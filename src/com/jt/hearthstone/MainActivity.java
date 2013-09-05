@@ -18,6 +18,7 @@ import android.widget.GridView;
 
 public class MainActivity extends ActionBarActivity {
 
+	public static String[] cardNames = new String[517];
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -55,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		Cards[] cards = gson.fromJson(jsonString, Cards[].class);
 		
-		String[] cardNames = new String[517];
+		
 		int i = 0;
 		for (Cards card : cards) {
 			cardNames[i] = card.getName();
