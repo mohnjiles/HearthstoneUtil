@@ -17,13 +17,14 @@ import android.view.Menu;
 import android.widget.GridView;
 
 public class MainActivity extends ActionBarActivity {
-
+	
 	public static String[] cardNames = new String[517];
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		getSupportActionBar().show();
+			
 		setTitle("Hearthstone Utilities");
 		GridView grid = (GridView) findViewById(R.id.cardsGrid);
 		Gson gson = new Gson();
