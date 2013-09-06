@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.util.ArrayList;
 
 import com.google.gson.Gson;
 
@@ -18,7 +19,7 @@ import android.widget.GridView;
 
 public class MainActivity extends ActionBarActivity {
 	
-	public static String[] cardNames = new String[517];
+	public static ArrayList<Cards> cardNames = new ArrayList<Cards>();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -56,12 +57,9 @@ public class MainActivity extends ActionBarActivity {
 		String jsonString = writer.toString();
 		
 		Cards[] cards = gson.fromJson(jsonString, Cards[].class);
-		
-		
-		int i = 0;
+
 		for (Cards card : cards) {
-			cardNames[i] = card.getName();
-			i++;
+			cardNames.add(card);
 		}
 		
 		grid.setAdapter(new ImageAdapter(this));

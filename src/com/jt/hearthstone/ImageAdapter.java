@@ -1,28 +1,30 @@
 package com.jt.hearthstone;
 
+import java.util.ArrayList;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private String[] cardNames = MainActivity.cardNames;
-    
+    private ArrayList<Cards> cardNames = MainActivity.cardNames;
+	public static String url;
+	ImageLoader imageLoader = ImageLoader.getInstance();
 
     public ImageAdapter(Context c) {
         mContext = c;
     }
 
     public int getCount() {
-        return cardNames.length;
+        return cardNames.size();
     }
 
     public Object getItem(int position) {
@@ -37,35 +39,60 @@ public class ImageAdapter extends BaseAdapter {
     	ImageView iv = null;
     	TextView tv = null;
     }
+    
+    	
+//	@Override
+//	public View getView(int position, View convertView, ViewGroup parent) {
+//		url = "http://jt.comyr.com/images/" + cardNames.get(position).getName().replace(" ", "%20") + ".png";
+//		final ImageView imageView;
+//		LayoutInflater li = (LayoutInflater)mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
+//		
+//		imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+//		
+//		if (convertView == null) {
+//			imageView = (ImageView) li.inflate(R.layout.item_grid_image, parent, false);
+//		} else {
+//			imageView = (ImageView) convertView;
+//		}
+//
+//		imageLoader.displayImage(url, imageView);
+//
+//		return imageView;
+//	}
 
-    // create a new ImageView for each item referenced by the Adapter
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
-    	View v;
-//    	Cards cards = (Cards) getItem(position);
-    	//String[] champNames = mContext.getResources().getStringArray(R.array.ChampNames);
+
     	
+    	url = "http://jt.comyr.com/images/" + cardNames.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+    	imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+    	 DisplayImageOptions options = new DisplayImageOptions.Builder()
+         .showStubImage(R.drawable.ic_launcher)
+         .cacheInMemory()
+         .cacheOnDisc()
+         .build();
+    	 
     	if (convertView == null) {
-    		vh = new ViewHolder();
-    		@SuppressWarnings("static-access")
-			LayoutInflater li = (LayoutInflater)mContext.getSystemService(mContext.LAYOUT_INFLATER_SERVICE);
     		
-    		v = li.inflate(R.layout.grid_layout, null);
-    		vh.tv = (TextView)v.findViewById(R.id.grid_item_text);
-    		vh.iv = (ImageView)v.findViewById(R.id.grid_item_image);
-    		v.setTag(vh);		
+    		convertView = View.inflate(mContext, R.layout.grid_layout, null);
+    		
+    		vh = new ViewHolder();
+
+    		vh.tv = (TextView) convertView.findViewById(R.id.grid_item_text);
+    		vh.iv = (ImageView) convertView.findViewById(R.id.grid_item_image);
+    		convertView.setTag(vh);	
+    		vh.iv.setImageResource(R.drawable.ic_launcher);
     	} else {
     		vh = (ViewHolder)convertView.getTag();
-    		v = convertView;
     	}
     	//vh.iv.setImageResource(mThumbIds[position]);
-    	vh.tv.setTextColor(Color.WHITE);
-    	vh.tv.setText(cardNames[position]);
-    	return v;
+    	vh.tv.setTextColor(Color.BLACK);
+    	vh.tv.setText(cardNames.get(position).getName());
+    	imageLoader.displayImage(url, vh.iv, options);
     	
+    	return convertView;
     	
     }
-
-    // references to our images
 
 }
