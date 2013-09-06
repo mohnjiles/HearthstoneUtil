@@ -8,7 +8,6 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,20 +16,16 @@ import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-import android.R.bool;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.text.StaticLayout;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.Filter;
 import android.widget.GridView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -148,7 +143,7 @@ public class MainActivity extends ActionBarActivity {
 
 	public class CardComparator implements Comparator<Cards> {
 		public int compare(Cards left, Cards right) {
-			return left.getName().compareTo(right.getName());
+			return left.getCost().toString().compareTo(right.getCost().toString());
 		}
 	}
 
@@ -162,7 +157,7 @@ public class MainActivity extends ActionBarActivity {
 			case 0:
 				cardList.clear();
 				for (Cards card : cards) {
-					cardList.add(card);
+					cardList.add(card);	
 				}
 				Collections.sort(cardList, new CardComparator());
 				adapter.notifyDataSetChanged();
