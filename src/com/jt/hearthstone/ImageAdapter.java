@@ -19,20 +19,9 @@ import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = MainActivity.cardList;
-    private ArrayList<Cards> druidCards = MainActivity.druidCards;
+    private ArrayList<Cards> cardList = MainActivity.cardList; // Get card list from MainActivity
 	public static String url;
-	boolean any = MainActivity.any;
-	boolean druid = MainActivity.druid;
-	boolean hunter = MainActivity.hunter;
-	boolean mage = MainActivity.mage;
-	boolean paladin = MainActivity.paladin;
-	boolean priest = MainActivity.priest;
-	boolean rogue = MainActivity.rogue;
-	boolean shaman = MainActivity.shaman;
-	boolean warlock = MainActivity.warlock;
-	boolean warrior = MainActivity.warrior;
-	ImageLoader imageLoader = MainActivity.loader;
+	ImageLoader imageLoader = MainActivity.loader; // Get instance of ImageLoader from main activity
 
     public ImageAdapter(Context c) {
         mContext = c;
@@ -50,6 +39,7 @@ public class ImageAdapter extends BaseAdapter {
         return 0;
     }
     
+    // Custom ViewHolder class to make scrolling smoother
     static class ViewHolder {
     	ImageView iv = null;
     	TextView tv = null;
@@ -59,22 +49,22 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
-    	if (druid) {
-    		url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-    	} else {
-    		url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-    	}
+    	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
 
-    	 DisplayImageOptions options = new DisplayImageOptions.Builder()
-         .showStubImage(R.drawable.ic_launcher)
-         .cacheInMemory(true)
-         .cacheOnDisc(false)
-         .build();
+    	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
+    	// We may eventually need to disable this based on further testing
+    	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
+    	// only a few KB each.
+    	DisplayImageOptions options = new DisplayImageOptions.Builder()
+        .showStubImage(R.drawable.ic_launcher)
+        .cacheInMemory(true)
+        .cacheOnDisc(false)
+        .build();
     	 
+    	// If our view (in this case, one item from the gridview) is null, then inflate it.
+    	// We do this because re-using views makes memory happy :)
     	if (convertView == null) {
-    		
     		convertView = View.inflate(mContext, R.layout.grid_layout, null);
-    		
     		vh = new ViewHolder();
 
     		vh.tv = (TextView) convertView.findViewById(R.id.grid_item_text);
@@ -85,9 +75,12 @@ public class ImageAdapter extends BaseAdapter {
     	} else {
     		vh = (ViewHolder)convertView.getTag();
     	}
-
+    	// Set the TextView color to black, even though we can do this in XML.
+    	// On second thought, do we even need the TextView?
 		vh.tv.setTextColor(Color.BLACK);
+		// Set the Text of the TextView
     	vh.tv.setText(cardList.get(position).getName());
+    	// Load the image for the ImageView
     	imageLoader.displayImage(url, vh.iv, options);
     	return convertView;
     	

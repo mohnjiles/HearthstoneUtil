@@ -9,6 +9,7 @@ import java.net.URL;
 
 import com.google.gson.Gson;
 
+// Gary's useful JsonUtil class
 public class JsonUtil {
 
 	private final static Gson GSON = new Gson();
