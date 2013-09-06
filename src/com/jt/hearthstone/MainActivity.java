@@ -199,6 +199,23 @@ public class MainActivity extends ActionBarActivity {
 				grid.invalidate();
 				grid.setAdapter(adapter);
 				break;
+				// Mage Class Card List
+			case 3:
+				cardList.clear();
+				for (Cards card : cards) {
+					if (card.getClasss() != null) {
+						if (card.getClasss().intValue() == 8) {
+							cardList.add(card);
+						}
+					}
+
+				}
+				
+				Collections.sort(cardList, new CardComparator());
+				adapter.notifyDataSetChanged();
+				grid.invalidate();
+				grid.setAdapter(adapter);
+				break;
 			}
 		}
 
