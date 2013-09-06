@@ -14,6 +14,8 @@ import java.util.Collections;
 import java.util.Comparator;
 
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import android.R.bool;
 import android.os.Bundle;
@@ -23,6 +25,9 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.Filter;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -33,17 +38,20 @@ public class MainActivity extends ActionBarActivity {
 	GridView grid;
 	Cards[] cards;
 	ImageAdapter adapter;
+	CheckBox includeNeutralCards;
+	
+	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> druidCards;
-	boolean any = true;
-	boolean druid = false;
-	boolean hunter = false;
-	boolean mage = false;
-	boolean paladin = false;
-	boolean priest = false;
-	boolean rogue = false;
-	boolean shaman = false;
-	boolean warlock = false;
-	boolean warrior = false;
+	public static boolean any = true;
+	public static boolean druid = false;
+	public static boolean hunter = false;
+	public static boolean mage = false;
+	public static boolean paladin = false;
+	public static boolean priest = false;
+	public static boolean rogue = false;
+	public static boolean shaman = false;
+	public static boolean warlock = false;
+	public static boolean warrior = false;
 
 	public static ArrayList<Cards> cardList;
 
@@ -57,8 +65,12 @@ public class MainActivity extends ActionBarActivity {
 
 		grid = (GridView) findViewById(R.id.cardsGrid);
 		spinner = (Spinner) findViewById(R.id.spinner1);
-
-		spinner.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+		includeNeutralCards = (CheckBox) findViewById(R.id.checkBox1);
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener();
+		spinner.setOnItemSelectedListener(listener);
+		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
+				this).denyCacheImageMultipleSizesInMemory().build();
+		loader.init(config);
 
 		Gson gson = new Gson();
 
@@ -96,11 +108,34 @@ public class MainActivity extends ActionBarActivity {
 				cardList.add(card);
 			}
 		}
-		
 		Collections.sort(cardList, new CardComparator());
 		adapter = new ImageAdapter(this);
 		grid.setAdapter(adapter);
-		adapter.notifyDataSetChanged();
+
+		includeNeutralCards
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						if (isChecked) {
+							for (Cards card : cards) {
+								cardList.remove(card);
+								if (card.getClasss() == null) {
+									cardList.add(card);
+								}
+							}
+
+							Collections.sort(cardList, new CardComparator());
+							adapter.notifyDataSetChanged();
+							grid.invalidate();
+							grid.setAdapter(adapter);
+						} else {
+							spinner.setSelection(1);
+						}
+					}
+
+				});
 
 	}
 
@@ -125,23 +160,36 @@ public class MainActivity extends ActionBarActivity {
 
 			switch (pos) {
 			case 0:
+				cardList.clear();
+				for (Cards card : cards) {
+					cardList.add(card);
+				}
+				Collections.sort(cardList, new CardComparator());
+				adapter.notifyDataSetChanged();
+				grid.invalidate();
+				grid.setAdapter(adapter);
 				break;
 			case 1:
-				druidCards = new ArrayList<Cards>();
+				cardList.clear();
 				for (Cards card : cards) {
-					if (card.getClasss().intValue() == 11) {
-						druidCards.add(card);
+					if (card.getClasss() != null) {
+						if (card.getClasss().intValue() == 11) {
+							cardList.add(card);
+						}
 					}
+
 				}
+				Collections.sort(cardList, new CardComparator());
 				adapter.notifyDataSetChanged();
+				grid.invalidate();
+				grid.setAdapter(adapter);
 				break;
 			}
 		}
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
+			// TODO Auto-ged();
 		}
-
 	}
 }

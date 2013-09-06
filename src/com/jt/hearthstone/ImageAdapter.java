@@ -12,6 +12,8 @@ import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -20,14 +22,24 @@ public class ImageAdapter extends BaseAdapter {
     private ArrayList<Cards> cardList = MainActivity.cardList;
     private ArrayList<Cards> druidCards = MainActivity.druidCards;
 	public static String url;
-	ImageLoader imageLoader = ImageLoader.getInstance();
+	boolean any = MainActivity.any;
+	boolean druid = MainActivity.druid;
+	boolean hunter = MainActivity.hunter;
+	boolean mage = MainActivity.mage;
+	boolean paladin = MainActivity.paladin;
+	boolean priest = MainActivity.priest;
+	boolean rogue = MainActivity.rogue;
+	boolean shaman = MainActivity.shaman;
+	boolean warlock = MainActivity.warlock;
+	boolean warrior = MainActivity.warrior;
+	ImageLoader imageLoader = MainActivity.loader;
 
     public ImageAdapter(Context c) {
         mContext = c;
     }
 
     public int getCount() {
-        return cardList.size();
+    	return cardList.size();
     }
 
     public Object getItem(int position) {
@@ -47,13 +59,12 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
+    	if (druid) {
+    		url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+    	} else {
+    		url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+    	}
 
-    	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-    	
-    
-    	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
-    	.denyCacheImageMultipleSizesInMemory().build();
-    	imageLoader.init(config);
     	 DisplayImageOptions options = new DisplayImageOptions.Builder()
          .showStubImage(R.drawable.ic_launcher)
          .cacheInMemory(true)
@@ -74,20 +85,10 @@ public class ImageAdapter extends BaseAdapter {
     	} else {
     		vh = (ViewHolder)convertView.getTag();
     	}
-    	//vh.iv.setImageResource(mThumbIds[position]);
-    	if (cardList.get(position).getClasss() != null) {
-    		if (cardList.get(position).getClasss().intValue() == 11) {
-	    		imageLoader.displayImage(url, vh.iv, options);
-	    	}
-    	}
-	    	
-	    vh.tv.setTextColor(Color.BLACK);
+
+		vh.tv.setTextColor(Color.BLACK);
     	vh.tv.setText(cardList.get(position).getName());
-    	//imageLoader.displayImage(url, vh.iv, options);
-    	
-    	
-    	
-    	
+    	imageLoader.displayImage(url, vh.iv, options);
     	return convertView;
     	
     }
