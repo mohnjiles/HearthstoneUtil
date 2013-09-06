@@ -154,6 +154,7 @@ public class MainActivity extends ActionBarActivity {
 				long id) {
 
 			switch (pos) {
+			//All Class Card List
 			case 0:
 				cardList.clear();
 				for (Cards card : cards) {
@@ -164,6 +165,7 @@ public class MainActivity extends ActionBarActivity {
 				grid.invalidate();
 				grid.setAdapter(adapter);
 				break;
+				//Druid Class Card List
 			case 1:
 				cardList.clear();
 				for (Cards card : cards) {
@@ -174,6 +176,24 @@ public class MainActivity extends ActionBarActivity {
 					}
 
 				}
+				
+				Collections.sort(cardList, new CardComparator());
+				adapter.notifyDataSetChanged();
+				grid.invalidate();
+				grid.setAdapter(adapter);
+				break;
+				// Hunter Class Card List
+			case 2:
+				cardList.clear();
+				for (Cards card : cards) {
+					if (card.getClasss() != null) {
+						if (card.getClasss().intValue() == 3) {
+							cardList.add(card);
+						}
+					}
+
+				}
+				
 				Collections.sort(cardList, new CardComparator());
 				adapter.notifyDataSetChanged();
 				grid.invalidate();
