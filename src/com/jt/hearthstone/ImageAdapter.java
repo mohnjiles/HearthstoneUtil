@@ -18,6 +18,7 @@ import android.widget.TextView;
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<Cards> cardList = MainActivity.cardList;
+    private ArrayList<Cards> druidCards = MainActivity.druidCards;
 	public static String url;
 	ImageLoader imageLoader = ImageLoader.getInstance();
 
@@ -47,8 +48,8 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
 
-    	
     	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+    	
     
     	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
     	.denyCacheImageMultipleSizesInMemory().build();
@@ -74,9 +75,15 @@ public class ImageAdapter extends BaseAdapter {
     		vh = (ViewHolder)convertView.getTag();
     	}
     	//vh.iv.setImageResource(mThumbIds[position]);
-    	vh.tv.setTextColor(Color.BLACK);
+    	if (cardList.get(position).getClasss() != null) {
+    		if (cardList.get(position).getClasss().intValue() == 11) {
+	    		imageLoader.displayImage(url, vh.iv, options);
+	    	}
+    	}
+	    	
+	    vh.tv.setTextColor(Color.BLACK);
     	vh.tv.setText(cardList.get(position).getName());
-    	imageLoader.displayImage(url, vh.iv, options);
+    	//imageLoader.displayImage(url, vh.iv, options);
     	
     	
     	

@@ -8,6 +8,7 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import com.google.gson.Gson;
 import android.R.bool;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.text.StaticLayout;
 import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
@@ -29,6 +31,9 @@ public class MainActivity extends ActionBarActivity {
 
 	Spinner spinner;
 	GridView grid;
+	Cards[] cards;
+	ImageAdapter adapter;
+	public static ArrayList<Cards> druidCards;
 	boolean any = true;
 	boolean druid = false;
 	boolean hunter = false;
@@ -84,17 +89,16 @@ public class MainActivity extends ActionBarActivity {
 
 		String jsonString = writer.toString();
 
-		Cards[] cards = gson.fromJson(jsonString, Cards[].class);
+		cards = gson.fromJson(jsonString, Cards[].class);
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
 				cardList.add(card);
-				card.getClass();
 			}
 		}
 		
 		Collections.sort(cardList, new CardComparator());
-		ImageAdapter adapter = new ImageAdapter(this);
+		adapter = new ImageAdapter(this);
 		grid.setAdapter(adapter);
 		adapter.notifyDataSetChanged();
 
@@ -123,16 +127,13 @@ public class MainActivity extends ActionBarActivity {
 			case 0:
 				break;
 			case 1:
-				any = false;
-				druid = true;
-				hunter = false;
-				mage = false;
-				paladin = false;
-				priest = false;
-				rogue = false;
-				shaman = false;
-				warlock = false;
-				warrior = false;
+				druidCards = new ArrayList<Cards>();
+				for (Cards card : cards) {
+					if (card.getClasss().intValue() == 11) {
+						druidCards.add(card);
+					}
+				}
+				adapter.notifyDataSetChanged();
 				break;
 			}
 		}
