@@ -9,36 +9,64 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 
 import com.google.gson.Gson;
 
+import android.R.bool;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 public class MainActivity extends ActionBarActivity {
-	
-	public static ArrayList<Cards> cardNames = new ArrayList<Cards>();
+
+	Spinner spinner;
+	GridView grid;
+	boolean any = true;
+	boolean druid = false;
+	boolean hunter = false;
+	boolean mage = false;
+	boolean paladin = false;
+	boolean priest = false;
+	boolean rogue = false;
+	boolean shaman = false;
+	boolean warlock = false;
+	boolean warrior = false;
+
+	public static ArrayList<Cards> cardList = new ArrayList<Cards>();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		getSupportActionBar().show();
-			
+
 		setTitle("Hearthstone Utilities");
-		GridView grid = (GridView) findViewById(R.id.cardsGrid);
+
+		grid = (GridView) findViewById(R.id.cardsGrid);
+		spinner = (Spinner) findViewById(R.id.spinner1);
+
+		spinner.setOnItemSelectedListener(new CustomOnItemSelectedListener());
+
 		Gson gson = new Gson();
-		
+
 		InputStream is = getResources().openRawResource(R.raw.cards);
 		Writer writer = new StringWriter();
 		char[] buffer = new char[1024];
 		try {
-		    Reader reader = new BufferedReader(new InputStreamReader(is, "UTF-8"));
-		    int n;
-		    while ((n = reader.read(buffer)) != -1) {
-		        writer.write(buffer, 0, n);
-		    }
+			Reader reader = new BufferedReader(new InputStreamReader(is,
+					"UTF-8"));
+			int n;
+			while ((n = reader.read(buffer)) != -1) {
+				writer.write(buffer, 0, n);
+			}
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,15 +83,16 @@ public class MainActivity extends ActionBarActivity {
 		}
 
 		String jsonString = writer.toString();
-		
+
 		Cards[] cards = gson.fromJson(jsonString, Cards[].class);
 
 		for (Cards card : cards) {
-			cardNames.add(card);
+
+			cardList.add(card);
 		}
-		
+		Collections.sort(cardList, new CardComparator());
 		grid.setAdapter(new ImageAdapter(this));
-		
+
 	}
 
 	@Override
@@ -73,4 +102,40 @@ public class MainActivity extends ActionBarActivity {
 		return true;
 	}
 
+	public class CardComparator implements Comparator<Cards> {
+		public int compare(Cards left, Cards right) {
+			return left.getName().compareTo(right.getName());
+		}
+	}
+
+	public class CustomOnItemSelectedListener implements OnItemSelectedListener {
+
+		@Override
+		public void onItemSelected(AdapterView<?> parent, View view, int pos,
+				long id) {
+
+			switch (pos) {
+			case 0:
+				break;
+			case 1:
+				any = false;
+				druid = true;
+				hunter = false;
+				mage = false;
+				paladin = false;
+				priest = false;
+				rogue = false;
+				shaman = false;
+				warlock = false;
+				warrior = false;
+				break;
+			}
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+		}
+
+	}
 }
