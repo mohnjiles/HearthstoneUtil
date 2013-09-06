@@ -215,3 +215,5 @@ pip-log.txt
 .mr.developer.cfg
 
 project.properties
+
+gson-2.2.4.jar
