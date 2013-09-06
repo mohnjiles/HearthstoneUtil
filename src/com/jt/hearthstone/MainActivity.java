@@ -40,7 +40,7 @@ public class MainActivity extends ActionBarActivity {
 	boolean warlock = false;
 	boolean warrior = false;
 
-	public static ArrayList<Cards> cardList = new ArrayList<Cards>();
+	public static ArrayList<Cards> cardList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +85,18 @@ public class MainActivity extends ActionBarActivity {
 		String jsonString = writer.toString();
 
 		Cards[] cards = gson.fromJson(jsonString, Cards[].class);
-
-		for (Cards card : cards) {
-
-			cardList.add(card);
+		if (cardList == null) {
+			cardList = new ArrayList<Cards>();
+			for (Cards card : cards) {
+				cardList.add(card);
+				card.getClass();
+			}
 		}
+		
 		Collections.sort(cardList, new CardComparator());
-		grid.setAdapter(new ImageAdapter(this));
+		ImageAdapter adapter = new ImageAdapter(this);
+		grid.setAdapter(adapter);
+		adapter.notifyDataSetChanged();
 
 	}
 

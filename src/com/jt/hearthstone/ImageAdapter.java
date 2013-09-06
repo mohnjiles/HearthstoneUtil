@@ -49,7 +49,10 @@ public class ImageAdapter extends BaseAdapter {
 
     	
     	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-    	imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+    
+    	ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(mContext)
+    	.denyCacheImageMultipleSizesInMemory().build();
+    	imageLoader.init(config);
     	 DisplayImageOptions options = new DisplayImageOptions.Builder()
          .showStubImage(R.drawable.ic_launcher)
          .cacheInMemory(true)
