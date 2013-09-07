@@ -10,7 +10,7 @@
         android:layout_height="462dp" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/tvCardName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -25,7 +25,7 @@
             android:id="@+id/ivHeroPower"
             android:layout_width="186dp"
             android:layout_height="275dp"
-            android:layout_below="@+id/textView1"
+            android:layout_below="@+id/tvCardName"
             android:layout_centerHorizontal="true"
             android:src="@drawable/abc_ab_solid_dark_holo" />
 

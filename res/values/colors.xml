@@ -2,4 +2,18 @@
 <resources>
     <color name="white">#FFFFFF</color>
     <color name="black">#000000</color>
+    <color name="druid">#f07c0d</color>
+    <color name="hunter">#9BD372</color>
+    <color name="mage">#3BC0EF</color>
+    <color name="paladin">#E68CAA</color>
+    <color name="priest">#F0FFF0</color>
+    <color name="rogue">#DAF468</color>
+    <color name="shaman">#141CC4</color>
+    <color name="warlock">#8382A7</color>
+    <color name="warrior">#BA9B51</color>
+    <color name="free">#9d9d9d</color>
+    <color name="rare">#0070dd</color>
+    <color name="epic">#a335ee</color>
+    <color name="legendary">#ff8000</color>
 </resources>
+

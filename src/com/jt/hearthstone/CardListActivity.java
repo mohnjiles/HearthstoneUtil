@@ -11,33 +11,41 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import com.jt.hearthstone.ImageAdapter;
-
+import android.R.integer;
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.text.StaticLayout;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.drawable.BitmapDrawable;
+import android.widget.TextView;
+
+import com.google.gson.Gson;
+import com.jt.hearthstone.R.color;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CardListActivity extends ActionBarActivity {
 
@@ -47,6 +55,24 @@ public class CardListActivity extends ActionBarActivity {
 	ImageAdapter adapter;
 	PopupWindow pWindow;
 	CheckBox includeNeutralCards;
+	TextView tvCardName;
+	TextView tvType;
+	TextView tvQuality;
+	TextView tvSet;
+	TextView tvEnchant;
+	TextView tvCrafted;
+	TextView tvClass;
+	ImageView ivCardImage;
+	
+	private static final int druid = Classes.DRUID.getValue();
+	int hunter = Classes.HUNTER.getValue();
+	int mage = Classes.MAGE.getValue();
+	int paladin = Classes.PALADIN.getValue();
+	int priest = Classes.PRIEST.getValue();
+	int rogue = Classes.ROGUE.getValue();
+	int shaman = Classes.SHAMAN.getValue();
+	int warlock = Classes.WARLOCK.getValue();
+	int warrior = Classes.WARRIOR.getValue();
 	
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
@@ -121,11 +147,7 @@ public class CardListActivity extends ActionBarActivity {
 		
 	    grid.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, 
-	    				getResources().getDisplayMetrics()); 
-	    		int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, 
-	    				getResources().getDisplayMetrics());
-	        	doSomeWindow(dipsWidthPortrait_Normal, dipsHeightPortrait_Normal, dipsWidthPortrait_Normal, dipsHeightPortrait_Normal);
+	        	initiatePopupWindow(position);
 	        }
 	    });
 
@@ -305,26 +327,151 @@ public class CardListActivity extends ActionBarActivity {
 		grid.setAdapter(adapter);
 	}
 	
-	private void doSomeWindow(int widthLandscape, int heightLandscape, 
-			int widthPortrait, int heightPortrait) {
-		
-		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		View layout = inflater.inflate(R.layout.card_popup, null);
-		
-		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			pWindow = new PopupWindow(layout, widthLandscape, heightLandscape, true);
-			pWindow.setBackgroundDrawable(new BitmapDrawable());
-			pWindow.setOutsideTouchable(true);
-			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
-			pWindow.setFocusable(true);
+	private void initiatePopupWindow(int position) {
+		try {
+			// get screen size of device
+			int screenSize = getResources().getConfiguration().screenLayout &
+			        Configuration.SCREENLAYOUT_SIZE_MASK;
 			
-		} else {
-			pWindow = new PopupWindow(layout, widthPortrait, heightPortrait, true);
-			pWindow.setBackgroundDrawable(new BitmapDrawable());
-			pWindow.setOutsideTouchable(true);
-			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
-			pWindow.setFocusable(true);
+			// convert px to dips for multiple screens
+			int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics()); 
+			int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, getResources().getDisplayMetrics());
+			int dipsWidthLandscape_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, getResources().getDisplayMetrics()); 
+			int dipsHeightLandscape_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics());
+			int dipsWidthPortrait_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 425, getResources().getDisplayMetrics()); 
+			int dipsHeightPortrait_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 550, getResources().getDisplayMetrics());
+			int dipsWidthLandscape_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 550, getResources().getDisplayMetrics()); 
+			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 425, getResources().getDisplayMetrics());
+			int dipsWidthPortrait_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()); 
+			int dipsHeightPortrait_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 350, getResources().getDisplayMetrics());
+			int dipsWidthLandscape_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 350, getResources().getDisplayMetrics()); 
+			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
 			
+			// We need to get the instance of the LayoutInflater
+			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			View layout = inflater.inflate(R.layout.card_popup, null);
+			
+			// make different popupWindowws for different screen sizes
+			switch (screenSize) {
+				case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+					doSomeWindow(
+			        		layout, 
+			        		dipsWidthLandscape_Large, 
+			        		dipsHeightLandscape_Large,
+			        		dipsWidthPortrait_Large,  
+			        		dipsHeightPortrait_Large); 
+					break;
+				case Configuration.SCREENLAYOUT_SIZE_LARGE:
+					doSomeWindow(
+			        		layout, // View of the popupWindow
+			        		dipsWidthLandscape_Large, // Width for landscape orientation
+			        		dipsHeightLandscape_Large, // Height for landscape
+			        		dipsWidthPortrait_Large,  // Width for portrait orientation
+			        		dipsHeightPortrait_Large); // Height for portrait
+					break;
+			    case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+			        doSomeWindow(
+			        		layout, 
+			        		dipsWidthLandscape_Normal, 
+			        		dipsHeightLandscape_Normal,
+			        		dipsWidthPortrait_Normal, 
+			        		dipsHeightPortrait_Normal);
+			        break;
+			    default:
+			    	doSomeWindow(
+			        		layout, 
+			        		dipsWidthLandscape_Small, 
+			        		dipsHeightLandscape_Small,
+			        		dipsWidthPortrait_Small, 
+			        		dipsHeightPortrait_Small);
+			        break;
+			}
+			
+			String url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+			loader.displayImage(url, ivCardImage);
+			tvCardName.setText(cardList.get(position).getName());
+			int classs = cardList.get(position).getClasss().intValue();
+			int type = cardList.get(position).getClasss().intValue();
+			int quality = cardList.get(position).getQuality().intValue();
+			
+			if (classs == Classes.DRUID.getValue()) {
+				int druid = getResources().getColor(R.color.druid);
+				tvClass.setTextColor(druid);
+				tvClass.setText("Druid");
+			}
+			// Set the type (minion, ability, etc)
+			if (type == 3) {
+				tvType.setText("Hero");
+			} else if (type == 4) {
+				tvType.setText("Minion");
+			} else if (type == 5) {
+				tvType.setText("Ability");
+			} else if (type == 7) {
+				tvType.setText("Weapon");
+			} else if (type == 10) {
+				tvType.setText("Hero Power");
+			}
+			
+			switch (quality) {
+			case 0:
+				int free = getResources().getColor(R.color.free);
+				tvQuality.setTextColor(free);
+				tvQuality.setText("Free");
+				break;
+			case 1:
+				tvQuality.setText("Common");
+				break;
+			case 3:
+				int rare = getResources().getColor(R.color.rare);
+				tvQuality.setTextColor(rare);
+				tvQuality.setText("Rare");
+				break;
+			case 4:
+				int epic = getResources().getColor(R.color.epic);
+				tvQuality.setTextColor(epic);
+				tvQuality.setText("Epic");
+				break;
+			case 5:
+				int legendary = getResources().getColor(R.color.legendary);
+				tvQuality.setTextColor(legendary);
+				tvQuality.setText("Legendary");
+				break;
+			}
+			
+			// If we ran in to a problem
+			} catch (Exception e) {
+				Log.w("PopupWindoww", "" + e.getMessage() + e.getStackTrace()[0].getLineNumber());
+			}
 		}
-	}
+
+		
+		// Runs the popupWindoww, getting view from inflater & dimensions based on screen size
+		private void doSomeWindow(View layout, int widthLandscape, int heightLandscape, 
+				int widthPortrait, int heightPortrait) {
+			
+			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				pWindow = new PopupWindow(layout, widthLandscape, heightLandscape, true);
+				pWindow.setBackgroundDrawable(new BitmapDrawable());
+				pWindow.setOutsideTouchable(true);
+				pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+				pWindow.setFocusable(true);
+				
+			} else {
+				pWindow = new PopupWindow(layout, widthPortrait, heightPortrait, true);
+				pWindow.setBackgroundDrawable(new BitmapDrawable());
+				pWindow.setOutsideTouchable(true);
+				pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+				pWindow.setFocusable(true);
+				
+			}
+			
+			ivCardImage = (ImageView) pWindow.getContentView().findViewById(R.id.ivCardImages);
+			tvCardName = (TextView) pWindow.getContentView().findViewById(R.id.tvCardName);
+			tvClass = (TextView) pWindow.getContentView().findViewById(R.id.tvClass);
+			tvCrafted = (TextView) pWindow.getContentView().findViewById(R.id.tvCrafted);
+			tvEnchant = (TextView) pWindow.getContentView().findViewById(R.id.tvEnchant);
+			tvQuality = (TextView) pWindow.getContentView().findViewById(R.id.tvQuality);
+			tvSet = (TextView) pWindow.getContentView().findViewById(R.id.tvSet);
+			tvType = (TextView) pWindow.getContentView().findViewById(R.id.tvType);
+		}
 }
