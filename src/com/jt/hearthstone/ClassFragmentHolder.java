@@ -1,6 +1,6 @@
 package com.jt.hearthstone;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -12,7 +12,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -54,7 +53,7 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		position = getIntent().getIntExtra("position", 0);
 		
 		// Fragment Holder
-		Vector<Fragment> fragments = new Vector<Fragment>();
+		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 		// Create a new InfoFragment
 		InfoFragment fragmentOne = new InfoFragment();
 		// Add it to our fragment holder
@@ -131,9 +130,9 @@ public class ClassFragmentHolder extends ActionBarActivity {
 	public class FragmentAdapter extends FragmentPagerAdapter {
 
 		 FragmentManager mManager;
-		 Vector<Fragment> localFragmentArray;
+		 ArrayList<Fragment> localFragmentArray;
 
-		 public FragmentAdapter(FragmentManager fm, Vector<Fragment> loadFragment) {
+		 public FragmentAdapter(FragmentManager fm, ArrayList<Fragment> loadFragment) {
 		  super(fm);
 		  localFragmentArray = loadFragment;
 		  mManager = fm;

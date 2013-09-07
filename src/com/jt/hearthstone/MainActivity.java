@@ -32,7 +32,6 @@ public class MainActivity extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
-			// MAKE ME EXPLAIN INTENTS
 			startActivity(new Intent(MainActivity.this, SettingsActivity.class));
 			return true;
 		default:

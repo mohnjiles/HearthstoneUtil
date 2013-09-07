@@ -50,7 +50,7 @@ public class ImageAdapter extends BaseAdapter {
     	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
     	// only a few KB each.
     	DisplayImageOptions options = new DisplayImageOptions.Builder()
-        .showStubImage(R.drawable.ic_launcher)
+        .showStubImage(R.drawable.cards)
         .cacheInMemory(true)
         .cacheOnDisc(true)
         .build();
@@ -64,7 +64,7 @@ public class ImageAdapter extends BaseAdapter {
     		vh.tv = (TextView) convertView.findViewById(R.id.grid_item_text);
     		vh.iv = (ImageView) convertView.findViewById(R.id.grid_item_image);
     		convertView.setTag(vh);	
-    		vh.iv.setImageResource(R.drawable.ic_launcher);
+    		vh.iv.setImageResource(R.drawable.cards);
     		
     	} else {
     		vh = (ViewHolder)convertView.getTag();
