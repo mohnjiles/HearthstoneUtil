@@ -390,26 +390,77 @@ public class CardListActivity extends ActionBarActivity {
 			String url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
 			loader.displayImage(url, ivCardImage);
 			tvCardName.setText(cardList.get(position).getName());
-			int classs = cardList.get(position).getClasss().intValue();
-			int type = cardList.get(position).getClasss().intValue();
+			int classs = 0;
+			if (cardList.get(position).getClasss() != null) {
+				classs = cardList.get(position).getClasss().intValue();
+			}
+			
+			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
+			int set = cardList.get(position).getSet().intValue();
 			
 			if (classs == Classes.DRUID.getValue()) {
 				int druid = getResources().getColor(R.color.druid);
 				tvClass.setTextColor(druid);
 				tvClass.setText("Druid");
+			} else if (classs == Classes.HUNTER.getValue()) {
+				int hunter = getResources().getColor(R.color.hunter);
+				tvClass.setTextColor(hunter);
+				tvClass.setText("Hunter");
+			} else if (classs == Classes.MAGE.getValue()) {
+				int mage = getResources().getColor(R.color.mage);
+				tvClass.setTextColor(mage);
+				tvClass.setText("Mage");
+			} else if (classs == Classes.PALADIN.getValue()) {
+				int paladin = getResources().getColor(R.color.paladin);
+				tvClass.setTextColor(paladin);
+				tvClass.setText("Paladin");
+			} else if (classs == Classes.PRIEST.getValue()) {
+				int priest = getResources().getColor(R.color.priest);
+				tvClass.setTextColor(priest);
+				tvClass.setText("Priest");
+			} else if (classs == Classes.ROGUE.getValue()) {
+				int rogue = getResources().getColor(R.color.rogue);
+				tvClass.setTextColor(rogue);
+				tvClass.setText("Rogue");
+			} else if (classs == Classes.SHAMAN.getValue()) {
+				int shaman = getResources().getColor(R.color.shaman);
+				tvClass.setTextColor(shaman);
+				tvClass.setText("Shaman");
+			} else if (classs == Classes.WARLOCK.getValue()) {
+				int warlock = getResources().getColor(R.color.warlock);
+				tvClass.setTextColor(warlock);
+				tvClass.setText("Warlock");
+			} else if (classs == Classes.WARRIOR.getValue()) {
+				int warrior = getResources().getColor(R.color.warrior);
+				tvClass.setTextColor(warrior);
+				tvClass.setText("Warrior");
+			} else if (classs == 0){
+				//int grey = getResources().getColor(R.color.free);
+				tvClass.setTextColor(Color.GREEN);
+				tvClass.setText("All Classes");
 			}
+			
 			// Set the type (minion, ability, etc)
-			if (type == 3) {
+			switch (type) {
+			case 3:
 				tvType.setText("Hero");
-			} else if (type == 4) {
+				break;
+			case 4:
 				tvType.setText("Minion");
-			} else if (type == 5) {
+				break;
+			case 5:
 				tvType.setText("Ability");
-			} else if (type == 7) {
+				break;
+			case 7:
 				tvType.setText("Weapon");
-			} else if (type == 10) {
+				break;
+			case 10:
 				tvType.setText("Hero Power");
+				break;
+			default:
+				tvType.setVisibility(View.GONE);
+				break;
 			}
 			
 			switch (quality) {
@@ -435,6 +486,24 @@ public class CardListActivity extends ActionBarActivity {
 				int legendary = getResources().getColor(R.color.legendary);
 				tvQuality.setTextColor(legendary);
 				tvQuality.setText("Legendary");
+				break;
+			default:
+				tvQuality.setVisibility(View.GONE);
+				break;
+			}
+			
+			switch (set) {
+			case 2:
+				tvSet.setText("Set: Basic");
+				break;
+			case 3:
+				tvSet.setText("Set: Expert");
+				break;
+			case 4:
+				tvSet.setText("Set: Reward");
+				break;
+			case 5:
+				tvSet.setText("Set: Missions");
 				break;
 			}
 			
