@@ -5,9 +5,9 @@
     android:versionName="1.0" >
 
     <uses-permission android:name="android.permission.INTERNET" />
-    
+
     <uses-sdk
-        android:minSdkVersion="7"
+        android:minSdkVersion="11"
         android:targetSdkVersion="18" />
 
     <application
@@ -24,10 +24,34 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-		<activity
+        <activity
             android:name="com.jt.hearthstone.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/PreferencesTheme" >
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.CardListActivity"
+            android:label="@string/title_activity_card_list"
+            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.ClassesActivity"
+            android:label="@string/title_activity_classes"
+            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.ClassFragmentHolder"
+            android:label="@string/title_activity_class_fragment_holder"
+            android:parentActivityName="com.jt.hearthstone.ClassesActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.ClassesActivity" />
         </activity>
     </application>
 

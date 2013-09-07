@@ -4,10 +4,8 @@ package com.jt.hearthstone;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
-import android.preference.PreferenceCategory;
 import android.widget.Toast;
 
 public class SettingsActivity extends PreferenceActivity{

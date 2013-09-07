@@ -8,24 +8,33 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivity" >
 
-    <Button
-        android:id="@+id/btnCardList"
-        android:layout_width="wrap_content"
+    <GridView
+        android:id="@+id/cardsGrid"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:onClick="cardListPressed"
-        android:text="Card List" />
+        android:layout_below="@+id/spinner1"
+        android:numColumns="auto_fit" >
+    </GridView>
 
-    <Button
-        android:id="@+id/btnClasses"
+    <Spinner
+        android:id="@+id/spinner1"
+        style="android:spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnCardList"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/checkBox1"
+        android:entries="@array/Classes" />
+
+    <CheckBox
+        android:id="@+id/checkBox1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/spinner1"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/btnCardList"
-        android:onClick="classesPressed"
-        android:text="Classes" />
+        android:layout_alignTop="@+id/spinner1"
+        android:text="Include Generic Cards" />
 
 </RelativeLayout>

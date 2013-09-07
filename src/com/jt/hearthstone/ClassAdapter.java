@@ -11,18 +11,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class ImageAdapter extends BaseAdapter {
+public class ClassAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = CardListActivity.cardList; // Get card list from MainActivity
-	public static String url;
-	ImageLoader imageLoader = CardListActivity.loader; // Get instance of ImageLoader from main activity
 
-    public ImageAdapter(Context c) {
+    public ClassAdapter(Context c) {
         mContext = c;
     }
 
     public int getCount() {
-    	return cardList.size();
+    	return thumbIds.length;
     }
 
     public Object getItem(int position) {
@@ -43,22 +40,12 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
-    	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-    	
-    	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
-    	// We may eventually need to disable this based on further testing
-    	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
-    	// only a few KB each.
-    	DisplayImageOptions options = new DisplayImageOptions.Builder()
-        .showStubImage(R.drawable.ic_launcher)
-        .cacheInMemory(true)
-        .cacheOnDisc(true)
-        .build();
+    	String[] classes = mContext.getResources().getStringArray(R.array.ClassesWithoutAny);
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
     	// We do this because re-using views makes memory happy :)
     	if (convertView == null) {
-    		convertView = View.inflate(mContext, R.layout.grid_layout, null);
+    		convertView = View.inflate(mContext, R.layout.class_grid_layout, null);
     		vh = new ViewHolder();
 
     		vh.tv = (TextView) convertView.findViewById(R.id.grid_item_text);
@@ -69,15 +56,19 @@ public class ImageAdapter extends BaseAdapter {
     	} else {
     		vh = (ViewHolder)convertView.getTag();
     	}
-    	// Set the TextView color to black, even though we can do this in XML.
-    	// On second thought, do we even need the TextView?
-		vh.tv.setTextColor(Color.WHITE);
-		// Set the Text of the TextView
-    	vh.tv.setText(cardList.get(position).getName());
-    	// Load the image for the ImageView
-    	imageLoader.displayImage(url, vh.iv, options);
+    	vh.tv.setText(classes[position]);
+    	vh.iv.setImageResource(thumbIds[position]);
+
     	return convertView;
     	
     }
+    
+    private static Integer thumbIds[] = {
+    	R.drawable.malfurion_stormrage, R.drawable.rexxar,
+    	R.drawable.jaina_proudmoore, R.drawable.uther_lightbringer,
+    	R.drawable.anduin_wrynn, R.drawable.valeera_sanguinar,
+    	R.drawable.thrall, R.drawable.gul_dan,
+    	R.drawable.garrosh_hellscream
+    };
 
 }

@@ -5,16 +5,36 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_settings">Settings Activity</string>
-	<string-array name="Classes">
-	    <item>Any</item>
-	    <item>Druid</item>
-	    <item>Hunter</item>
-	    <item>Mage</item>
-	    <item>Paladin</item>
-	    <item>Priest</item>
-	    <item>Rogue</item>
-	    <item>Shaman</item>
-	    <item>Warlock</item>
-	    <item>Warrior</item>
-	</string-array>
+
+    <string-array name="Classes">
+        <item>Any</item>
+        <item>Druid</item>
+        <item>Hunter</item>
+        <item>Mage</item>
+        <item>Paladin</item>
+        <item>Priest</item>
+        <item>Rogue</item>
+        <item>Shaman</item>
+        <item>Warlock</item>
+        <item>Warrior</item>
+    </string-array>
+    <string-array name="ClassesWithoutAny">
+        <item>Druid</item>
+        <item>Hunter</item>
+        <item>Mage</item>
+        <item>Paladin</item>
+        <item>Priest</item>
+        <item>Rogue</item>
+        <item>Shaman</item>
+        <item>Warlock</item>
+        <item>Warrior</item>
+    </string-array>
+
+    <string name="title_activity_card_list">CardListActivity</string>
+    <string name="title_activity_classes">ClassesActivity</string>
+    <string name="title_activity_class_fragment_holder">ClassFragmentHolder</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+
 </resources>

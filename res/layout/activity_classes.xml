@@ -6,26 +6,30 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
+    tools:context=".ClassesActivity" >
 
-    <Button
-        android:id="@+id/btnCardList"
+    <TextView
+        android:id="@+id/tvClassName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:onClick="cardListPressed"
-        android:text="Card List" />
+        android:gravity="center"
+        android:text="Select a Class"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
-    <Button
-        android:id="@+id/btnClasses"
-        android:layout_width="wrap_content"
+    <GridView
+        android:id="@+id/classGrid"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnCardList"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/btnCardList"
-        android:onClick="classesPressed"
-        android:text="Classes" />
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvClassName"
+        android:layout_marginTop="4dp"
+        android:horizontalSpacing="4dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="4dp" >
+
+    </GridView>
 
 </RelativeLayout>
