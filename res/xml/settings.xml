@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent" >
+
+    <PreferenceCategory 
+        android:title="Debugging"
+        android:key="search_category">
+     	<Preference android:title="Clear Caches"
+                android:key="button"
+                android:summary="Clears both disc and memory cache"/>
+    </PreferenceCategory>
+    
+</PreferenceScreen>

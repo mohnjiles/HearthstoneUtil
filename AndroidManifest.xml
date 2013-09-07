@@ -24,6 +24,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+		<activity
+            android:name="com.jt.hearthstone.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:theme="@style/PreferencesTheme" >
+        </activity>
     </application>
 
 </manifest>

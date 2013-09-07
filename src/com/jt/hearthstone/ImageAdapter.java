@@ -50,7 +50,7 @@ public class ImageAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
     	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
-
+    	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
     	// We may eventually need to disable this based on further testing
     	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
@@ -58,7 +58,7 @@ public class ImageAdapter extends BaseAdapter {
     	DisplayImageOptions options = new DisplayImageOptions.Builder()
         .showStubImage(R.drawable.ic_launcher)
         .cacheInMemory(true)
-        .cacheOnDisc(false)
+        .cacheOnDisc(true)
         .build();
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
