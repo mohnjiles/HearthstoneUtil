@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#666666"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -16,7 +17,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:onClick="cardListPressed"
-        android:text="Card List" />
+        android:text="Card List"
+        android:textColor="#FFFFFF" />
 
     <Button
         android:id="@+id/btnClasses"
@@ -26,6 +28,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/btnCardList"
         android:onClick="classesPressed"
-        android:text="Classes" />
+        android:text="Classes"
+        android:textColor="#FFFFFF" />
 
 </RelativeLayout>
