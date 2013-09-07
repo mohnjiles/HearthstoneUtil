@@ -18,6 +18,9 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.jt.hearthstone.ImageAdapter;
 
 import android.os.Bundle;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,11 +28,16 @@ import android.widget.AdapterView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
+import android.widget.PopupWindow;
 import android.widget.Spinner;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
+import android.graphics.drawable.BitmapDrawable;
 
 public class CardListActivity extends ActionBarActivity {
 
@@ -37,6 +45,7 @@ public class CardListActivity extends ActionBarActivity {
 	GridView grid;
 	Cards[] cards;
 	ImageAdapter adapter;
+	PopupWindow pWindow;
 	CheckBox includeNeutralCards;
 	
 	public static ImageLoader loader = ImageLoader.getInstance();
@@ -104,6 +113,21 @@ public class CardListActivity extends ActionBarActivity {
 				e.printStackTrace();
 			}
 		}
+		
+		
+		
+		
+		
+		
+	    grid.setOnItemClickListener(new OnItemClickListener() {
+	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+	        	int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, 
+	    				getResources().getDisplayMetrics()); 
+	    		int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, 
+	    				getResources().getDisplayMetrics());
+	        	doSomeWindow(dipsWidthPortrait_Normal, dipsHeightPortrait_Normal, dipsWidthPortrait_Normal, dipsHeightPortrait_Normal);
+	        }
+	    });
 
 		// The json String from the file
 		String jsonString = writer.toString();
@@ -131,6 +155,7 @@ public class CardListActivity extends ActionBarActivity {
 		
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
+		
 		
 		// This works now! Listener for when CheckBox is checked
 		includeNeutralCards
@@ -278,5 +303,28 @@ public class CardListActivity extends ActionBarActivity {
 		}
 		Collections.sort(cardList, new CardComparator());
 		grid.setAdapter(adapter);
+	}
+	
+	private void doSomeWindow(int widthLandscape, int heightLandscape, 
+			int widthPortrait, int heightPortrait) {
+		
+		LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		View layout = inflater.inflate(R.layout.card_popup, null);
+		
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			pWindow = new PopupWindow(layout, widthLandscape, heightLandscape, true);
+			pWindow.setBackgroundDrawable(new BitmapDrawable());
+			pWindow.setOutsideTouchable(true);
+			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			pWindow.setFocusable(true);
+			
+		} else {
+			pWindow = new PopupWindow(layout, widthPortrait, heightPortrait, true);
+			pWindow.setBackgroundDrawable(new BitmapDrawable());
+			pWindow.setOutsideTouchable(true);
+			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			pWindow.setFocusable(true);
+			
+		}
 	}
 }
