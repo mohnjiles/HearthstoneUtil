@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 import android.R.integer;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.ColorStateList;
@@ -20,13 +21,16 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.text.StaticLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -64,7 +68,7 @@ public class CardListActivity extends ActionBarActivity {
 	TextView tvClass;
 	ImageView ivCardImage;
 
-	private static final int druid = Classes.DRUID.getValue();
+	int druid = Classes.DRUID.getValue();
 	int hunter = Classes.HUNTER.getValue();
 	int mage = Classes.MAGE.getValue();
 	int paladin = Classes.PALADIN.getValue();
@@ -73,6 +77,9 @@ public class CardListActivity extends ActionBarActivity {
 	int shaman = Classes.SHAMAN.getValue();
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
+	
+	private SearchView mSearchView;
+	private MenuItem searchItem;
 
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
@@ -102,7 +109,6 @@ public class CardListActivity extends ActionBarActivity {
 		includeNeutralCards = (CheckBox) findViewById(R.id.checkBox1);
 
 		// Create a new instance of our custom OnItemSelectedListener
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener();
 
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
@@ -151,7 +157,6 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
-
 		// Load default card list
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
@@ -207,14 +212,21 @@ public class CardListActivity extends ActionBarActivity {
 					}
 
 				});
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(cardList, cards, grid, adapter);
 		spinner.setOnItemSelectedListener(listener);
+		
 
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.main, menu);
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.card_list, menu);
+		searchItem = menu.findItem(R.id.action_search);
+		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList, cards, grid, adapter, 
+				searchItem, spinner));
 		return true;
 	}
 
@@ -236,99 +248,8 @@ public class CardListActivity extends ActionBarActivity {
 		}
 	}
 
-	public class CustomOnItemSelectedListener implements OnItemSelectedListener {
-
-		@Override
-		public void onItemSelected(AdapterView<?> parent, View view, int pos,
-				long id) {
-
-			switch (pos) {
-			// All Class Card List
-			case 0:
-				setCardList();
-				break;
-			// Druid Class Card List
-			case 1:
-				setCardList(Classes.DRUID);
-				break;
-
-			// Hunter Class Card List
-			case 2:
-				setCardList(Classes.HUNTER);
-				break;
-
-			// Mage Class Card List
-			case 3:
-				setCardList(Classes.MAGE);
-				break;
-
-			// Paladin Class Card List
-			case 4:
-				setCardList(Classes.PALADIN);
-				break;
-			case 5:
-				setCardList(Classes.PRIEST);
-				break;
-			case 6:
-				setCardList(Classes.ROGUE);
-				break;
-			case 7:
-				setCardList(Classes.SHAMAN);
-				break;
-			case 8:
-				setCardList(Classes.WARLOCK);
-				break;
-			case 9:
-				setCardList(Classes.WARRIOR);
-				break;
-			}
-		}
-
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO
-		}
-	}
-
-	/*
-	 * Handy little function to set the card list This is called when you select
-	 * any class other than "Any" from the Spinner
-	 */
-	private void setCardList(Classes classes) {
-		// Clear the current ArrayList so we can repopulate it
-		cardList.clear();
-		// Repopulate the card list with class cards
-		for (Cards card : cards) {
-			if (card.getClasss() != null) {
-				if (card.getClasss().intValue() == classes.getValue()) {
-					// Ignore hero cards
-					if (!card.getName().equals(classes.getHeroName())) { 
-						cardList.add(card);
-					}
-				}
-			}
-
-		}
-
-		Collections.sort(cardList, new CardComparator());
-		grid.setAdapter(adapter);
-	}
-
-	/*
-	 * Handy little function to set the default card list This is called when
-	 * you select "Any" from the Spinner Overloaded version of previous function
-	 */
-	private void setCardList() {
-		// Clear the current ArrayList so we can repopulate it
-		cardList.clear();
-		// Repopulate the card list with class cards
-		for (Cards card : cards) {
-			cardList.add(card);
-		}
-		Collections.sort(cardList, new CardComparator());
-		grid.setAdapter(adapter);
-	}
-
+	
+	
 	private void initiatePopupWindow(int position) {
 		try {
 			// get screen size of device
