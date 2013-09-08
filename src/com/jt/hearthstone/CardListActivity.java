@@ -63,7 +63,7 @@ public class CardListActivity extends ActionBarActivity {
 	TextView tvCrafted;
 	TextView tvClass;
 	ImageView ivCardImage;
-	
+
 	private static final int druid = Classes.DRUID.getValue();
 	int hunter = Classes.HUNTER.getValue();
 	int mage = Classes.MAGE.getValue();
@@ -73,26 +73,26 @@ public class CardListActivity extends ActionBarActivity {
 	int shaman = Classes.SHAMAN.getValue();
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
-	
+
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		// Set main view to Activity_Main layout
 		setContentView(R.layout.activity_card_list);
-		
+
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
-		
+
 		// Set ActionBar Title
 		setTitle("Hearthstone Utilities");
-		
+
 		// Show Up button on ActionBar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		// Start up GSON
 		Gson gson = new Gson();
 
@@ -100,17 +100,16 @@ public class CardListActivity extends ActionBarActivity {
 		grid = (GridView) findViewById(R.id.cardsGrid);
 		spinner = (Spinner) findViewById(R.id.spinner1);
 		includeNeutralCards = (CheckBox) findViewById(R.id.checkBox1);
-		
-		// Create a new instance of our custom OnItemSelectedListener 
+
+		// Create a new instance of our custom OnItemSelectedListener
 		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener();
 
-		
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
 				this).denyCacheImageMultipleSizesInMemory().build();
-		
+
 		// Initialize the ImageLoader
 		loader.init(config);
 
@@ -139,24 +138,20 @@ public class CardListActivity extends ActionBarActivity {
 				e.printStackTrace();
 			}
 		}
-		
-		
-		
-		
-		
-		
-	    grid.setOnItemClickListener(new OnItemClickListener() {
-	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	initiatePopupWindow(position);
-	        }
-	    });
+
+		grid.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				initiatePopupWindow(position);
+			}
+		});
 
 		// The json String from the file
 		String jsonString = writer.toString();
-		
+
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
-		
+
 		// Load default card list
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
@@ -164,27 +159,26 @@ public class CardListActivity extends ActionBarActivity {
 				cardList.add(card);
 			}
 		}
-		
-		
+
 		// Set the spinner (drop down selector) to listen to our custom listener
-		
+
 		// Sort the card list with our own custom Comparator
 		// -- this sorts by Mana Cost
 		Collections.sort(cardList, new CardComparator());
-		
-		// Create a new instance of our ImageAdapter class 
+
+		// Create a new instance of our ImageAdapter class
 		adapter = new ImageAdapter(this);
-		
+
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
-		
-		
+
 		// This works now! Listener for when CheckBox is checked
 		includeNeutralCards
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-					
+				
+					// Called when checkbox is checked or unchecked
 					@Override
-					public void onCheckedChanged(CompoundButton buttonView, // called when you check or uncheck
+					public void onCheckedChanged(CompoundButton buttonView, 
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
 						if (isChecked) {
@@ -196,9 +190,11 @@ public class CardListActivity extends ActionBarActivity {
 
 							Collections.sort(cardList, new CardComparator());
 							grid.setAdapter(adapter);
-							
-						// Otherwise, user is unchecking the box, so remove all generic cards.
-						// Why haven't I been using more ArrayLists in my other app?????
+
+							// Otherwise, user is unchecking the box, so remove
+							// all generic cards.
+							// Why haven't I been using more ArrayLists in my
+							// other app?????
 						} else {
 							for (Cards card : cards) {
 								if (card.getClasss() == null) {
@@ -222,22 +218,24 @@ public class CardListActivity extends ActionBarActivity {
 		return true;
 	}
 
-	@Override 
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.action_settings: 
+		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
-			startActivity(new Intent(CardListActivity.this, SettingsActivity.class));
+			startActivity(new Intent(CardListActivity.this,
+					SettingsActivity.class));
 			return true;
-		case android.R.id.home: 
-			// When the back button on the ActionBar is pressed, go back one Activity
+		case android.R.id.home:
+			// When the back button on the ActionBar is pressed, go back one
+			// Activity
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 
 		@Override
@@ -245,25 +243,25 @@ public class CardListActivity extends ActionBarActivity {
 				long id) {
 
 			switch (pos) {
-			//All Class Card List
+			// All Class Card List
 			case 0:
 				setCardList();
 				break;
-			//Druid Class Card List
+			// Druid Class Card List
 			case 1:
 				setCardList(Classes.DRUID);
 				break;
-				
+
 			// Hunter Class Card List
 			case 2:
 				setCardList(Classes.HUNTER);
 				break;
-				
+
 			// Mage Class Card List
 			case 3:
 				setCardList(Classes.MAGE);
 				break;
-				
+
 			// Paladin Class Card List
 			case 4:
 				setCardList(Classes.PALADIN);
@@ -288,12 +286,14 @@ public class CardListActivity extends ActionBarActivity {
 
 		@Override
 		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO 
+			// TODO
 		}
 	}
-	
-	/* Handy little function to set the card list
-	This is called when you select any class other than "Any" from the Spinner */
+
+	/*
+	 * Handy little function to set the card list This is called when you select
+	 * any class other than "Any" from the Spinner
+	 */
 	private void setCardList(Classes classes) {
 		// Clear the current ArrayList so we can repopulate it
 		cardList.clear();
@@ -301,22 +301,24 @@ public class CardListActivity extends ActionBarActivity {
 		for (Cards card : cards) {
 			if (card.getClasss() != null) {
 				if (card.getClasss().intValue() == classes.getValue()) {
-					if (!card.getName().equals(classes.getHeroName())) { // Ignore hero cards (stored in enum)
+					// Ignore hero cards
+					if (!card.getName().equals(classes.getHeroName())) { 
 						cardList.add(card);
-					} 
+					}
 				}
 			}
 
 		}
-		
+
 		Collections.sort(cardList, new CardComparator());
 		grid.setAdapter(adapter);
 	}
-	
-	/* Handy little function to set the default card list
-		This is called when you select "Any" from the Spinner 
-		Overloaded version of previous function */
-	private void setCardList(){
+
+	/*
+	 * Handy little function to set the default card list This is called when
+	 * you select "Any" from the Spinner Overloaded version of previous function
+	 */
+	private void setCardList() {
 		// Clear the current ArrayList so we can repopulate it
 		cardList.clear();
 		// Repopulate the card list with class cards
@@ -326,79 +328,106 @@ public class CardListActivity extends ActionBarActivity {
 		Collections.sort(cardList, new CardComparator());
 		grid.setAdapter(adapter);
 	}
-	
+
 	private void initiatePopupWindow(int position) {
 		try {
 			// get screen size of device
-			int screenSize = getResources().getConfiguration().screenLayout &
-			        Configuration.SCREENLAYOUT_SIZE_MASK;
-			
+			int screenSize = getResources().getConfiguration().screenLayout
+					& Configuration.SCREENLAYOUT_SIZE_MASK;
+
 			// convert px to dips for multiple screens
-			int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics()); 
-			int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, getResources().getDisplayMetrics());
-			int dipsWidthLandscape_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 475, getResources().getDisplayMetrics()); 
-			int dipsHeightLandscape_Normal = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, getResources().getDisplayMetrics());
-			int dipsWidthPortrait_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 425, getResources().getDisplayMetrics()); 
-			int dipsHeightPortrait_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 550, getResources().getDisplayMetrics());
-			int dipsWidthLandscape_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 550, getResources().getDisplayMetrics()); 
-			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 425, getResources().getDisplayMetrics());
-			int dipsWidthPortrait_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics()); 
-			int dipsHeightPortrait_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 350, getResources().getDisplayMetrics());
-			int dipsWidthLandscape_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 350, getResources().getDisplayMetrics()); 
-			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
-			
-			// We need to get the instance of the LayoutInflater
+			int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
+							.getDisplayMetrics());
+			int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
+							.getDisplayMetrics());
+			int dipsWidthLandscape_Normal = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
+							.getDisplayMetrics());
+			int dipsHeightLandscape_Normal = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
+							.getDisplayMetrics());
+			int dipsWidthPortrait_Large = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
+							.getDisplayMetrics());
+			int dipsHeightPortrait_Large = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+							.getDisplayMetrics());
+			int dipsWidthLandscape_Large = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+							.getDisplayMetrics());
+			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
+							.getDisplayMetrics());
+			int dipsWidthPortrait_Small = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
+							.getDisplayMetrics());
+			int dipsHeightPortrait_Small = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 350, getResources()
+							.getDisplayMetrics());
+			int dipsWidthLandscape_Small = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 350, getResources()
+							.getDisplayMetrics());
+			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
+							.getDisplayMetrics());
+
+			// We need to get the instance of the LayoutInflater,
+			// Gotta give the PopupWindow a layout
 			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
-			
-			// make different popupWindowws for different screen sizes
+
+			// make different popupWindows for different screen sizes
 			switch (screenSize) {
-				case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-					doSomeWindow(
-			        		layout, 
-			        		dipsWidthLandscape_Large, 
-			        		dipsHeightLandscape_Large,
-			        		dipsWidthPortrait_Large,  
-			        		dipsHeightPortrait_Large); 
-					break;
-				case Configuration.SCREENLAYOUT_SIZE_LARGE:
-					doSomeWindow(
-			        		layout, // View of the popupWindow
-			        		dipsWidthLandscape_Large, // Width for landscape orientation
-			        		dipsHeightLandscape_Large, // Height for landscape
-			        		dipsWidthPortrait_Large,  // Width for portrait orientation
-			        		dipsHeightPortrait_Large); // Height for portrait
-					break;
-			    case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-			        doSomeWindow(
-			        		layout, 
-			        		dipsWidthLandscape_Normal, 
-			        		dipsHeightLandscape_Normal,
-			        		dipsWidthPortrait_Normal, 
-			        		dipsHeightPortrait_Normal);
-			        break;
-			    default:
-			    	doSomeWindow(
-			        		layout, 
-			        		dipsWidthLandscape_Small, 
-			        		dipsHeightLandscape_Small,
-			        		dipsWidthPortrait_Small, 
-			        		dipsHeightPortrait_Small);
-			        break;
-			}
 			
-			String url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+				// XLARGE = 10"+ Tablets usually
+			case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+				doSomeWindow(layout, dipsWidthLandscape_Large,
+						dipsHeightLandscape_Large, dipsWidthPortrait_Large,
+						dipsHeightPortrait_Large);
+				break;
+				
+				// LARGE = 7"+ Tablets usually, maybe some giant phones
+			case Configuration.SCREENLAYOUT_SIZE_LARGE:
+				doSomeWindow(layout, // View of the popupWindow
+						dipsWidthLandscape_Large, // Width for landscape
+						dipsHeightLandscape_Large, // Height for landscape
+						dipsWidthPortrait_Large, // Width for portrait
+						dipsHeightPortrait_Large); // Height for portrait
+				break;
+				
+				// NORMAL = 95% of all phones
+			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+				doSomeWindow(layout, dipsWidthLandscape_Normal,
+						dipsHeightLandscape_Normal, dipsWidthPortrait_Normal,
+						dipsHeightPortrait_Normal);
+				break;
+			default:
+				doSomeWindow(layout, dipsWidthLandscape_Small,
+						dipsHeightLandscape_Small, dipsWidthPortrait_Small,
+						dipsHeightPortrait_Small);
+				break;
+			}
+
+			// Get card image
+			String url = "http://jt.comyr.com/images/"
+					+ cardList.get(position).getName().replace(" ", "%20")
+							.replace(":", "") + ".png";
 			loader.displayImage(url, ivCardImage);
+			
+			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
+			
 			int classs = 0;
 			if (cardList.get(position).getClasss() != null) {
 				classs = cardList.get(position).getClasss().intValue();
 			}
-			
+
 			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
 			int set = cardList.get(position).getSet().intValue();
-			
+
 			if (classs == Classes.DRUID.getValue()) {
 				int druid = getResources().getColor(R.color.druid);
 				tvClass.setTextColor(druid);
@@ -435,12 +464,11 @@ public class CardListActivity extends ActionBarActivity {
 				int warrior = getResources().getColor(R.color.warrior);
 				tvClass.setTextColor(warrior);
 				tvClass.setText("Warrior");
-			} else if (classs == 0){
-				//int grey = getResources().getColor(R.color.free);
+			} else if (classs == 0) {
 				tvClass.setTextColor(Color.GREEN);
 				tvClass.setText("All Classes");
 			}
-			
+
 			// Set the type (minion, ability, etc)
 			switch (type) {
 			case 3:
@@ -458,11 +486,12 @@ public class CardListActivity extends ActionBarActivity {
 			case 10:
 				tvType.setText("Hero Power");
 				break;
-			default:
+			default: // If card doesn't have a type, just hide the textview.
 				tvType.setVisibility(View.GONE);
 				break;
 			}
-			
+
+			// Set rarity of the card
 			switch (quality) {
 			case 0:
 				int free = getResources().getColor(R.color.free);
@@ -487,11 +516,11 @@ public class CardListActivity extends ActionBarActivity {
 				tvQuality.setTextColor(legendary);
 				tvQuality.setText("Legendary");
 				break;
-			default:
-				tvQuality.setVisibility(View.GONE);
+			default: // No rarity? This should only happen for some abilities.
+				tvQuality.setVisibility(View.GONE); // Hides it.
 				break;
 			}
-			
+
 			switch (set) {
 			case 2:
 				tvSet.setText("Set: Basic");
@@ -506,41 +535,50 @@ public class CardListActivity extends ActionBarActivity {
 				tvSet.setText("Set: Missions");
 				break;
 			}
-			
+
 			// If we ran in to a problem
-			} catch (Exception e) {
-				Log.w("PopupWindoww", "" + e.getMessage() + e.getStackTrace()[0].getLineNumber());
-			}
+		} catch (Exception e) {
+			Log.w("PopupWindow",
+					"" + e.getMessage() + e.getStackTrace()[0].getLineNumber());
+		}
+	}
+
+	// Runs the popupWindoww, getting view from inflater & dimensions based on
+	// screen size
+	private void doSomeWindow(View layout, int widthLandscape,
+			int heightLandscape, int widthPortrait, int heightPortrait) {
+
+		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			pWindow = new PopupWindow(layout, widthLandscape, heightLandscape,
+					true);
+			pWindow.setBackgroundDrawable(new BitmapDrawable());
+			pWindow.setOutsideTouchable(true);
+			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			pWindow.setFocusable(true);
+
+		} else {
+			pWindow = new PopupWindow(layout, widthPortrait, heightPortrait,
+					true);
+			pWindow.setBackgroundDrawable(new BitmapDrawable());
+			pWindow.setOutsideTouchable(true);
+			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
+			pWindow.setFocusable(true);
+
 		}
 
-		
-		// Runs the popupWindoww, getting view from inflater & dimensions based on screen size
-		private void doSomeWindow(View layout, int widthLandscape, int heightLandscape, 
-				int widthPortrait, int heightPortrait) {
-			
-			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				pWindow = new PopupWindow(layout, widthLandscape, heightLandscape, true);
-				pWindow.setBackgroundDrawable(new BitmapDrawable());
-				pWindow.setOutsideTouchable(true);
-				pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
-				pWindow.setFocusable(true);
-				
-			} else {
-				pWindow = new PopupWindow(layout, widthPortrait, heightPortrait, true);
-				pWindow.setBackgroundDrawable(new BitmapDrawable());
-				pWindow.setOutsideTouchable(true);
-				pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
-				pWindow.setFocusable(true);
-				
-			}
-			
-			ivCardImage = (ImageView) pWindow.getContentView().findViewById(R.id.ivCardImages);
-			tvCardName = (TextView) pWindow.getContentView().findViewById(R.id.tvCardName);
-			tvClass = (TextView) pWindow.getContentView().findViewById(R.id.tvClass);
-			tvCrafted = (TextView) pWindow.getContentView().findViewById(R.id.tvCrafted);
-			tvEnchant = (TextView) pWindow.getContentView().findViewById(R.id.tvEnchant);
-			tvQuality = (TextView) pWindow.getContentView().findViewById(R.id.tvQuality);
-			tvSet = (TextView) pWindow.getContentView().findViewById(R.id.tvSet);
-			tvType = (TextView) pWindow.getContentView().findViewById(R.id.tvType);
-		}
+		ivCardImage = (ImageView) pWindow.getContentView().findViewById(
+				R.id.ivCardImages);
+		tvCardName = (TextView) pWindow.getContentView().findViewById(
+				R.id.tvCardName);
+		tvClass = (TextView) pWindow.getContentView()
+				.findViewById(R.id.tvClass);
+		tvCrafted = (TextView) pWindow.getContentView().findViewById(
+				R.id.tvCrafted);
+		tvEnchant = (TextView) pWindow.getContentView().findViewById(
+				R.id.tvEnchant);
+		tvQuality = (TextView) pWindow.getContentView().findViewById(
+				R.id.tvQuality);
+		tvSet = (TextView) pWindow.getContentView().findViewById(R.id.tvSet);
+		tvType = (TextView) pWindow.getContentView().findViewById(R.id.tvType);
+	}
 }
