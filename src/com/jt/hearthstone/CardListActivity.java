@@ -317,8 +317,6 @@ public class CardListActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
-	
 	
 	private void initiatePopupWindow(int position) {
 		try {

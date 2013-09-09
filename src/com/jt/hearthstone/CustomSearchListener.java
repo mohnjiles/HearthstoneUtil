@@ -55,6 +55,27 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
     	case 2:
     		setCardList(newText, Classes.HUNTER);
     		return false;
+    	case 3:
+    		setCardList(newText, Classes.MAGE);
+    		return false;
+    	case 4:
+    		setCardList(newText, Classes.PALADIN);
+    		return false;
+    	case 5:
+    		setCardList(newText, Classes.PRIEST);
+    		return false;
+    	case 6:
+    		setCardList(newText, Classes.ROGUE);
+    		return false;
+    	case 7:
+    		setCardList(newText, Classes.SHAMAN);
+    		return false;
+    	case 8:
+    		setCardList(newText, Classes.WARLOCK);
+    		return false;
+    	case 9:
+    		setCardList(newText, Classes.WARRIOR);
+    		return false;
         default:
         	setCardList(newText);
         	return false;

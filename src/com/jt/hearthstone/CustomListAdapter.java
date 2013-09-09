@@ -73,6 +73,7 @@ public class CustomListAdapter extends BaseAdapter {
     	
 		int quality = cardList.get(position).getQuality().intValue();
 		
+		// Set the color of the text based on quality
 		switch (quality) {
 		case 0:
 			int free = mContext.getResources().getColor(R.color.free);
@@ -97,37 +98,41 @@ public class CustomListAdapter extends BaseAdapter {
 			break; 
 		}
 		
-		
+		// Set card name
     	cardName = cardList.get(position).getName();
     	if (cardList.get(position).getAttack() != null) {
     		attack = cardList.get(position).getAttack().toString();
     	}
+    	// Set mana cost
     	mana = cardList.get(position).getCost().toString();
     	if (cardList.get(position).getHealth() != null) {
     		health = cardList.get(position).getHealth().toString();
     	}
     	
     	
-    	
+    	// Set the name of the card
     	vh.tvCardName.setText(cardName);
+    	// Set the attack value
     	if (attack != null) {
     		vh.tvAttack.setText(attack);
     	} else {
     		vh.tvAttack.setText("0");
     	}
-    	
+    	// Set the mana value
     	if (mana != null) {
     		vh.tvManaCost.setText(mana);
     	} else {
     		vh.tvManaCost.setText("0");
     	}
     	
+    	// Set the Health value
     	if (health != null) {
     		vh.tvHealth.setText(health);
     	} else {
     		vh.tvHealth.setText("0");
     	}
     	
+    	// Set the Class icon
     	if (cardList.get(position).getClasss() != null) {
     		switch (cardList.get(position).getClasss().intValue()) {
     		case 1:
