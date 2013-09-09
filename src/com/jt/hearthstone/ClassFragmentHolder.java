@@ -46,8 +46,6 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		mViewPager = (ViewPager) findViewById(R.id.classPager);
-		ivClassIcon = (ImageView) findViewById(R.id.ivClassIcon); 
-		tvClassName = (TextView) findViewById(R.id.tvClassName);
 		
 		// Position of item clicked
 		position = getIntent().getIntExtra("position", 0);
@@ -64,40 +62,40 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		
 		switch (position) {
 		case 0:
-			ivClassIcon.setImageResource(R.drawable.druid_icon);
-			tvClassName.setText("Druid");
+			getSupportActionBar().setIcon(R.drawable.druid_icon);
+			setTitle("Druid");
 			break;
 		case 1:
-			ivClassIcon.setImageResource(R.drawable.hunter_icon);
-			tvClassName.setText("Hunter");
+			getSupportActionBar().setIcon(R.drawable.hunter_icon);
+			setTitle("Hunter");
 			break;
 		case 2:
-			ivClassIcon.setImageResource(R.drawable.mage_icon);
-			tvClassName.setText("Mage");
+			getSupportActionBar().setIcon(R.drawable.mage_icon);
+			setTitle("Mage");
 			break;
 		case 3:
-			ivClassIcon.setImageResource(R.drawable.paladin_icon);
-			tvClassName.setText("Paladin");
+			getSupportActionBar().setIcon(R.drawable.paladin_icon);
+			setTitle("Paladin");
 			break;
 		case 4:
-			ivClassIcon.setImageResource(R.drawable.priest_icon);
-			tvClassName.setText("Priest");
+			getSupportActionBar().setIcon(R.drawable.priest_icon);
+			setTitle("Priest");
 			break;
 		case 5:
-			ivClassIcon.setImageResource(R.drawable.rogue_icon);
-			tvClassName.setText("Rogue");
+			getSupportActionBar().setIcon(R.drawable.rogue_icon);
+			setTitle("Rogue");
 			break;
 		case 6:
-			ivClassIcon.setImageResource(R.drawable.shaman_icon);
-			tvClassName.setText("Shaman");
+			getSupportActionBar().setIcon(R.drawable.shaman_icon);
+			setTitle("Shaman");
 			break;
 		case 7:
-			ivClassIcon.setImageResource(R.drawable.warlock_icon);
-			tvClassName.setText("Warlock");
+			getSupportActionBar().setIcon(R.drawable.warlock_icon);
+			setTitle("Warlock");
 			break;
 		case 8:
-			ivClassIcon.setImageResource(R.drawable.warrior_icon);
-			tvClassName.setText("Warrior");
+			getSupportActionBar().setIcon(R.drawable.warrior_icon);
+			setTitle("Warrior");
 			break;
 		}
 

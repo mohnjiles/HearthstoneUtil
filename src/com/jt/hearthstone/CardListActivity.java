@@ -11,11 +11,8 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import android.R.integer;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
@@ -24,7 +21,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.text.StaticLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -33,24 +29,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
-
+import butterknife.Views;
+import static butterknife.Views.findById;
 import com.google.gson.Gson;
-import com.jt.hearthstone.R.color;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -68,7 +59,6 @@ public class CardListActivity extends ActionBarActivity {
 	TextView tvType;
 	TextView tvQuality;
 	TextView tvSet;
-	TextView tvEnchant;
 	TextView tvCrafted;
 	TextView tvClass;
 	ImageView ivCardImage;
@@ -83,10 +73,10 @@ public class CardListActivity extends ActionBarActivity {
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
 	int pos = CustomOnItemSelectedListener.position;
-	
+
 	boolean isGrid = false;
 	public static boolean reverse = false;
-	
+
 	private SearchView mSearchView;
 	private MenuItem searchItem;
 	private ListView listCards;
@@ -102,6 +92,15 @@ public class CardListActivity extends ActionBarActivity {
 		// Set main view to Activity_Main layout
 		setContentView(R.layout.activity_card_list);
 
+		// ** NEW ** inject views with ButterKnife
+		Views.inject(this);
+		grid = findById(this, R.id.cardsGrid);
+		listCards = findById(this, R.id.cardsList);
+		includeNeutralCards = findById(this, R.id.cbGenerics);
+		cbReverse = findById(this, R.id.cbReverse);
+		spinner = findById(this, R.id.spinner1);
+		spinnerSort = findById(this, R.id.spinnerSort);
+
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
 
@@ -114,17 +113,9 @@ public class CardListActivity extends ActionBarActivity {
 		// Start up GSON
 		Gson gson = new Gson();
 
-		// Find (assign?) our views
-		grid = (GridView) findViewById(R.id.cardsGrid);
-		spinner = (Spinner) findViewById(R.id.spinner1);
-		spinnerSort = (Spinner) findViewById(R.id.spinnerSort);
-		cbReverse = (CheckBox) findViewById(R.id.cbReverse);
-		includeNeutralCards = (CheckBox) findViewById(R.id.cbGenerics);
-		listCards = (ListView) findViewById(R.id.cardsList);
+		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
 
-		reverse = cbReverse.isChecked();
-		
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
@@ -208,10 +199,10 @@ public class CardListActivity extends ActionBarActivity {
 		// This works now! Listener for when CheckBox is checked
 		includeNeutralCards
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-				
+
 					// Called when checkbox is checked or unchecked
 					@Override
-					public void onCheckedChanged(CompoundButton buttonView, 
+					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
 						if (isChecked) {
@@ -221,7 +212,8 @@ public class CardListActivity extends ActionBarActivity {
 								}
 							}
 
-							Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
+							Collections.sort(cardList, new CardComparator(
+									spinnerSort.getSelectedItemPosition(),
 									cbReverse.isChecked()));
 							adapter.notifyDataSetChanged();
 							adapter2.notifyDataSetChanged();
@@ -238,7 +230,8 @@ public class CardListActivity extends ActionBarActivity {
 									cardList.remove(card);
 								}
 							}
-							Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
+							Collections.sort(cardList, new CardComparator(
+									spinnerSort.getSelectedItemPosition(),
 									cbReverse.isChecked()));
 							adapter.notifyDataSetChanged();
 							adapter2.notifyDataSetChanged();
@@ -248,29 +241,31 @@ public class CardListActivity extends ActionBarActivity {
 					}
 
 				});
-		
-		cbReverse
-		.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-		
-			// Called when checkbox is checked or unchecked
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView, 
-					boolean isChecked) {
-					reverse = isChecked;
-					Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
-							isChecked));
-					adapter.notifyDataSetChanged();
-					adapter2.notifyDataSetChanged();
-					grid.setAdapter(adapter);
-					listCards.setAdapter(adapter2);
-			}
 
-		});
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(cardList, cards, grid, listCards, 
-				adapter, adapter2);
+		cbReverse
+				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+					// Called when checkbox is checked or unchecked
+					@Override
+					public void onCheckedChanged(CompoundButton buttonView,
+							boolean isChecked) {
+						reverse = isChecked;
+						Collections.sort(cardList, new CardComparator(
+								spinnerSort.getSelectedItemPosition(),
+								isChecked));
+						reverse = isChecked;
+						adapter.notifyDataSetChanged();
+						adapter2.notifyDataSetChanged();
+						grid.setAdapter(adapter);
+						listCards.setAdapter(adapter2);
+					}
+
+				});
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
+				cardList, cards, grid, listCards, adapter, adapter2);
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
-		
+
 	}
 
 	@Override
@@ -280,14 +275,16 @@ public class CardListActivity extends ActionBarActivity {
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList, cards, grid, listCards, adapter, 
-				adapter2, searchItem, spinner));
+		mSearchView
+				.setOnQueryTextListener(new CustomSearchListener(cardList,
+						cards, grid, listCards, adapter, adapter2, searchItem,
+						spinner));
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
@@ -317,7 +314,7 @@ public class CardListActivity extends ActionBarActivity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
+
 	private void initiatePopupWindow(int position) {
 		try {
 			// get screen size of device
@@ -369,15 +366,15 @@ public class CardListActivity extends ActionBarActivity {
 
 			// make different popupWindows for different screen sizes
 			switch (screenSize) {
-			
-				// XLARGE = 10"+ Tablets usually
+
+			// XLARGE = 10"+ Tablets usually
 			case Configuration.SCREENLAYOUT_SIZE_XLARGE:
 				doSomeWindow(layout, dipsWidthLandscape_Large,
 						dipsHeightLandscape_Large, dipsWidthPortrait_Large,
 						dipsHeightPortrait_Large);
 				break;
-				
-				// LARGE = 7"+ Tablets usually, maybe some giant phones
+
+			// LARGE = 7"+ Tablets usually, maybe some giant phones
 			case Configuration.SCREENLAYOUT_SIZE_LARGE:
 				doSomeWindow(layout, // View of the popupWindow
 						dipsWidthLandscape_Large, // Width for landscape
@@ -385,8 +382,8 @@ public class CardListActivity extends ActionBarActivity {
 						dipsWidthPortrait_Large, // Width for portrait
 						dipsHeightPortrait_Large); // Height for portrait
 				break;
-				
-				// NORMAL = 95% of all phones
+
+			// NORMAL = 95% of all phones
 			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
 				doSomeWindow(layout, dipsWidthLandscape_Normal,
 						dipsHeightLandscape_Normal, dipsWidthPortrait_Normal,
@@ -404,10 +401,10 @@ public class CardListActivity extends ActionBarActivity {
 					+ cardList.get(position).getName().replace(" ", "%20")
 							.replace(":", "") + ".png";
 			loader.displayImage(url, ivCardImage);
-			
+
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
-			
+
 			int classs = 0;
 			if (cardList.get(position).getClasss() != null) {
 				classs = cardList.get(position).getClasss().intValue();
@@ -416,6 +413,8 @@ public class CardListActivity extends ActionBarActivity {
 			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
 			int set = cardList.get(position).getSet().intValue();
+			
+			tvCrafted.setText(cardList.get(position).getDescription());
 
 			if (classs == Classes.DRUID.getValue()) {
 				int druid = getResources().getColor(R.color.druid);
@@ -555,19 +554,13 @@ public class CardListActivity extends ActionBarActivity {
 
 		}
 
-		ivCardImage = (ImageView) pWindow.getContentView().findViewById(
-				R.id.ivCardImages);
-		tvCardName = (TextView) pWindow.getContentView().findViewById(
-				R.id.tvCardName);
-		tvClass = (TextView) pWindow.getContentView()
-				.findViewById(R.id.tvClass);
-		tvCrafted = (TextView) pWindow.getContentView().findViewById(
-				R.id.tvCrafted);
-		tvEnchant = (TextView) pWindow.getContentView().findViewById(
-				R.id.tvEnchant);
-		tvQuality = (TextView) pWindow.getContentView().findViewById(
-				R.id.tvQuality);
-		tvSet = (TextView) pWindow.getContentView().findViewById(R.id.tvSet);
-		tvType = (TextView) pWindow.getContentView().findViewById(R.id.tvType);
+		ivCardImage = findById(pWindow.getContentView(), R.id.ivCardImages);
+		tvCardName = findById(pWindow.getContentView(), R.id.tvCardName);
+		tvClass = findById(pWindow.getContentView(), R.id.tvClass);
+		tvCrafted = findById(pWindow.getContentView(), R.id.tvCrafted);
+		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
+		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
+		tvType = findById(pWindow.getContentView(), R.id.tvType);
+
 	}
 }

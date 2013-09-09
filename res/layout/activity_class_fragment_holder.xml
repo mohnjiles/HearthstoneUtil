@@ -8,7 +8,6 @@
 	    android:id="@+id/classPager"
 	    android:layout_width="match_parent"
 	    android:layout_height="match_parent"
-	    android:layout_marginTop="50dp"
 	    tools:context=".ClassFragmentHolder" >
 	
 	    <!--
@@ -27,33 +26,5 @@
 	        android:textColor="#fff" />
 	
 	</android.support.v4.view.ViewPager>
-
-	<RelativeLayout
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:layout_alignParentTop="true"
-	    android:layout_centerHorizontal="true"
-	    android:layout_marginTop="15dp" >
-
-	    <TextView
-	        android:id="@+id/tvClassName"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_alignBottom="@+id/ivClassIcon"
-	        android:layout_alignTop="@+id/ivClassIcon"
-	        android:layout_marginLeft="4dp"
-	        android:layout_toRightOf="@+id/ivClassIcon"
-	        android:gravity="center"
-	        android:text="Druid"
-	        android:textColor="@color/white"
-	        android:textSize="16sp" />
-	   
-	    <ImageView
-	        android:id="@+id/ivClassIcon"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:src="@drawable/druid_icon" />
-
-	</RelativeLayout>
 
 </RelativeLayout>

@@ -80,6 +80,7 @@ public class CustomListAdapter extends BaseAdapter {
 			vh.tvCardName.setTextColor(free);
 			break;
 		case 1:
+			vh.tvCardName.setTextColor(Color.WHITE);
 			break;
 		case 3:
 			int rare = mContext.getResources().getColor(R.color.rare);
@@ -162,7 +163,12 @@ public class CustomListAdapter extends BaseAdapter {
     		case 11:
     			vh.ivClassIcon.setImageResource(R.drawable.druid_icon);
     			break;
+    		default:
+    			vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
+    			break;
     		}
+    	} else {
+    		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
     	}
     	
     	return convertView;

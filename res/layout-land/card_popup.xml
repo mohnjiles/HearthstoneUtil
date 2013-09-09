@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    android:orientation="vertical" >
+
+    <TextView
+        android:id="@+id/tvCardName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignRight="@+id/ivCardImages"
+        android:layout_marginBottom="-24dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="TextView"
+        android:textColor="@color/white"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvClass"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="16dp"
+        android:text="Ability/Minion"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/tvQuality"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignRight="@+id/tvType"
+        android:layout_below="@+id/tvType"
+        android:text="QualityType"
+        android:textColor="#FFFFFF" />
+
+    <ImageView
+        android:id="@+id/ivCardImages"
+        android:layout_width="200dp"
+        android:layout_height="300dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvCardName"
+        android:src="@drawable/cards" />
+
+    <TextView
+        android:id="@+id/tvClass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivCardImages"
+        android:layout_marginTop="24dp"
+        android:layout_toRightOf="@+id/ivCardImages"
+        android:text="Class"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvSet"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvQuality"
+        android:layout_alignBottom="@+id/tvQuality"
+        android:layout_alignLeft="@+id/tvClass"
+        android:text="Set"
+        android:textColor="#FFFFFF" />
+
+    <TextView
+        android:id="@+id/tvCrafted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvSet"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="16dp"
+        android:layout_marginLeft="-16dp"
+        android:gravity="center"
+        android:text="Crafted"
+        android:textColor="@color/white" />
+
+</RelativeLayout>
