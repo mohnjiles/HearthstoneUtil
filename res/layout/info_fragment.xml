@@ -30,7 +30,7 @@
             android:src="@drawable/abc_ab_solid_dark_holo" />
 
         <TextView
-            android:id="@+id/TextView01"
+            android:id="@+id/tvHealth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -47,7 +47,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentLeft="true"
             android:layout_alignParentRight="true"
-            android:layout_below="@+id/TextView01" >
+            android:layout_below="@+id/tvHealth" >
 
             <LinearLayout
                 android:layout_width="match_parent"

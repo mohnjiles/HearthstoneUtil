@@ -29,6 +29,13 @@
         <item>Warlock</item>
         <item>Warrior</item>
     </string-array>
+    <string-array name="Sort">
+        <item>Alphabetical</item>
+        <item>Rarity</item>
+        <item>Mana Cost</item>
+        <item>Attack</item>
+        <item>Health</item>
+    </string-array>
 
     <string name="title_activity_card_list">CardListActivity</string>
     <string name="title_activity_classes">ClassesActivity</string>

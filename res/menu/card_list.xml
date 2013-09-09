@@ -10,5 +10,8 @@
           android:icon="@android:drawable/ic_menu_search"
           hearthstone:showAsAction="always"
           hearthstone:actionViewClass="android.support.v7.widget.SearchView" />
-
+    <item android:id="@+id/action_switch"
+        android:title="Switch to List"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        hearthstone:showAsAction="ifRoom" />
 </menu>

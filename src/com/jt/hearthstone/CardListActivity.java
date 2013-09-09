@@ -33,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -42,6 +43,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -53,12 +56,14 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CardListActivity extends ActionBarActivity {
 
-	Spinner spinner;
+	public static Spinner spinner;
+	public static Spinner spinnerSort;
 	GridView grid;
 	Cards[] cards;
 	ImageAdapter adapter;
 	PopupWindow pWindow;
-	CheckBox includeNeutralCards;
+	public static CheckBox includeNeutralCards;
+	public static CheckBox cbReverse;
 	TextView tvCardName;
 	TextView tvType;
 	TextView tvQuality;
@@ -77,10 +82,16 @@ public class CardListActivity extends ActionBarActivity {
 	int shaman = Classes.SHAMAN.getValue();
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
+	int pos = CustomOnItemSelectedListener.position;
+	
+	boolean isGrid = false;
+	public static boolean reverse = false;
 	
 	private SearchView mSearchView;
 	private MenuItem searchItem;
+	private ListView listCards;
 
+	private CustomListAdapter adapter2;
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
 
@@ -106,10 +117,14 @@ public class CardListActivity extends ActionBarActivity {
 		// Find (assign?) our views
 		grid = (GridView) findViewById(R.id.cardsGrid);
 		spinner = (Spinner) findViewById(R.id.spinner1);
-		includeNeutralCards = (CheckBox) findViewById(R.id.checkBox1);
+		spinnerSort = (Spinner) findViewById(R.id.spinnerSort);
+		cbReverse = (CheckBox) findViewById(R.id.cbReverse);
+		includeNeutralCards = (CheckBox) findViewById(R.id.cbGenerics);
+		listCards = (ListView) findViewById(R.id.cardsList);
+		grid.setVisibility(View.INVISIBLE);
 
-		// Create a new instance of our custom OnItemSelectedListener
-
+		reverse = cbReverse.isChecked();
+		
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
@@ -151,6 +166,12 @@ public class CardListActivity extends ActionBarActivity {
 				initiatePopupWindow(position);
 			}
 		});
+		listCards.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				initiatePopupWindow(position);
+			}
+		});
 
 		// The json String from the file
 		String jsonString = writer.toString();
@@ -163,19 +184,26 @@ public class CardListActivity extends ActionBarActivity {
 			for (Cards card : cards) {
 				cardList.add(card);
 			}
+		} else {
+			cardList.clear();
+			for (Cards card : cards) {
+				cardList.add(card);
+			}
 		}
 
 		// Set the spinner (drop down selector) to listen to our custom listener
 
 		// Sort the card list with our own custom Comparator
 		// -- this sorts by Mana Cost
-		Collections.sort(cardList, new CardComparator());
+		Collections.sort(cardList, new CardComparator(pos, reverse));
 
 		// Create a new instance of our ImageAdapter class
 		adapter = new ImageAdapter(this);
+		adapter2 = new CustomListAdapter(this);
 
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
+		listCards.setAdapter(adapter2);
 
 		// This works now! Listener for when CheckBox is checked
 		includeNeutralCards
@@ -193,8 +221,12 @@ public class CardListActivity extends ActionBarActivity {
 								}
 							}
 
-							Collections.sort(cardList, new CardComparator());
+							Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
+									cbReverse.isChecked()));
+							adapter.notifyDataSetChanged();
+							adapter2.notifyDataSetChanged();
 							grid.setAdapter(adapter);
+							listCards.setAdapter(adapter2);
 
 							// Otherwise, user is unchecking the box, so remove
 							// all generic cards.
@@ -206,16 +238,39 @@ public class CardListActivity extends ActionBarActivity {
 									cardList.remove(card);
 								}
 							}
-							Collections.sort(cardList, new CardComparator());
+							Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
+									cbReverse.isChecked()));
+							adapter.notifyDataSetChanged();
+							adapter2.notifyDataSetChanged();
 							grid.setAdapter(adapter);
+							listCards.setAdapter(adapter2);
 						}
 					}
 
 				});
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(cardList, cards, grid, adapter);
-		spinner.setOnItemSelectedListener(listener);
 		
+		cbReverse
+		.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+		
+			// Called when checkbox is checked or unchecked
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, 
+					boolean isChecked) {
+					reverse = isChecked;
+					Collections.sort(cardList, new CardComparator(spinnerSort.getSelectedItemPosition(),
+							isChecked));
+					adapter.notifyDataSetChanged();
+					adapter2.notifyDataSetChanged();
+					grid.setAdapter(adapter);
+					listCards.setAdapter(adapter2);
+			}
 
+		});
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(cardList, cards, grid, listCards, 
+				adapter, adapter2);
+		spinner.setOnItemSelectedListener(listener);
+		spinnerSort.setOnItemSelectedListener(listener);
+		
 	}
 
 	@Override
@@ -225,13 +280,14 @@ public class CardListActivity extends ActionBarActivity {
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList, cards, grid, adapter, 
-				searchItem, spinner));
+		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList, cards, grid, listCards, adapter, 
+				adapter2, searchItem, spinner));
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
@@ -243,6 +299,20 @@ public class CardListActivity extends ActionBarActivity {
 			// Activity
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.action_switch:
+			if (isGrid) {
+				grid.setVisibility(View.INVISIBLE);
+				listCards.setVisibility(View.VISIBLE);
+				item.setTitle("Switch to Grid View");
+				isGrid = false;
+				return true;
+			} else {
+				grid.setVisibility(View.VISIBLE);
+				listCards.setVisibility(View.INVISIBLE);
+				item.setTitle("Switch to List View");
+				isGrid = true;
+				return true;
+			}
 		default:
 			return super.onOptionsItemSelected(item);
 		}
