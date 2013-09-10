@@ -105,7 +105,7 @@ public class CardListActivity extends ActionBarActivity {
 		getSupportActionBar().show();
 
 		// Set ActionBar Title
-		setTitle("Hearthstone Utilities");
+		setTitle("Hearthstone Companion");
 
 		// Show Up button on ActionBar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);

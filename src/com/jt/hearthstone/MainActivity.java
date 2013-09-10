@@ -17,7 +17,7 @@ public class MainActivity extends ActionBarActivity {
 		// Show ActionBar (Title bar)
 		getSupportActionBar().show();
 		// Set ActionBar Title
-		setTitle("Hearthstone Utilities");
+		setTitle("Hearthstone Companion");
 		
 	}
 
