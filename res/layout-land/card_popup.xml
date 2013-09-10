@@ -40,8 +40,8 @@
 
     <ImageView
         android:id="@+id/ivCardImages"
-        android:layout_width="200dp"
-        android:layout_height="300dp"
+        android:layout_width="@dimen/card_icon_width"
+        android:layout_height="@dimen/card_icon"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvCardName"
         android:src="@drawable/cards" />
