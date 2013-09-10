@@ -23,6 +23,8 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -103,6 +105,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
+		registerForContextMenu(listCards);
 
 		// Set ActionBar Title
 		setTitle("Hearthstone Companion");
@@ -205,7 +208,7 @@ public class CardListActivity extends ActionBarActivity {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
-						if (isChecked) {
+						if (isChecked && spinner.getSelectedItemPosition() != 0) {
 							for (Cards card : cards) {
 								if (card.getClasss() == null) {
 									cardList.add(card);
@@ -226,7 +229,7 @@ public class CardListActivity extends ActionBarActivity {
 							// other app?????
 						} else {
 							for (Cards card : cards) {
-								if (card.getClasss() == null) {
+								if (card.getClasss() == null && spinner.getSelectedItemPosition() != 0) {
 									cardList.remove(card);
 								}
 							}
@@ -280,6 +283,26 @@ public class CardListActivity extends ActionBarActivity {
 						cards, grid, listCards, adapter, adapter2, searchItem,
 						spinner));
 		return true;
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==R.id.cardsList) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    menu.setHeaderTitle(cardList.get(info.position).getName());
+	    String[] menuItems = getResources().getStringArray(R.array.ContextMenuAdd);
+	    for (int i = 0; i<menuItems.length; i++) {
+	      menu.add(Menu.NONE, i, i, menuItems[i]);
+	    }
+	  }
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	  int menuItemIndex = item.getItemId();
+	  
+	  return true;
 	}
 
 	@Override

@@ -62,6 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/spinner1"
+        android:layout_marginRight="16dp"
         android:layout_toRightOf="@+id/textView2"
         android:entries="@array/Sort" />
 
@@ -72,6 +73,7 @@
         android:layout_alignBottom="@+id/spinner1"
         android:layout_alignParentLeft="true"
         android:layout_alignTop="@+id/spinner1"
+        android:layout_marginLeft="16dp"
         android:layout_marginRight="4dp"
         android:gravity="center_vertical"
         android:text="Class:"

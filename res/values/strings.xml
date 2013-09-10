@@ -7,7 +7,7 @@
     <string name="title_activity_settings">Settings Activity</string>
 
     <string-array name="Classes">
-        <item>Any</item>
+        <item>All</item>
         <item>Druid</item>
         <item>Hunter</item>
         <item>Mage</item>
@@ -36,6 +36,9 @@
         <item>Attack</item>
         <item>Health</item>
     </string-array>
+    <string-array name="ContextMenuAdd">
+        <item>Add to Deck</item>
+    </string-array>
 
     <string name="title_activity_card_list">CardListActivity</string>
     <string name="title_activity_classes">ClassesActivity</string>
@@ -43,5 +46,6 @@
     <string name="title_section1">Section 1</string>
     <string name="title_section2">Section 2</string>
     <string name="title_section3">Section 3</string>
+    <string name="title_activity_deck_selector">DeckSelector</string>
 
 </resources>

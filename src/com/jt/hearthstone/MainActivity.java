@@ -45,4 +45,7 @@ public class MainActivity extends ActionBarActivity {
 	public void classesPressed(View view) {
 		startActivity(new Intent(MainActivity.this, ClassesActivity.class));
 	}
+	public void deckSelectorPressed(View view) {
+		startActivity(new Intent(MainActivity.this, DeckSelector.class));
+	}
 }

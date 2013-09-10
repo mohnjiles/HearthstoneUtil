@@ -13,6 +13,8 @@
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/ivCardImages"
         android:layout_marginBottom="-24dp"
+        android:layout_marginLeft="@dimen/card_name_padding"
+        android:layout_marginRight="@dimen/card_name_padding"
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="TextView"
@@ -44,6 +46,8 @@
         android:layout_height="@dimen/card_icon"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvCardName"
+        android:layout_marginLeft="@dimen/card_icon_padding_left"
+        android:layout_marginRight="@dimen/card_icon_padding_right"
         android:src="@drawable/cards" />
 
     <TextView
@@ -76,6 +80,7 @@
         android:layout_alignParentRight="true"
         android:layout_marginBottom="16dp"
         android:layout_marginLeft="-16dp"
+        android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Crafted"
         android:textColor="@color/white" />

@@ -29,9 +29,9 @@ public class CardComparator implements Comparator<Cards> {
 			}
 		case 2:
 			if (!reverse) {
-				return left.getCost().toString().compareTo(right.getCost().toString());
+				return Double.compare(left.getCost().doubleValue(), right.getCost().doubleValue());
 			} else {
-				return right.getCost().toString().compareTo(left.getCost().toString());
+				return Double.compare(right.getCost().doubleValue(), left.getCost().doubleValue());
 			}
 		case 3:
 			if (left.getAttack() == null) {
@@ -41,9 +41,9 @@ public class CardComparator implements Comparator<Cards> {
 				right.setAttack(0);
 			}
 			if (!reverse) {
-				return left.getAttack().toString().compareTo(right.getAttack().toString());
+				return Double.compare(left.getAttack().doubleValue(), right.getAttack().doubleValue());
 			} else {
-				return right.getAttack().toString().compareTo(left.getAttack().toString());
+				return Double.compare(right.getAttack().doubleValue(), left.getAttack().doubleValue());
 			}
 		case 4:
 			if (left.getHealth() == null) {
@@ -53,15 +53,15 @@ public class CardComparator implements Comparator<Cards> {
 				right.setHealth(0);
 			}
 			if (!reverse) {
-				return left.getHealth().toString().compareTo(right.getHealth().toString());
+				return Double.compare(left.getHealth().doubleValue(), right.getHealth().doubleValue());
 			} else {
-				return right.getHealth().toString().compareTo(left.getHealth().toString());
+				return Double.compare(right.getHealth().doubleValue(), left.getHealth().doubleValue());
 			}
 		default:
 			if (!reverse) {
-				return left.getCost().toString().compareTo(right.getCost().toString());
+				return Double.compare(left.getCost().doubleValue(), right.getCost().doubleValue());
 			} else {
-				return right.getCost().toString().compareTo(left.getCost().toString());
+				return Double.compare(right.getCost().doubleValue(), left.getCost().doubleValue());
 			}
 		}
 		
