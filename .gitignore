@@ -17,6 +17,7 @@ local.properties
 .settings/
 .loadpath
 
+
 # External tool builders
 .externalToolBuilders/
 
@@ -218,3 +219,4 @@ pip-log.txt
 project.properties
 
 gson-2.2.4.jar
+HearthstoneUtil.apk
