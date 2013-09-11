@@ -96,8 +96,8 @@ public class CardListActivity extends ActionBarActivity {
 	private ArrayList<String> deckList;
 	private int position;
 
-	List<Cards> deckOne = new ArrayList<Cards>();
-	List<Cards> deckTwo = new ArrayList<Cards>();
+	public static List<Cards> deckOne = new ArrayList<Cards>();
+	public static List<Cards> deckTwo = new ArrayList<Cards>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -165,7 +165,7 @@ public class CardListActivity extends ActionBarActivity {
 				e.printStackTrace();
 			}
 		}
-		
+		// Get deck list from file
 		InputStream instream = null;
 		try {
 			instream = openFileInput("decklist");
@@ -337,7 +337,7 @@ public class CardListActivity extends ActionBarActivity {
 	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 	    menu.setHeaderTitle(cardList.get(info.position).getName());
 	    position = info.position;
-	    String[] menuItems = new String[5];
+	    String[] menuItems = new String[deckList.size()];
 	    
 	    int j = 0;
 	    while (j < deckList.size()) {

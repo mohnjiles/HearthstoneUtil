@@ -1,9 +1,11 @@
 package com.jt.hearthstone;
 
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,12 +14,17 @@ import butterknife.InjectView;
 import butterknife.Views;
 import static butterknife.Views.findById;
 import android.R.integer;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -28,6 +35,8 @@ public class DeckActivity extends ActionBarActivity {
 	ListView lvDeck;
 	public static List<Cards> cardList;
 	int position;
+	int pos;
+	DeckListAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -49,9 +58,59 @@ public class DeckActivity extends ActionBarActivity {
 			break;
 		}
 		tvDeckTitle.setText(listDecks.get(position));
-		lvDeck.setAdapter(new DeckListAdapter(this, position));
+		adapter = new DeckListAdapter(this, position);
+		lvDeck.setAdapter(adapter);
+		registerForContextMenu(lvDeck);
 	}
 
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+		
+	    if (v.getId()==R.id.lvDeck) {
+	        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	        menu.setHeaderTitle(cardList.get(info.position).getName());
+	        pos = info.position;
+	        String menuItems = "Remove card \"" + cardList.get(info.position).getName() + "\"";
+	        menu.add(Menu.NONE, 0, 0, menuItems);
+	  }
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	    int menuItemIndex = item.getItemId();
+	    cardList.remove(pos);
+	    switch (position) {
+	    case 0:
+	    	saveDeck("deck_one", cardList);
+	    	break;
+	    case 1:
+	    	saveDeck("deck_two", cardList);
+	    	break;
+	    }
+	    adapter.notifyDataSetChanged();
+	    lvDeck.setAdapter(adapter);
+	    return true;
+	}
+	
+	private void saveDeck(String deckName, Object object) {
+		FileOutputStream fos = null;
+		  try {
+			  fos = openFileOutput(deckName, Context.MODE_PRIVATE);
+		  } catch (FileNotFoundException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	      ObjectOutputStream oos;
+		  try {
+			  oos = new ObjectOutputStream(fos);
+			  oos.writeObject(object);
+			  oos.close();
+		  } catch (IOException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

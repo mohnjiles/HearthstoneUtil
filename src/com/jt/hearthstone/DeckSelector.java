@@ -12,6 +12,7 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,11 +20,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -34,6 +37,10 @@ public class DeckSelector extends ActionBarActivity {
 	ListView lvDecks;
 	public static ArrayList<String> listDecks = new ArrayList<String>();
 	ArrayAdapter<String> adapter;	
+	List<Cards> deckOne = CardListActivity.deckOne;
+	List<Cards> deckTwo = CardListActivity.deckTwo;
+	int position;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,6 +50,7 @@ public class DeckSelector extends ActionBarActivity {
 		
 		lvDecks = findById(this, R.id.lvDecks);
 		//listDecks.add("Test");
+		registerForContextMenu(lvDecks);
 	   
 		InputStream instream = null;
 		try {
@@ -158,6 +166,59 @@ public class DeckSelector extends ActionBarActivity {
 		    return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+		
+	    if (v.getId()==R.id.lvDecks) {
+	        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	        menu.setHeaderTitle(listDecks.get(info.position));
+	        position = info.position;
+	        String menuItems = "Remove deck \"" + listDecks.get(info.position) + "\"";
+	        menu.add(Menu.NONE, 0, 0, menuItems);
+	  }
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+	    int menuItemIndex = item.getItemId();
+	    listDecks.remove(position);
+	    saveDeck("decklist", listDecks);
+	    adapter.notifyDataSetChanged();
+	    lvDecks.setAdapter(adapter);
+	    switch (position) {
+	    case 0:
+	    	deckOne.clear();
+	    	saveDeck("deck_one", deckOne);
+	    	break;
+	    case 1:
+	    	deckTwo.clear();
+	    	saveDeck("deck_two", deckTwo);
+	    	break;
+	    }
+	    
+	    return true;
+	}
+	
+	private void saveDeck(String deckName, Object object) {
+		FileOutputStream fos = null;
+		  try {
+			  fos = openFileOutput(deckName, Context.MODE_PRIVATE);
+		  } catch (FileNotFoundException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	      ObjectOutputStream oos;
+		  try {
+			  oos = new ObjectOutputStream(fos);
+			  oos.writeObject(object);
+			  oos.close();
+		  } catch (IOException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
 	}
 
 }
