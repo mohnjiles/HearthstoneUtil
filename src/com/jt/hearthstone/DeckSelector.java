@@ -10,10 +10,12 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.List;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -73,9 +76,19 @@ public class DeckSelector extends ActionBarActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, listDecks);
 		lvDecks.setAdapter(adapter);
+		lvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				Intent intent = new Intent(DeckSelector.this, DeckActivity.class);
+				intent.putExtra("position", arg2);
+				startActivity(intent);
+			}
+			
+		});
 		
 	}
 

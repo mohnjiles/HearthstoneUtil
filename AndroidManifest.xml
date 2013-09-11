@@ -61,6 +61,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.MainActivity" />
         </activity>
+        <activity
+            android:name="com.jt.hearthstone.DeckActivity"
+            android:label="@string/title_activity_deck"
+            android:parentActivityName="com.jt.hearthstone.DeckSelector" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.DeckSelector" />
+        </activity>
     </application>
 
 </manifest>

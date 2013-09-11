@@ -1,7 +1,9 @@
 
 package com.jt.hearthstone;
 
-public class Cards{
+import java.io.Serializable;
+
+public class Cards implements Serializable{
    	private Number attack;
    	private Number classs;
    	private Number collectible;
@@ -16,6 +18,7 @@ public class Cards{
    	private Number quality;
    	private Number set;
    	private Number type;
+   	private static final long serialVersionUID = 1337L;
 
  	public Number getAttack(){
 		return this.attack;

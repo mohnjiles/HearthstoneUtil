@@ -1,10 +1,8 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
+import java.util.List;
+
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +10,19 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class CustomListAdapter extends BaseAdapter {
+public class DeckListAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = CardListActivity.cardList; // Get card list from MainActivity
 	public static String url;
-	ImageLoader imageLoader = CardListActivity.loader; // Get instance of ImageLoader from main activity
 	private String cardName;
+	private int cardListNumber;
+	private List<Cards> cardList = DeckActivity.cardList;
 
-    public CustomListAdapter(Context c) {
+    public DeckListAdapter(Context c, int cardListPos) {
         mContext = c;
+        cardListNumber = cardListPos;
     }
-
+    
+    
     public int getCount() {
     	return cardList.size();
     }
@@ -36,7 +36,7 @@ public class CustomListAdapter extends BaseAdapter {
     }
     
     // Custom ViewHolder class to make scrolling smoother
-    private static class ViewHolder {
+    static class ViewHolderTwo {
     	ImageView ivClassIcon = null;
     	TextView tvCardName = null;
     	TextView tvManaCost = null;
@@ -47,16 +47,17 @@ public class CustomListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-    	ViewHolder vh;
+    	ViewHolderTwo vh;
     	String attack = null;
     	String health = null;
     	String mana = null;
+    	
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
     	// We do this because re-using views makes memory happy :)
     	if (convertView == null) {
     		convertView = View.inflate(mContext, R.layout.custom_list_view, null);
-    		vh = new ViewHolder();
+    		vh = new ViewHolderTwo();
 
     		vh.tvCardName = (TextView) convertView.findViewById(R.id.tvCardTitle);
     		vh.ivClassIcon = (ImageView) convertView.findViewById(R.id.ivClassImage);
@@ -67,7 +68,7 @@ public class CustomListAdapter extends BaseAdapter {
     		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
     		
     	} else {
-    		vh = (ViewHolder)convertView.getTag();
+    		vh = (ViewHolderTwo)convertView.getTag();
     	}
     	
     	

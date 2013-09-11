@@ -1,16 +1,23 @@
 package com.jt.hearthstone;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Reader;
+import java.io.StreamCorruptedException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -86,6 +93,11 @@ public class CardListActivity extends ActionBarActivity {
 	private CustomListAdapter adapter2;
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
+	private ArrayList<String> deckList;
+	private int position;
+
+	List<Cards> deckOne = new ArrayList<Cards>();
+	List<Cards> deckTwo = new ArrayList<Cards>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -152,6 +164,39 @@ public class CardListActivity extends ActionBarActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+		
+		InputStream instream = null;
+		try {
+			instream = openFileInput("decklist");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					deckList = (ArrayList<String>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+					
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		grid.setOnItemClickListener(new OnItemClickListener() {
@@ -291,7 +336,15 @@ public class CardListActivity extends ActionBarActivity {
 	  if (v.getId()==R.id.cardsList) {
 	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 	    menu.setHeaderTitle(cardList.get(info.position).getName());
-	    String[] menuItems = getResources().getStringArray(R.array.ContextMenuAdd);
+	    position = info.position;
+	    String[] menuItems = new String[5];
+	    
+	    int j = 0;
+	    while (j < deckList.size()) {
+	    	menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
+	    	j++;
+	    }
+	   
 	    for (int i = 0; i<menuItems.length; i++) {
 	      menu.add(Menu.NONE, i, i, menuItems[i]);
 	    }
@@ -301,7 +354,17 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 	  int menuItemIndex = item.getItemId();
-	  
+	  switch (menuItemIndex) {
+	  case 0:
+		  deckOne.add(cardList.get(position));
+		  saveDeck("deck_one", deckOne);
+		  break;
+	  case 1:
+		  deckTwo.add(cardList.get(position));
+		  saveDeck("deck_two", deckTwo);
+		  break;
+		  
+	  }
 	  return true;
 	}
 
@@ -585,5 +648,24 @@ public class CardListActivity extends ActionBarActivity {
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
 
+	}
+	
+	private void saveDeck(String deckName, Object object) {
+		FileOutputStream fos = null;
+		  try {
+			  fos = openFileOutput(deckName, Context.MODE_PRIVATE);
+		  } catch (FileNotFoundException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	      ObjectOutputStream oos;
+		  try {
+			  oos = new ObjectOutputStream(fos);
+			  oos.writeObject(object);
+			  oos.close();
+		  } catch (IOException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
 	}
 }

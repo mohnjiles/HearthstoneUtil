@@ -1,5 +1,6 @@
 package com.jt.hearthstone;
 
+import android.R.integer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -8,7 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 public class MainActivity extends ActionBarActivity {
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,7 +41,8 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public void cardListPressed(View view) {
-		startActivity(new Intent(MainActivity.this, CardListActivity.class));
+		Intent intent = new Intent(MainActivity.this, CardListActivity.class);
+		startActivity(intent);
 	}
 	public void classesPressed(View view) {
 		startActivity(new Intent(MainActivity.this, ClassesActivity.class));
