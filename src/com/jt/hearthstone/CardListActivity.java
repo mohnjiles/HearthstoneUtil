@@ -83,7 +83,7 @@ public class CardListActivity extends ActionBarActivity {
 	int warrior = Classes.WARRIOR.getValue();
 	int pos = CustomOnItemSelectedListener.position;
 	
-	int timesInDeck;
+	int[] timesInDecks = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
 	boolean isGrid = false;
 	public static boolean reverse = false;
@@ -357,21 +357,24 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		int menuItemIndex = item.getItemId();
-		if (timesInDeck < 3) {
-			switch (menuItemIndex) {
-			case 0:
+		switch (menuItemIndex) {
+		case 0:
+			if (timesInDecks[0] < 3) {
 				deckOne.add(cardList.get(position));
 				saveDeck("deck_one", deckOne);
-				break;
-			case 1:
-				deckTwo.add(cardList.get(position));
-				saveDeck("deck_two", deckTwo);
+				timesInDecks[0]++;
 				break;
 			}
-			cardList.get(position).setTimesInDeck(timesInDeck++);
-		} else {
-			Toast.makeText(CardListActivity.this, "Can't have more than two of the same card.", Toast.LENGTH_SHORT);
+			
+		case 1:
+			if (timesInDecks[1] < 3) {
+				deckTwo.add(cardList.get(position));
+				saveDeck("deck_two", deckTwo);
+				timesInDecks[1]++;
+				break;
+			}
 		}
+		Toast.makeText(CardListActivity.this, "Can't have more than two of the same card.", Toast.LENGTH_SHORT);
 		
 	  return true;
 	}
