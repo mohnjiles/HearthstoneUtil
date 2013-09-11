@@ -82,6 +82,8 @@ public class CardListActivity extends ActionBarActivity {
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
 	int pos = CustomOnItemSelectedListener.position;
+	
+	int timesInDeck;
 
 	boolean isGrid = false;
 	public static boolean reverse = false;
@@ -336,6 +338,7 @@ public class CardListActivity extends ActionBarActivity {
 	  if (v.getId()==R.id.cardsList) {
 	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 	    menu.setHeaderTitle(cardList.get(info.position).getName());
+		timesInDeck = cardList.get(info.position).getTimesInDeck().intValue();
 	    position = info.position;
 	    String[] menuItems = new String[deckList.size()];
 	    
@@ -353,18 +356,23 @@ public class CardListActivity extends ActionBarActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	  int menuItemIndex = item.getItemId();
-	  switch (menuItemIndex) {
-	  case 0:
-		  deckOne.add(cardList.get(position));
-		  saveDeck("deck_one", deckOne);
-		  break;
-	  case 1:
-		  deckTwo.add(cardList.get(position));
-		  saveDeck("deck_two", deckTwo);
-		  break;
-		  
-	  }
+		int menuItemIndex = item.getItemId();
+		if (timesInDeck < 3) {
+			switch (menuItemIndex) {
+			case 0:
+				deckOne.add(cardList.get(position));
+				saveDeck("deck_one", deckOne);
+				break;
+			case 1:
+				deckTwo.add(cardList.get(position));
+				saveDeck("deck_two", deckTwo);
+				break;
+			}
+			cardList.get(position).setTimesInDeck(timesInDeck++);
+		} else {
+			Toast.makeText(CardListActivity.this, "Can't have more than two of the same card.", Toast.LENGTH_SHORT);
+		}
+		
 	  return true;
 	}
 
