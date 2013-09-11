@@ -1,4 +1,3 @@
-
 package com.jt.hearthstone;
 
 import java.io.Serializable;
@@ -18,6 +17,7 @@ public class Cards implements Serializable{
    	private Number quality;
    	private Number set;
    	private Number type;
+	private Number timesInDeck;
    	private static final long serialVersionUID = 1337L;
 
  	public Number getAttack(){
@@ -103,5 +103,11 @@ public class Cards implements Serializable{
 	}
 	public void setClasss(Number classs) {
 		this.classs = classs;
+	}
+	public Number getTimesInDeck() {
+		return timesInDeck;
+	}
+	public void setTimesInDeck(Number timesInDeck) {
+		this.timesInDeck = timesInDeck;
 	}
 }
