@@ -1,6 +1,8 @@
 package com.jt.hearthstone;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import android.content.Context;
@@ -13,12 +15,13 @@ import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = CardListActivity.cardList; // Get card list from MainActivity
+    private List<Cards> cardList;
 	public static String url;
 	ImageLoader imageLoader = CardListActivity.loader; // Get instance of ImageLoader from main activity
 
-    public ImageAdapter(Context c) {
+    public ImageAdapter(Context c, List<Cards> list) {
         mContext = c;
+        cardList = list;
     }
 
     public int getCount() {

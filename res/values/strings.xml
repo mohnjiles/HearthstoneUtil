@@ -39,6 +39,24 @@
     <string-array name="ContextMenuAdd">
         <item>Add to Deck</item>
     </string-array>
+    <string-array name="Mechanic">
+        <item>Battlecry</item>
+        <item>Charge</item>
+        <item>Combo</item>
+        <item>Deathrattle</item>
+        <item>Divine Shield</item>
+        <item>Enrage</item>
+        <item>Freeze</item>
+        <item>Overload</item>
+        <item>Spell Power</item>
+        <item>Secret</item>
+        <item>Silence</item>
+        <item>Stealth</item>
+        <item>Summoned</item>
+        <item>Taunt</item>
+        <item>Transform</item>
+        <item>Windfury</item>
+    </string-array>
 
     <string name="title_activity_card_list">CardListActivity</string>
     <string name="title_activity_classes">ClassesActivity</string>

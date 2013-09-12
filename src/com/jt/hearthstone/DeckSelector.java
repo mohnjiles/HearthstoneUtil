@@ -42,6 +42,13 @@ public class DeckSelector extends ActionBarActivity {
 	List<Cards> deckOne = CardListActivity.deckOne;
 	List<Cards> deckTwo = CardListActivity.deckTwo;
 	List<Cards> deckThree = CardListActivity.deckThree;
+	List<Cards> deckFour = CardListActivity.deckFour;
+	List<Cards> deckFive = CardListActivity.deckFive;
+	List<Cards> deckSix = CardListActivity.deckSix;
+	List<Cards> deckSeven = CardListActivity.deckSeven;
+	List<Cards> deckEight = CardListActivity.deckEight;
+	List<Cards> deckNine = CardListActivity.deckNine;
+	List<Cards> deckTen = CardListActivity.deckTen;
 	int position;
 	
 	@Override
@@ -186,48 +193,42 @@ public class DeckSelector extends ActionBarActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	    int menuItemIndex = item.getItemId();
 	    listDecks.remove(position);
 	    saveDeck("decklist", listDecks);
 	    adapter.notifyDataSetChanged();
 	    lvDecks.setAdapter(adapter);
 	    switch (position) {
 	    case 0:
-	    	try {
-				deckOne = getDeck(deckList.get(position));
-				if (deckOne != null) {
-					deckOne.clear();
-					saveDeck(deckList.get(position), deckOne);
-				}
-				break;
-			} catch (NullPointerException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
+	    	removeDeck(deckOne, position);
+	    	break;
 	    case 1:
-	    	try {
-	    		deckTwo = getDeck(deckList.get(position));
-		    	if (deckTwo != null) {
-		    		deckTwo.clear();
-		    		saveDeck(deckList.get(position), deckTwo);
-		    	}
-	    	} catch (NullPointerException e) {
-	    		e.printStackTrace();
-	    	}
-	    	
+	    	removeDeck(deckTwo, position);
 	    	break;
 	    case 2:
-	    	try {
-				deckThree = getDeck(deckList.get(position));
-				if (deckThree != null) {
-					deckThree.clear();
-					saveDeck(deckList.get(position), deckThree);
-				}
-				break;
-			} catch (NullPointerException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+	    	removeDeck(deckThree, position);
+	    	break;
+	    case 3:
+	    	removeDeck(deckFour, position);
+	    	break;
+	    case 4:
+	    	removeDeck(deckFive, position);
+	    	break;
+	    case 5:
+	    	removeDeck(deckSix, position);
+	    	break;
+	    case 6:
+	    	removeDeck(deckSeven, position);
+	    	break;
+	    case 7:
+	    	removeDeck(deckEight, position);
+	    	break;
+	    case 8:
+	    	removeDeck(deckNine, position);
+	    	break;
+	    case 9:
+	    	removeDeck(deckTen, position);
+	    	break;
+
 	    }
 	    
 	    return true;
@@ -289,6 +290,19 @@ public class DeckSelector extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	private void removeDeck(List<Cards> list, int position) {
+		try {
+			list = getDeck(deckList.get(position));
+			if (list != null) {
+				list.clear();
+				saveDeck(deckList.get(position), list);
+			}
+		} catch (NullPointerException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
 
 }

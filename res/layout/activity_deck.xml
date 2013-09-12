@@ -3,9 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#666666"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".DeckActivity" >
 
@@ -15,8 +12,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
         android:text="Deck List"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
 
     <ListView
         android:id="@+id/lvDeck"
@@ -28,5 +27,15 @@
         android:background="#444444" >
 
     </ListView>
+
+    <GridView
+        android:id="@+id/gvDeck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/textView1"
+        android:numColumns="auto_fit" >
+
+    </GridView>
 
 </RelativeLayout>

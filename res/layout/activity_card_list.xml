@@ -6,7 +6,7 @@
     tools:context=".MainActivity" >
 
     <GridView
-        android:id="@+id/cardsGrid"
+        android:id="@+id/gvDeck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -25,7 +25,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cbGenerics"
         android:numColumns="auto_fit" >
-
     </ListView>
 
     <Spinner
@@ -34,20 +33,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         android:layout_toLeftOf="@+id/imageView1"
         android:layout_toRightOf="@+id/textView1"
         android:entries="@array/Classes" />
-
-    <CheckBox
-        android:id="@+id/cbGenerics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignRight="@+id/imageView1"
-        android:layout_below="@+id/spinner1"
-        android:text="Include Generic Cards"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp" />
 
     <ImageView
         android:id="@+id/imageView1"
@@ -93,14 +82,47 @@
         android:textColor="#FFFFFF" />
 
     <CheckBox
+        android:id="@+id/cbGenerics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/cbReverse"
+        android:layout_below="@+id/spinnerSort"
+        android:layout_marginTop="30dp"
+        android:text="Include Generic Cards"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
+
+    <CheckBox
         android:id="@+id/cbReverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/cbGenerics"
-        android:layout_alignBottom="@+id/cbGenerics"
         android:layout_alignLeft="@+id/textView2"
+        android:layout_below="@+id/spinnerSort"
         android:text="Reverse Sort"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
+
+    <TextView
+        android:id="@+id/TextView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/cbGenerics"
+        android:layout_alignLeft="@+id/textView1"
+        android:layout_alignTop="@+id/spinnerMechanic"
+        android:layout_marginBottom="16dp"
+        android:gravity="center_vertical"
+        android:text="Mechanic: "
+        android:textColor="#FFFFFF" />
+
+    <Spinner
+        android:id="@+id/spinnerMechanic"
+        style="android:spinnerStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/cbGenerics"
+        android:layout_alignRight="@+id/spinner1"
+        android:layout_marginBottom="16dp"
+        android:layout_toRightOf="@+id/TextView01"
+        android:entries="@array/Mechanic" />
 
 </RelativeLayout>

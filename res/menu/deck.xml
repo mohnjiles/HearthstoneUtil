@@ -11,5 +11,10 @@
         hearthstone:showAsAction="ifRoom"
         android:title="Clear Deck"
         android:icon="@drawable/ic_menu_clear_playlist" />
+    
+	<item android:id="@+id/action_switch"
+        android:title="Switch to List"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        hearthstone:showAsAction="ifRoom" />
 
 </menu>

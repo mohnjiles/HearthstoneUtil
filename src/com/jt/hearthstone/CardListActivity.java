@@ -131,7 +131,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		// ** NEW ** inject views with ButterKnife
 		Views.inject(this);
-		grid = findById(this, R.id.cardsGrid);
+		grid = findById(this, R.id.gvDeck);
 		listCards = findById(this, R.id.cardsList);
 		includeNeutralCards = findById(this, R.id.cbGenerics);
 		cbReverse = findById(this, R.id.cbReverse);
@@ -260,7 +260,7 @@ public class CardListActivity extends ActionBarActivity {
 		Collections.sort(cardList, new CardComparator(pos, reverse));
 
 		// Create a new instance of our ImageAdapter class
-		adapter = new ImageAdapter(this);
+		adapter = new ImageAdapter(this, cardList);
 		adapter2 = new CustomListAdapter(this);
 
 		// Set the gridview's adapter to our custom adapter
@@ -671,6 +671,25 @@ public class CardListActivity extends ActionBarActivity {
 		case 2:
 			addCards(deckThree, menuItemIndex);
 			return true;
+		case 3:
+			addCards(deckFour, menuItemIndex);
+			return true;
+		case 4:
+			addCards(deckFive, menuItemIndex);
+			return true;
+		case 5:
+			addCards(deckSix, menuItemIndex);
+			return true;
+		case 6:
+			addCards(deckSeven, menuItemIndex);
+			return true;
+		case 7:
+			addCards(deckEight, menuItemIndex);
+			return true;
+		case 8:
+			addCards(deckNine, menuItemIndex);
+			return true;
+			
 		}
 	  return true;
 	}
