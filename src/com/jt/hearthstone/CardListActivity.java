@@ -1,5 +1,7 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,7 +17,9 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import android.R.integer;
 import android.content.Context;
@@ -48,8 +52,9 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 import butterknife.Views;
-import static butterknife.Views.findById;
+
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -82,8 +87,6 @@ public class CardListActivity extends ActionBarActivity {
 	int warlock = Classes.WARLOCK.getValue();
 	int warrior = Classes.WARRIOR.getValue();
 	int pos = CustomOnItemSelectedListener.position;
-	
-	int[] timesInDecks = new int[10] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
 	boolean isGrid = false;
 	public static boolean reverse = false;
@@ -98,8 +101,8 @@ public class CardListActivity extends ActionBarActivity {
 	private ArrayList<String> deckList;
 	private int position;
 
-	public static List<Cards> deckOne = new ArrayList<Cards>();
-	public static List<Cards> deckTwo = new ArrayList<Cards>();
+	public static List<Cards> deckOne;
+	public static List<Cards> deckTwo;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -315,6 +318,7 @@ public class CardListActivity extends ActionBarActivity {
 				cardList, cards, grid, listCards, adapter, adapter2);
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
+		// Get the decks from the file
 
 	}
 
@@ -338,7 +342,6 @@ public class CardListActivity extends ActionBarActivity {
 	  if (v.getId()==R.id.cardsList) {
 	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 	    menu.setHeaderTitle(cardList.get(info.position).getName());
-		timesInDeck = cardList.get(info.position).getTimesInDeck().intValue();
 	    position = info.position;
 	    String[] menuItems = new String[deckList.size()];
 	    
@@ -359,23 +362,16 @@ public class CardListActivity extends ActionBarActivity {
 		int menuItemIndex = item.getItemId();
 		switch (menuItemIndex) {
 		case 0:
-			if (timesInDecks[0] < 3) {
-				deckOne.add(cardList.get(position));
-				saveDeck("deck_one", deckOne);
-				timesInDecks[0]++;
-				break;
-			}
-			
+			deckOne = getDeck("deck_one");
+			deckOne.add(cardList.get(position));
+			saveDeck("deck_one", deckOne);
+			return true;
 		case 1:
-			if (timesInDecks[1] < 3) {
-				deckTwo.add(cardList.get(position));
-				saveDeck("deck_two", deckTwo);
-				timesInDecks[1]++;
-				break;
-			}
+			deckTwo = getDeck("deck_two");
+			deckTwo.add(cardList.get(position));
+			saveDeck("deck_two", deckTwo);
+			return true;
 		}
-		Toast.makeText(CardListActivity.this, "Can't have more than two of the same card.", Toast.LENGTH_SHORT);
-		
 	  return true;
 	}
 
@@ -678,5 +674,41 @@ public class CardListActivity extends ActionBarActivity {
 			  // TODO Auto-generated catch block
 			  e1.printStackTrace();
 		  }
+	}
+	private List<Cards> getDeck(String deckName) {
+		InputStream instream = null;
+		List<Cards> list = null;
+		try {
+			instream = openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<Cards>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+					
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
 	}
 }
