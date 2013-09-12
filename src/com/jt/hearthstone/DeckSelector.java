@@ -2,6 +2,7 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -37,8 +38,10 @@ public class DeckSelector extends ActionBarActivity {
 	ListView lvDecks;
 	public static ArrayList<String> listDecks = new ArrayList<String>();
 	ArrayAdapter<String> adapter;	
+	List<String> deckList = CardListActivity.deckList;
 	List<Cards> deckOne = CardListActivity.deckOne;
 	List<Cards> deckTwo = CardListActivity.deckTwo;
+	List<Cards> deckThree = CardListActivity.deckThree;
 	int position;
 	
 	@Override
@@ -190,13 +193,41 @@ public class DeckSelector extends ActionBarActivity {
 	    lvDecks.setAdapter(adapter);
 	    switch (position) {
 	    case 0:
-	    	deckOne.clear();
-	    	saveDeck("deck_one", deckOne);
-	    	break;
+	    	try {
+				deckOne = getDeck(deckList.get(position));
+				if (deckOne != null) {
+					deckOne.clear();
+					saveDeck(deckList.get(position), deckOne);
+				}
+				break;
+			} catch (NullPointerException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 	    case 1:
-	    	deckTwo.clear();
-	    	saveDeck("deck_two", deckTwo);
+	    	try {
+	    		deckTwo = getDeck(deckList.get(position));
+		    	if (deckTwo != null) {
+		    		deckTwo.clear();
+		    		saveDeck(deckList.get(position), deckTwo);
+		    	}
+	    	} catch (NullPointerException e) {
+	    		e.printStackTrace();
+	    	}
+	    	
 	    	break;
+	    case 2:
+	    	try {
+				deckThree = getDeck(deckList.get(position));
+				if (deckThree != null) {
+					deckThree.clear();
+					saveDeck(deckList.get(position), deckThree);
+				}
+				break;
+			} catch (NullPointerException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	    }
 	    
 	    return true;
@@ -219,6 +250,45 @@ public class DeckSelector extends ActionBarActivity {
 			  // TODO Auto-generated catch block
 			  e1.printStackTrace();
 		  }
+	}
+	
+	private List<Cards> getDeck(String deckName) {
+		InputStream instream = null;
+		List<Cards> list = new ArrayList<Cards>();
+		try {
+			instream = openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			list = new ArrayList<Cards>();
+			e.printStackTrace();
+		}
+		
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<Cards>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+					
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				list = new ArrayList<Cards>();
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 }

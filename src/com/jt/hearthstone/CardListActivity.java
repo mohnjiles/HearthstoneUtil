@@ -98,11 +98,29 @@ public class CardListActivity extends ActionBarActivity {
 	private CustomListAdapter adapter2;
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
-	private ArrayList<String> deckList;
+	public static ArrayList<String> deckList;
 	private int position;
 
 	public static List<Cards> deckOne;
 	public static List<Cards> deckTwo;
+	public static List<Cards> deckThree;
+	public static List<Cards> deckFour;
+	public static List<Cards> deckFive;
+	public static List<Cards> deckSix;
+	public static List<Cards> deckSeven;
+	public static List<Cards> deckEight;
+	public static List<Cards> deckNine;
+	public static List<Cards> deckTen;
+	public static List<Cards> deckEleven;
+	public static List<Cards> deckTwelve;
+	public static List<Cards> deckThirteen;
+	public static List<Cards> deckFourteen;
+	public static List<Cards> deckFifteen;
+	public static List<Cards> deckSixteen;
+	public static List<Cards> deckSeventeen;
+	public static List<Cards> deckEighteen;
+	public static List<Cards> deckNineteen;
+	public static List<Cards> deckTwenty;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -334,45 +352,6 @@ public class CardListActivity extends ActionBarActivity {
 						cards, grid, listCards, adapter, adapter2, searchItem,
 						spinner));
 		return true;
-	}
-	
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-	    ContextMenuInfo menuInfo) {
-	  if (v.getId()==R.id.cardsList) {
-	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-	    menu.setHeaderTitle(cardList.get(info.position).getName());
-	    position = info.position;
-	    String[] menuItems = new String[deckList.size()];
-	    
-	    int j = 0;
-	    while (j < deckList.size()) {
-	    	menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
-	    	j++;
-	    }
-	   
-	    for (int i = 0; i<menuItems.length; i++) {
-	      menu.add(Menu.NONE, i, i, menuItems[i]);
-	    }
-	  }
-	}
-	
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
-		int menuItemIndex = item.getItemId();
-		switch (menuItemIndex) {
-		case 0:
-			deckOne = getDeck("deck_one");
-			deckOne.add(cardList.get(position));
-			saveDeck("deck_one", deckOne);
-			return true;
-		case 1:
-			deckTwo = getDeck("deck_two");
-			deckTwo.add(cardList.get(position));
-			saveDeck("deck_two", deckTwo);
-			return true;
-		}
-	  return true;
 	}
 
 	@Override
@@ -657,6 +636,45 @@ public class CardListActivity extends ActionBarActivity {
 
 	}
 	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	    ContextMenuInfo menuInfo) {
+	  if (v.getId()==R.id.cardsList) {
+	    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+	    menu.setHeaderTitle(cardList.get(info.position).getName());
+	    position = info.position;
+	    String[] menuItems = new String[deckList.size()];
+	    
+	    int j = 0;
+	    while (j < deckList.size()) {
+	    	menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
+	    	j++;
+	    }
+	   
+	    for (int i = 0; i<menuItems.length; i++) {
+	      menu.add(Menu.NONE, i, i, menuItems[i]);
+	    }
+	  }
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		int menuItemIndex = item.getItemId();
+		if (item.getTitle().equals(deckList.get(menuItemIndex)));
+		switch (menuItemIndex) {
+		case 0:
+			addCards(deckOne, menuItemIndex);
+			return true;
+		case 1:
+			addCards(deckTwo, menuItemIndex);
+			return true;
+		case 2:
+			addCards(deckThree, menuItemIndex);
+			return true;
+		}
+	  return true;
+	}
+	
 	private void saveDeck(String deckName, Object object) {
 		FileOutputStream fos = null;
 		  try {
@@ -681,7 +699,7 @@ public class CardListActivity extends ActionBarActivity {
 		try {
 			instream = openFileInput(deckName);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
+			list = new ArrayList<Cards>();
 			e.printStackTrace();
 		}
 		
@@ -710,5 +728,15 @@ public class CardListActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	private void addCards(List<Cards> list, int menuItemIndex) {
+		if (getDeck(deckList.get(menuItemIndex)) != null) {
+			list = getDeck(deckList.get(menuItemIndex));
+		} else {
+			list = new ArrayList<Cards>();
+		}
+		
+		list.add(cardList.get(position));
+		saveDeck(deckList.get(menuItemIndex), list);
 	}
 }

@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 public class DecksListAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<String> decksList = DeckSelector.listDecks;
+    private ArrayList<String> decksList = CardListActivity.deckList;
 	public static String url;
 
     public DecksListAdapter(Context c) {

@@ -1,5 +1,8 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,20 +13,18 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.InjectView;
-import butterknife.Views;
-import static butterknife.Views.findById;
-import android.R.integer;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -51,10 +52,13 @@ public class DeckActivity extends ActionBarActivity {
 		setTitle(listDecks.get(position));
 		switch (position) {
 		case 0:
-			getDeck("deck_one");
+			getDeck(listDecks.get(position));
 			break;
 		case 1:
-			getDeck("deck_two");
+			getDeck(listDecks.get(position));
+			break;
+		case 2:
+			getDeck(listDecks.get(position));
 			break;
 		}
 		tvDeckTitle.setText(listDecks.get(position));
@@ -82,10 +86,13 @@ public class DeckActivity extends ActionBarActivity {
 	    cardList.remove(pos);
 	    switch (position) {
 	    case 0:
-	    	saveDeck("deck_one", cardList);
+	    	saveDeck(listDecks.get(position), cardList);
 	    	break;
 	    case 1:
-	    	saveDeck("deck_two", cardList);
+	    	saveDeck(listDecks.get(position), cardList);
+	    	break;
+	    case 2:
+	    	saveDeck(listDecks.get(position), cardList);
 	    	break;
 	    }
 	    adapter.notifyDataSetChanged();
@@ -132,6 +139,39 @@ public class DeckActivity extends ActionBarActivity {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
+		case R.id.action_clear:
+			AlertDialog dialog;
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("Remove all cards from this deck?");
+			builder.setPositiveButton("Remove All", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					cardList.clear();
+					switch (position) {
+					case 0:
+						saveDeck(listDecks.get(position), cardList);
+						break;
+					case 1:
+						saveDeck(listDecks.get(position), cardList);
+						break;
+					case 2:
+						saveDeck(listDecks.get(position), cardList);
+						break;
+					}
+					adapter.notifyDataSetChanged();
+					lvDeck.setAdapter(adapter);
+				}
+			});
+			builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+			dialog = builder.create();
+			dialog.show();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -141,7 +181,6 @@ public class DeckActivity extends ActionBarActivity {
 		try {
 			instream = openFileInput(deckName);
 		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -161,6 +200,8 @@ public class DeckActivity extends ActionBarActivity {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+			} else {
+				cardList = new ArrayList<Cards>();
 			}
 		} catch (StreamCorruptedException e) {
 			// TODO Auto-generated catch block
