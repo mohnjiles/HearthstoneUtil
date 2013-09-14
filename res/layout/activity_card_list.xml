@@ -7,13 +7,16 @@
 
     <GridView
         android:id="@+id/gvDeck"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cbGenerics"
+        android:gravity="center_horizontal"
+        android:columnWidth="@dimen/grid_column_width"
         android:numColumns="auto_fit" >
+
     </GridView>
 
     <ListView

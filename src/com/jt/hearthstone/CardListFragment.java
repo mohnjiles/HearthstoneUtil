@@ -27,9 +27,8 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.util.TypedValue;
@@ -53,13 +52,12 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
-import butterknife.Views;
 
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
-public class CardListActivity extends ActionBarActivity {
+public class CardListFragment extends Fragment {
 
 	public static Spinner spinner;
 	public static Spinner spinnerSort;
@@ -77,6 +75,9 @@ public class CardListActivity extends ActionBarActivity {
 	TextView tvCrafted;
 	TextView tvClass;
 	ImageView ivCardImage;
+	
+	ListView lvDeck = DeckActivity.lvDeck;
+	GridView gvDeck = DeckActivity.gvDeck;
 
 	int druid = Classes.DRUID.getValue();
 	int hunter = Classes.HUNTER.getValue();
@@ -102,6 +103,8 @@ public class CardListActivity extends ActionBarActivity {
 	public static ArrayList<String> deckList;
 	private int position;
 	private int menuItemIndex;
+	
+	com.jt.hearthstone.DeckFragmentHolder.FragmentAdapter fragAdapter = DeckFragmentHolder.adapter;
 
 	public static List<Cards> deckOne;
 	public static List<Cards> deckTwo;
@@ -125,30 +128,21 @@ public class CardListActivity extends ActionBarActivity {
 	public static List<Cards> deckTwenty;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
 
-		// Set main view to Activity_Main layout
-		setContentView(R.layout.activity_card_list);
+		View V = inflater.inflate(R.layout.activity_card_list, container, false);
 
 		// Get views with ButterKnife
-		grid = findById(this, R.id.gvDeck);
-		listCards = findById(this, R.id.cardsList);
-		includeNeutralCards = findById(this, R.id.cbGenerics);
-		cbReverse = findById(this, R.id.cbReverse);
-		spinner = findById(this, R.id.spinner1);
-		spinnerSort = findById(this, R.id.spinnerSort);
-		spinnerMechanic = findById(this, R.id.spinnerMechanic);
-
-		// Show ActionBar (Top bar)
-		getSupportActionBar().show();
+		grid = findById(V, R.id.gvDeck);
+		listCards = findById(V, R.id.cardsList);
+		includeNeutralCards = findById(V, R.id.cbGenerics);
+		cbReverse = findById(V, R.id.cbReverse);
+		spinner = findById(V, R.id.spinner1);
+		spinnerSort = findById(V, R.id.spinnerSort);
+		spinnerMechanic = findById(V, R.id.spinnerMechanic);
 		registerForContextMenu(listCards);
-
-		// Set ActionBar Title
-		setTitle("Hearthstone Companion");
-
-		// Show Up button on ActionBar
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
@@ -157,7 +151,7 @@ public class CardListActivity extends ActionBarActivity {
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
 		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				this).denyCacheImageMultipleSizesInMemory().build();
+				getActivity()).denyCacheImageMultipleSizesInMemory().build();
 
 		// Initialize the ImageLoader
 		loader.init(config);
@@ -190,8 +184,8 @@ public class CardListActivity extends ActionBarActivity {
 		Collections.sort(cardList, new CardComparator(pos, reverse));
 
 		// Create a new instance of our ImageAdapter class
-		adapter = new ImageAdapter(this, cardList);
-		adapter2 = new CustomListAdapter(this);
+		adapter = new ImageAdapter(getActivity(), cardList);
+		adapter2 = new CustomListAdapter(getActivity());
 
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
@@ -269,13 +263,18 @@ public class CardListActivity extends ActionBarActivity {
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
 		// Get the decks from the file
+		return V;
 
+	}
+	
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
@@ -283,7 +282,6 @@ public class CardListActivity extends ActionBarActivity {
 				.setOnQueryTextListener(new CustomSearchListener(cardList,
 						cards, grid, listCards, adapter, adapter2, searchItem,
 						spinner));
-		return true;
 	}
 
 	@Override
@@ -292,13 +290,8 @@ public class CardListActivity extends ActionBarActivity {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
-			startActivity(new Intent(CardListActivity.this,
+			startActivity(new Intent(getActivity(),
 					SettingsActivity.class));
-			return true;
-		case android.R.id.home:
-			// When the back button on the ActionBar is pressed, go back one
-			// Activity
-			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.action_switch:
 			if (isGrid) {
@@ -348,13 +341,13 @@ public class CardListActivity extends ActionBarActivity {
 		switch (menuItemIndex) {
 		case 0:
 			if (item.getTitle().equals("Add to new deck")) {
-				LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-			    View layout = inflater.inflate(R.layout.dialog_layout, (ViewGroup) findViewById(R.id.linearLayout));
+				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			    View layout = inflater.inflate(R.layout.dialog_layout, (ViewGroup) getView().findViewById(R.id.linearLayout));
 			//layout_root should be the name of the "top-level" layout node in the dialog_layout.xml file.
 			    final EditText nameBox = (EditText) layout.findViewById(R.id.etDeckName);
 			    
 			    //Building dialog
-			    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			    builder.setView(layout);
 			    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
 			        @Override
@@ -365,6 +358,7 @@ public class CardListActivity extends ActionBarActivity {
 			    		ArrayList<Cards> newDeck = new ArrayList<Cards>();
 			    		saveDeck(nameBox.getText().toString(), newDeck);
 			    		addCards(newDeck, deckList.size() - 1);
+			    		
 			        }
 			    });
 			    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -379,10 +373,18 @@ public class CardListActivity extends ActionBarActivity {
 			    return true;
 			} else {
 				addCards(deckOne, menuItemIndex);
+				DeckActivity.adapter.notifyDataSetChanged();
+	    		DeckActivity.adapter2.notifyDataSetChanged();
+	    		DeckActivity.lvDeck.setAdapter(DeckActivity.adapter);
+	    		DeckActivity.gvDeck.setAdapter(DeckActivity.adapter2);
 				return true;
 			}
 		case 1:
 			addCards(deckTwo, menuItemIndex);
+//			adapterOfDeck.notifyDataSetChanged();
+//    		adapterOfDeck2.notifyDataSetChanged();
+//    		lvDeck.setAdapter(adapterOfDeck);
+//    		gvDeck.setAdapter(adapterOfDeck2);
 			return true;
 		case 2:
 			addCards(deckThree, menuItemIndex);
@@ -459,7 +461,7 @@ public class CardListActivity extends ActionBarActivity {
 	
 			// We need to get the instance of the LayoutInflater,
 			// Gotta give the PopupWindow a layout
-			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
 	
 			// make different popupWindows for different screen sizes
@@ -666,7 +668,7 @@ public class CardListActivity extends ActionBarActivity {
 		InputStream instream = null;
 		List<Cards> list = null;
 		try {
-			instream = openFileInput(deckName);
+			instream = getActivity().openFileInput(deckName);
 		} catch (FileNotFoundException e) {
 			list = new ArrayList<Cards>();
 			e.printStackTrace();
@@ -702,7 +704,7 @@ public class CardListActivity extends ActionBarActivity {
 	private void saveDeck(String deckName, Object object) {
 		FileOutputStream fos = null;
 		try {
-			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
+			fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
 		} catch (FileNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -732,7 +734,7 @@ public class CardListActivity extends ActionBarActivity {
 	private void getDeckList() {
 		InputStream instream = null;
 		try {
-			instream = openFileInput("decklist");
+			instream = getActivity().openFileInput("decklist");
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

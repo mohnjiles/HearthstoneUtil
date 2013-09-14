@@ -2,7 +2,6 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,9 +12,7 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
+import android.R.color;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -24,8 +21,8 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -35,20 +32,25 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
-import android.widget.AdapterView.OnItemClickListener;
 
-public class DeckActivity extends ActionBarActivity {
+import com.jt.hearthstone.ClassFragmentHolder.FragmentAdapter;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+public class DeckActivity extends Fragment {
 	
 	TextView tvDeckTitle;
 	ArrayList<String> listDecks = DeckSelector.listDecks;
-	ListView lvDeck;
-	GridView gvDeck;
+	public static ListView lvDeck;
+	public static GridView gvDeck;
 	TextView tvCardName;
 	TextView tvType;
 	TextView tvQuality;
@@ -57,31 +59,37 @@ public class DeckActivity extends ActionBarActivity {
 	TextView tvClass;
 	ImageView ivCardImage;
 	PopupWindow pWindow;
-	public static List<Cards> cardList;
+	static List<Cards> cardList;
 	int position;
 	int pos;
-	DeckListAdapter adapter;
-	ImageAdapter adapter2;
+	public static DeckListAdapter adapter;
+	public static ImageAdapter adapter2;
 	ImageLoader loader = ImageLoader.getInstance();
+	ActionBar aBar = DeckFragmentHolder.aBar;
 	private boolean isGrid = false;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_deck);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View V = inflater.inflate(R.layout.activity_deck, container, false);
 		// Show the Up button in the action bar.
-		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
-		Intent intent = getIntent();
+		setHasOptionsMenu(true);
+		Intent intent = getActivity().getIntent();
 		position = intent.getIntExtra("position", 0);
 		
-		setTitle(listDecks.get(position));
+		aBar.setTitle(listDecks.get(position));
 		
-		loader.init(ImageLoaderConfiguration.createDefault(this));
+		loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		
-		lvDeck = findById(this, R.id.lvDeck);
-		gvDeck = findById(this, R.id.gvDeck);
-		tvDeckTitle = findById(this, R.id.textView1);
+		return V;
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+		
+		lvDeck = findById(getView(), R.id.lvDeck);
+		gvDeck = findById(getView(), R.id.gvDeck);
 		
 		gvDeck.setVisibility(View.INVISIBLE);
 		
@@ -97,20 +105,19 @@ public class DeckActivity extends ActionBarActivity {
 				initiatePopupWindow(position);
 			}
 		});
+
 		
+		cardList = getDeck(listDecks.get(position));
 		
-		getDeck(listDecks.get(position));
+		adapter = new DeckListAdapter(getActivity(), position);
+		adapter2 = new ImageAdapter(getActivity(), cardList);
 		
-		tvDeckTitle.setText(listDecks.get(position));
-		
-		adapter = new DeckListAdapter(this, position);
-		adapter2 = new ImageAdapter(this, cardList);
 		lvDeck.setAdapter(adapter);
 		gvDeck.setAdapter(adapter2);
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 	}
-
+	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 	    ContextMenuInfo menuInfo) {
@@ -126,67 +133,34 @@ public class DeckActivity extends ActionBarActivity {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	    int menuItemIndex = item.getItemId();
 	    cardList.remove(pos);
 	    saveDeck(listDecks.get(position), cardList);
 	    adapter.notifyDataSetChanged();
 	    lvDeck.setAdapter(adapter);
 	    return true;
 	}
-	
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		  try {
-			  fos = openFileOutput(deckName, Context.MODE_PRIVATE);
-		  } catch (FileNotFoundException e1) {
-			  // TODO Auto-generated catch block
-			  e1.printStackTrace();
-		  }
-	      ObjectOutputStream oos;
-		  try {
-			  oos = new ObjectOutputStream(fos);
-			  oos.writeObject(object);
-			  oos.close();
-		  } catch (IOException e1) {
-			  // TODO Auto-generated catch block
-			  e1.printStackTrace();
-		  }
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.deck, menu);
-		return true;
-	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case android.R.id.home:
-			// This ID represents the Home or Up button. In the case of this
-			// activity, the Up button is shown. Use NavUtils to allow users
-			// to navigate up one level in the application structure. For
-			// more details, see the Navigation pattern on Android Design:
-			//
-			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
-			//
-			NavUtils.navigateUpFromSameTask(this);
-			return true;
 		case R.id.action_switch:
 			if (isGrid) {
 				gvDeck.setVisibility(View.INVISIBLE);
 				lvDeck.setVisibility(View.VISIBLE);
 				isGrid = false;
+				item.setIcon(R.drawable.collections_view_as_grid);
+				item.setTitle("Switch to grid view");
 			} else {
 				gvDeck.setVisibility(View.VISIBLE);
 				lvDeck.setVisibility(View.INVISIBLE);
 				isGrid = true;
+				item.setIcon(R.drawable.collections_view_as_list);
+				item.setTitle("Switch to list view");
 			}
 			break;
 		case R.id.action_clear:
 			AlertDialog dialog;
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setTitle("Remove all cards from this deck?");
 			builder.setPositiveButton("Remove All", new DialogInterface.OnClickListener() {
 				
@@ -210,11 +184,32 @@ public class DeckActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
+
 	
-	private void getDeck(String deckName) {
+	private void saveDeck(String deckName, Object object) {
+		FileOutputStream fos = null;
+		  try {
+			  fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
+		  } catch (FileNotFoundException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	      ObjectOutputStream oos;
+		  try {
+			  oos = new ObjectOutputStream(fos);
+			  oos.writeObject(object);
+			  oos.close();
+		  } catch (IOException e1) {
+			  // TODO Auto-generated catch block
+			  e1.printStackTrace();
+		  }
+	}
+	
+	private List<Cards> getDeck(String deckName) {
 		InputStream instream = null;
+		List<Cards> list = null;
 		try {
-			instream = openFileInput(deckName);
+			instream = getActivity().openFileInput(deckName);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -223,7 +218,7 @@ public class DeckActivity extends ActionBarActivity {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					cardList = (List<Cards>) objStream.readObject();
+					list = (List<Cards>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -236,7 +231,7 @@ public class DeckActivity extends ActionBarActivity {
 					e.printStackTrace();
 				}
 			} else {
-				cardList = new ArrayList<Cards>();
+				list = new ArrayList<Cards>();
 			}
 		} catch (StreamCorruptedException e) {
 			// TODO Auto-generated catch block
@@ -245,6 +240,7 @@ public class DeckActivity extends ActionBarActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		return list;
 	}
 	
 	private void initiatePopupWindow(int position) {
@@ -293,7 +289,7 @@ public class DeckActivity extends ActionBarActivity {
 
 			// We need to get the instance of the LayoutInflater,
 			// Gotta give the PopupWindow a layout
-			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
 
 			// make different popupWindows for different screen sizes
@@ -465,6 +461,7 @@ public class DeckActivity extends ActionBarActivity {
 
 	// Runs the popupWindoww, getting view from inflater & dimensions based on
 	// screen size
+	@SuppressWarnings("deprecation")
 	private void doSomeWindow(View layout, int widthLandscape,
 			int heightLandscape, int widthPortrait, int heightPortrait) {
 

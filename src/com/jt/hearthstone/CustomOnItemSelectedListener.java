@@ -18,8 +18,9 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	private GridView grid;
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
-	private CheckBox cbReverse = CardListActivity.cbReverse;
-	private Spinner spinnerSort = CardListActivity.spinnerSort;
+	private CheckBox cbReverse = CardListFragment.cbReverse;
+	private Spinner spinnerSort = CardListFragment.spinnerSort;
+	private Spinner spinnerClass = CardListFragment.spinner;
 	private ListView listCards;
 	public static int position = 0;
 	private boolean reverse = CardListActivity.reverse;
@@ -81,6 +82,7 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 				setCardList(Classes.WARRIOR);
 				break;
 			}
+
 		} else if (spinner.getId() == R.id.spinnerSort) {
 			position = pos;
 			Collections.sort(cardList,
@@ -89,6 +91,70 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 			adapter2.notifyDataSetChanged();
 			grid.setAdapter(adapter);
 			listCards.setAdapter(adapter2);
+
+		} else if (spinner.getId() == R.id.spinnerMechanic) {
+			switch (spinnerClass.getSelectedItemPosition()) {
+			case 0:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList();
+				} else {
+					cardList.clear();
+					for (Cards card : cards) {
+						if (card.getDescription() != null
+								&& card.getDescription().contains(
+										spinner.getSelectedItem().toString())) {
+							cardList.add(card);
+						}
+					}
+					Collections.sort(
+							cardList,
+							new CardComparator(spinnerSort
+									.getSelectedItemPosition(), cbReverse
+									.isChecked()));
+					adapter.notifyDataSetChanged();
+					adapter2.notifyDataSetChanged();
+					grid.setAdapter(adapter);
+					listCards.setAdapter(adapter2);
+				}
+				break;
+			case 1:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.DRUID);
+				} else {
+					setCardList(Classes.DRUID, spinner.getSelectedItem().toString());
+				}
+				break;
+			case 2:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.HUNTER);
+				} else {
+					setCardList(Classes.HUNTER, spinner.getSelectedItem().toString());
+				}
+				break;
+			case 3:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.MAGE);
+				} else {
+					setCardList(Classes.MAGE, spinner.getSelectedItem().toString());
+				}
+				break;
+			case 4:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.PALADIN);
+				} else {
+					setCardList(Classes.PALADIN, spinner.getSelectedItem().toString());
+				}
+				break;
+			case 5:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.PRIEST);
+				} else {
+					setCardList(Classes.PRIEST, spinner.getSelectedItem().toString());
+				}
+				break;
+
+			}
+
 		}
 
 	}
@@ -102,6 +168,27 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	 * Handy little function to set the card list This is called when you select
 	 * any class other than "Any" from the Spinner
 	 */
+	private void setCardList(Classes classes, String selectedItem) {
+		cardList.clear();
+		for (Cards card : cards) {
+			if (card.getDescription() != null
+					&& card.getClasss() != null
+					&& card.getClasss().intValue() == classes.getValue()
+					&& card.getDescription().contains(selectedItem)
+					&& !card.getName().equals(classes.getHeroName())) {
+				cardList.add(card);
+			}
+		}
+		Collections.sort(cardList,
+				new CardComparator(spinnerSort.getSelectedItemPosition(),
+						cbReverse.isChecked()));
+		
+		adapter.notifyDataSetChanged();
+		adapter2.notifyDataSetChanged();
+		grid.setAdapter(adapter);
+		listCards.setAdapter(adapter2);
+	}
+
 	private void setCardList(Classes classes) {
 		// Clear the current ArrayList so we can repopulate it
 		cardList.clear();
