@@ -19,14 +19,14 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 	private GridView grid;
 	private ImageAdapter adapter;
 	private MenuItem searchItem;
-	private Spinner spinner = CardListActivity.spinner;
-	private Spinner spinnerSort = CardListActivity.spinnerSort;
+	private Spinner spinner = CardListFragment.spinner;
+	private Spinner spinnerSort = CardListFragment.spinnerSort;
 	private CustomListAdapter adapter2;
 	private ListView listCards;
-	private CheckBox cbGenerics = CardListActivity.includeNeutralCards;
-	private CheckBox cbReverse = CardListActivity.cbReverse;
+	private CheckBox cbGenerics = CardListFragment.includeNeutralCards;
+	private CheckBox cbReverse = CardListFragment.cbReverse;
 	int position = CustomOnItemSelectedListener.position;
-	boolean reverse = CardListActivity.reverse;
+	boolean reverse = CardListFragment.reverse;
 	
 	public CustomSearchListener(ArrayList<Cards> cardList, Cards[] cards, GridView grid, 
 			ListView listCards, ImageAdapter adapter, CustomListAdapter adapter2, 

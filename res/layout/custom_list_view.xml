@@ -20,7 +20,7 @@
         android:gravity="center"
         android:text="Al&apos;Akir the Windlord"
         android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:textSize="@dimen/card_name_text_size" />
 
     <TextView
         android:id="@+id/tvHealth"
@@ -33,12 +33,12 @@
         android:gravity="center"
         android:text="30"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="@dimen/card_stats_text_size" />
 
     <ImageView
         android:id="@+id/imageView1"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/card_stats_image_size"
+        android:layout_height="@dimen/card_stats_image_size"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/tvHealth"
         android:src="@drawable/health" />
@@ -55,9 +55,9 @@
 
         <ImageView
             android:id="@+id/ivClassImage"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
-            android:src="@drawable/druid_icon" />
+            android:layout_width="@dimen/card_class_size"
+            android:layout_height="@dimen/card_class_size"
+            android:src="@drawable/ic_launcher" />
     </LinearLayout>
 
     <TextView
@@ -72,12 +72,12 @@
         android:gravity="center"
         android:text="30"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="@dimen/card_stats_text_size" />
 
     <ImageView
         android:id="@+id/ImageView01"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/card_stats_image_size"
+        android:layout_height="@dimen/card_stats_image_size"
         android:layout_alignTop="@+id/tvAttack"
         android:layout_centerVertical="true"
         android:layout_marginRight="1dp"
@@ -97,12 +97,12 @@
         android:gravity="center"
         android:text="30"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="@dimen/card_stats_text_size" />
 
     <ImageView
         android:id="@+id/ImageView02"
-        android:layout_width="24dp"
-        android:layout_height="24dp"
+        android:layout_width="@dimen/card_stats_image_size"
+        android:layout_height="@dimen/card_stats_image_size"
         android:layout_alignTop="@+id/tvMana"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/tvMana"

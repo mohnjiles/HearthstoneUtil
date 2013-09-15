@@ -1,21 +1,10 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/deckLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#666666"
-    android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".DeckActivity" >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:text="Deck List"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
 
     <ListView
         android:id="@+id/lvDeck"
@@ -23,9 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/textView1"
         android:background="#444444" >
-
     </ListView>
 
     <GridView
@@ -33,9 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/textView1"
         android:numColumns="auto_fit" >
-
     </GridView>
 
 </RelativeLayout>
