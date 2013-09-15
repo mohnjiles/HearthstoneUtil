@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -29,13 +30,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Spinner;
 
 public class DeckSelector extends ActionBarActivity {
 
 	ListView lvDecks;
-	static ArrayList<String> listDecks = new ArrayList<String>();
+	public static ArrayList<String> listDecks = new ArrayList<String>();
 	CustomDeckAdapter adapter;
-	List<String> deckList = CardListActivity.deckList;
+
 	List<Cards> deckOne = CardListActivity.deckOne;
 	List<Cards> deckTwo = CardListActivity.deckTwo;
 	List<Cards> deckThree = CardListActivity.deckThree;
@@ -55,7 +57,6 @@ public class DeckSelector extends ActionBarActivity {
 		// Show the Up button in the action bar.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		setTitle("Decks");
-
 		lvDecks = findById(this, R.id.lvDecks);
 		// listDecks.add("Test");
 		registerForContextMenu(lvDecks);
@@ -139,7 +140,7 @@ public class DeckSelector extends ActionBarActivity {
 			// the dialog_layout.xml file.
 			final EditText nameBox = (EditText) layout
 					.findViewById(R.id.etDeckName);
-
+			
 			// Building dialog
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setView(layout);
@@ -200,10 +201,6 @@ public class DeckSelector extends ActionBarActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		listDecks.remove(position);
-		saveDeck("decklist", listDecks);
-		adapter.notifyDataSetChanged();
-		lvDecks.setAdapter(adapter);
 		switch (position) {
 		case 0:
 			removeDeck(deckOne, position);
@@ -236,7 +233,12 @@ public class DeckSelector extends ActionBarActivity {
 			removeDeck(deckTen, position);
 			break;
 		}
-		return true;
+		
+		listDecks.remove(position);
+		saveDeck("decklist", listDecks);
+		adapter.notifyDataSetChanged();
+		lvDecks.setAdapter(adapter);
+		return super.onContextItemSelected(item);
 	}
 
 	private void saveDeck(String deckName, Object object) {
@@ -299,10 +301,10 @@ public class DeckSelector extends ActionBarActivity {
 
 	private void removeDeck(List<Cards> list, int position) {
 		try {
-			list = getDeck(deckList.get(position));
+			list = getDeck(listDecks.get(position));
 			if (list != null) {
 				list.clear();
-				saveDeck(deckList.get(position), list);
+				saveDeck(listDecks.get(position), list);
 			}
 		} catch (NullPointerException e1) {
 			// TODO Auto-generated catch block

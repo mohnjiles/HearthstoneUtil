@@ -31,7 +31,7 @@
     </ListView>
 
     <Spinner
-        android:id="@+id/spinner1"
+        android:id="@+id/spinClass"
         style="android:spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -53,7 +53,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/spinner1"
+        android:layout_alignTop="@+id/spinClass"
         android:layout_marginRight="16dp"
         android:layout_toRightOf="@+id/textView2"
         android:entries="@array/Sort" />
@@ -62,9 +62,9 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinner1"
+        android:layout_alignBottom="@+id/spinClass"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/spinner1"
+        android:layout_alignTop="@+id/spinClass"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="4dp"
         android:gravity="center_vertical"
@@ -77,7 +77,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/textView1"
         android:layout_alignLeft="@+id/imageView1"
-        android:layout_alignTop="@+id/spinner1"
+        android:layout_alignTop="@+id/spinClass"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="4dp"
         android:gravity="center_vertical"
@@ -123,7 +123,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/cbGenerics"
-        android:layout_alignRight="@+id/spinner1"
+        android:layout_alignRight="@+id/spinClass"
         android:layout_marginBottom="16dp"
         android:layout_toRightOf="@+id/TextView01"
         android:entries="@array/Mechanic" />

@@ -18,6 +18,7 @@ import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.provider.ContactsContract.DeletedContacts;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +33,7 @@ public class ChartActivity extends Fragment {
 
     private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
 
-    private XYSeries mCurrentSeries;
+    private XYSeries mCurrentSeries = new XYSeries("Cards");
 
     private XYSeriesRenderer mCurrentRenderer;
     
@@ -40,6 +41,7 @@ public class ChartActivity extends Fragment {
     private RelativeLayout layout;
     int position;
     String name;
+
 
     @Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -50,6 +52,13 @@ public class ChartActivity extends Fragment {
 		position = getActivity().getIntent().getIntExtra("position", 0);
 		name = getActivity().getIntent().getStringExtra("name");
         layout = (RelativeLayout) V.findViewById(R.id.chartLayout);
+//        if (mChart != null) {
+//        	((ViewGroup) mChart.getParent()).removeView(mChart);
+//        	initChart();
+//            addSampleData();
+//        	layout.addView(mChart);
+//        } 
+
         
         return V;
     }
@@ -62,13 +71,17 @@ public class ChartActivity extends Fragment {
             mChart = ChartFactory.getBarChartView(getActivity(), mDataset, mRenderer, BarChart.Type.DEFAULT);
             layout.addView(mChart);
         } else {
-            mChart.repaint();
+        	((ViewGroup) mChart.getParent()).removeView(mChart);
+        	mCurrentSeries.clear();
+//        	initChart();
+            addSampleData();
+        	layout.addView(mChart);
         }
     }
     
 	private void addSampleData() {
 		int[] costs = new int[50];
-		cardList = getDeck(name);
+		cardList = DeckActivity.cardList;
 	 	for (Cards card : cardList) {
 	 		if (card.getCost() != null) {
 				costs[card.getCost().intValue()]++;
@@ -79,16 +92,17 @@ public class ChartActivity extends Fragment {
 	}
 
 	private void initChart() {
-	    mCurrentSeries = new XYSeries("Cards");
 	    mDataset.addSeries(mCurrentSeries);
 	    mCurrentRenderer = new XYSeriesRenderer();
 	    mRenderer.addSeriesRenderer(mCurrentRenderer);
-	    mRenderer.setBarSpacing(1.2f);
+	    mRenderer.setBarSpacing(1.0d);
+	    mRenderer.setBarWidth(10.0f);
 	    mRenderer.setPanEnabled(false, false);
-	    mRenderer.setXAxisMin(0.0);
-	    mRenderer.setXAxisMax(12.0);
-	    mRenderer.setYAxisMin(0.0);
-	    mRenderer.setYAxisMax(10.0);
+	    mRenderer.setXAxisMin(0.0f);
+	    mRenderer.setXAxisMax(12.0f);
+	    mRenderer.setYAxisMin(0.0f);
+	    mRenderer.setYAxisMax(10.0f);
+	    mRenderer.setLegendTextSize(0.0f);
 	    mRenderer.setShowGridX(true);
 	    mRenderer.setBackgroundColor(Color.DKGRAY);
 	    mRenderer.setApplyBackgroundColor(true);
@@ -98,6 +112,7 @@ public class ChartActivity extends Fragment {
 	    mRenderer.setYLabels(10);
 	    mRenderer.setXTitle("Mana Cost");
 	    mRenderer.setYTitle("Num. in Deck");
+	    mRenderer.setLegendHeight(0);
 	    mCurrentRenderer.setColor(Color.CYAN);
 	}
 

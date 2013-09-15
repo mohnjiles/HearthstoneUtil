@@ -14,9 +14,9 @@ import android.widget.TextView;
 
 public class CustomListAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = CardListFragment.cardList; // Get card list from MainActivity
+    private ArrayList<Cards> cardList = CardListFragment.cardList; // Get card list from Fragment
 	public static String url;
-	ImageLoader imageLoader = CardListFragment.loader; // Get instance of ImageLoader from main activity
+	ImageLoader imageLoader = CardListFragment.loader; // Get instance of ImageLoader
 	private String cardName;
 
     public CustomListAdapter(Context c) {

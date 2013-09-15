@@ -41,7 +41,7 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
 		Spinner spinner = (Spinner) parent;
-		if (spinner.getId() == R.id.spinner1) {
+		if (spinner.getId() == R.id.spinClass) {
 			switch (pos) {
 			// All Class Card List
 			case 0:

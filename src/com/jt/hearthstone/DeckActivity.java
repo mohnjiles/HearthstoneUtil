@@ -30,6 +30,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -79,6 +80,12 @@ public class DeckActivity extends Fragment {
 		
 		aBar.setTitle(listDecks.get(position));
 		
+		cardList = getDeck(listDecks.get(position));
+		lvDeck = findById(V, R.id.lvDeck);
+		gvDeck = findById(V, R.id.gvDeck);
+		registerForContextMenu(lvDeck);
+		registerForContextMenu(gvDeck);
+		
 		loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		
 		return V;
@@ -88,8 +95,7 @@ public class DeckActivity extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		lvDeck = findById(getView(), R.id.lvDeck);
-		gvDeck = findById(getView(), R.id.gvDeck);
+
 		
 		gvDeck.setVisibility(View.INVISIBLE);
 		
@@ -107,37 +113,47 @@ public class DeckActivity extends Fragment {
 		});
 
 		
-		cardList = getDeck(listDecks.get(position));
-		
 		adapter = new DeckListAdapter(getActivity(), position);
 		adapter2 = new ImageAdapter(getActivity(), cardList);
 		
 		lvDeck.setAdapter(adapter);
 		gvDeck.setAdapter(adapter2);
-		registerForContextMenu(lvDeck);
-		registerForContextMenu(gvDeck);
 	}
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 	    ContextMenuInfo menuInfo) {
-		
+		super.onCreateContextMenu(menu, v, menuInfo);
 	    if (v.getId()==R.id.lvDeck || v.getId() == R.id.gvDeck) {
 	        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 	        menu.setHeaderTitle(cardList.get(info.position).getName());
 	        pos = info.position;
 	        String menuItems = "Remove card \"" + cardList.get(info.position).getName() + "\"";
-	        menu.add(Menu.NONE, 0, 0, menuItems);
+	        menu.add(Menu.FIRST, 0, 0, menuItems);
 	  }
 	}
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-	    cardList.remove(pos);
-	    saveDeck(listDecks.get(position), cardList);
-	    adapter.notifyDataSetChanged();
-	    lvDeck.setAdapter(adapter);
-	    return true;
+		if (item.getGroupId() == Menu.FIRST) {
+			cardList.remove(pos);
+		    Log.i("Card Removed", "Card removed, pos: " + pos);
+		    saveDeck(listDecks.get(position), cardList);
+		    Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+		    adapter.notifyDataSetChanged();
+			lvDeck.setAdapter(adapter);
+			
+		    DeckFragmentHolder.adapter.notifyDataSetChanged();
+		}
+	    
+	    
+	    return super.onContextItemSelected(item);
+	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.deck, menu);
+		super.onCreateOptionsMenu(menu, inflater);
 	}
 
 	@Override

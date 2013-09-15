@@ -19,7 +19,7 @@
     </GridView>
 
     <Spinner
-        android:id="@+id/spinner1"
+        android:id="@+id/spinClass"
         style="android:spinnerStyle"
         android:layout_width="@dimen/spinner_size"
         android:layout_height="wrap_content"
@@ -40,9 +40,9 @@
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinner1"
+        android:layout_alignBottom="@+id/spinClass"
         android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/spinner1"
+        android:layout_alignTop="@+id/spinClass"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="4dp"
         android:gravity="center_vertical"
@@ -80,8 +80,8 @@
         style="android:spinnerStyle"
         android:layout_width="@dimen/spinner_size"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinner1"
-        android:layout_below="@+id/spinner1"
+        android:layout_alignLeft="@+id/spinClass"
+        android:layout_below="@+id/spinClass"
         android:layout_marginBottom="8dp"
         android:layout_marginRight="8dp"
         android:entries="@array/Sort" />

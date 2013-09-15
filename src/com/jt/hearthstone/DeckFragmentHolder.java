@@ -67,14 +67,14 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		adapter = new FragmentAdapter(
 				getSupportFragmentManager(), fragments);
-		myPager.setOffscreenPageLimit(0);
+		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.deck, menu);
+		getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
 		return true;
 	}
 
@@ -90,10 +90,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
 			NavUtils.navigateUpFromSameTask(this);
-			return true;
-		case R.id.action_debug:
-			myPager.getAdapter().notifyDataSetChanged();
-			return true;
+			return super.onOptionsItemSelected(item);
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -119,11 +116,16 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		public int getCount() {
 			return localFragmentArray.size();
 		}
-
+		
 		@Override
-		public void destroyItem(ViewGroup container, int position, Object object) {
-			this.notifyDataSetChanged();
-		}
+		public int getItemPosition(Object object) {
+		    return POSITION_NONE;
+		}  
+
+//		@Override
+//		public void destroyItem(ViewGroup container, int position, Object object) {
+//			this.notifyDataSetChanged();
+//		}
 
 		@Override
 		public boolean isViewFromObject(View arg0, Object arg1) {

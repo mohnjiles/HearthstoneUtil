@@ -17,10 +17,5 @@
         android:icon="@drawable/collections_view_as_grid"
         hearthstone:showAsAction="ifRoom" />
 	
-	<item android:id="@+id/action_debug"
-        android:title="Switch to grid view"
-        android:icon="@android:drawable/ic_menu_recent_history"
-        hearthstone:showAsAction="always" />
-	
 
 </menu>

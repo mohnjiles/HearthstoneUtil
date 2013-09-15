@@ -136,7 +136,7 @@ public class CardListActivity extends ActionBarActivity {
 		listCards = findById(this, R.id.cardsList);
 		includeNeutralCards = findById(this, R.id.cbGenerics);
 		cbReverse = findById(this, R.id.cbReverse);
-		spinner = findById(this, R.id.spinner1);
+		spinner = findById(this, R.id.spinClass);
 		spinnerSort = findById(this, R.id.spinnerSort);
 		spinnerMechanic = findById(this, R.id.spinnerMechanic);
 

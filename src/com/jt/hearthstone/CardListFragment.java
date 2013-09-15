@@ -17,6 +17,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -103,6 +104,7 @@ public class CardListFragment extends Fragment {
 	public static ArrayList<String> deckList;
 	private int position;
 	private int menuItemIndex;
+	private int deckListPos;
 	
 	com.jt.hearthstone.DeckFragmentHolder.FragmentAdapter fragAdapter = DeckFragmentHolder.adapter;
 
@@ -139,7 +141,7 @@ public class CardListFragment extends Fragment {
 		listCards = findById(V, R.id.cardsList);
 		includeNeutralCards = findById(V, R.id.cbGenerics);
 		cbReverse = findById(V, R.id.cbReverse);
-		spinner = findById(V, R.id.spinner1);
+		spinner = findById(V, R.id.spinClass);
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
 		registerForContextMenu(listCards);
@@ -147,6 +149,9 @@ public class CardListFragment extends Fragment {
 		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
 
+		Intent intent = getActivity().getIntent();
+		deckListPos = intent.getIntExtra("position", 0);
+		
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
@@ -262,7 +267,7 @@ public class CardListFragment extends Fragment {
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
-		// Get the decks from the file
+		setHasOptionsMenu(true);
 		return V;
 
 	}
@@ -321,98 +326,20 @@ public class CardListFragment extends Fragment {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
-			String[] menuItems = new String[deckList.size()];
-			menu.add(Menu.NONE, 0, 0, "Add to new deck");
-			int j = 0;
-			while (j < deckList.size()) {
-				menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
-				j++;
-			}
-
-			for (int i = 0; i < menuItems.length; i++) {
-				menu.add(Menu.NONE, i, i, menuItems[i]);
-			}
+			menu.add(1337, 0, 0, "Add to deck \"" + deckList.get(deckListPos) + "\"");
 		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		menuItemIndex = item.getItemId();
-		switch (menuItemIndex) {
-		case 0:
-			if (item.getTitle().equals("Add to new deck")) {
-				LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			    View layout = inflater.inflate(R.layout.dialog_layout, (ViewGroup) getView().findViewById(R.id.linearLayout));
-			//layout_root should be the name of the "top-level" layout node in the dialog_layout.xml file.
-			    final EditText nameBox = (EditText) layout.findViewById(R.id.etDeckName);
-			    
-			    //Building dialog
-			    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			    builder.setView(layout);
-			    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			        @Override
-			        public void onClick(DialogInterface dialog, int which) {
-			            dialog.dismiss();
-			            deckList.add(nameBox.getText().toString());
-			    		saveDeck("decklist", deckList);
-			    		ArrayList<Cards> newDeck = new ArrayList<Cards>();
-			    		saveDeck(nameBox.getText().toString(), newDeck);
-			    		addCards(newDeck, deckList.size() - 1);
-			    		
-			        }
-			    });
-			    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			        @Override
-			        public void onClick(DialogInterface dialog, int which) {
-			            dialog.dismiss();
-			        }
-			    });
-			    AlertDialog dialog = builder.create();
-			    dialog.show();
-			    
-			    return true;
-			} else {
-				addCards(deckOne, menuItemIndex);
-				DeckActivity.adapter.notifyDataSetChanged();
-	    		DeckActivity.adapter2.notifyDataSetChanged();
-	    		DeckActivity.lvDeck.setAdapter(DeckActivity.adapter);
-	    		DeckActivity.gvDeck.setAdapter(DeckActivity.adapter2);
-				return true;
-			}
-		case 1:
-			addCards(deckTwo, menuItemIndex);
-//			adapterOfDeck.notifyDataSetChanged();
-//    		adapterOfDeck2.notifyDataSetChanged();
-//    		lvDeck.setAdapter(adapterOfDeck);
-//    		gvDeck.setAdapter(adapterOfDeck2);
-			return true;
-		case 2:
-			addCards(deckThree, menuItemIndex);
-			return true;
-		case 3:
-			addCards(deckFour, menuItemIndex);
-			return true;
-		case 4:
-			addCards(deckFive, menuItemIndex);
-			return true;
-		case 5:
-			addCards(deckSix, menuItemIndex);
-			return true;
-		case 6:
-			addCards(deckSeven, menuItemIndex);
-			return true;
-		case 7:
-			addCards(deckEight, menuItemIndex);
-			return true;
-		case 8:
-			addCards(deckNine, menuItemIndex);
-			return true;
-		case 9:
-			addCards(deckTen, menuItemIndex);
-			return true;
-
+		if (item.getGroupId() == 1337) {
+			addCards(deckOne, deckListPos);
+			DeckFragmentHolder.adapter.notifyDataSetChanged();
+			return super.onContextItemSelected(item);
 		}
-		return true;
+		
+		return super.onContextItemSelected(item);
 	}
 
 	private void initiatePopupWindow(int position) {
