@@ -7,7 +7,7 @@
     android:orientation="vertical" >
 
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/TextView01"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -18,9 +18,24 @@
         android:id="@+id/etDeckName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:ems="10" >
+        android:ems="10"
+        android:textColor="#FFFFFF" >
 
         <requestFocus />
     </EditText>
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="Select a Class:"
+        android:textColor="#FFFFFF" />
+
+    <Spinner
+        android:id="@+id/spinClass"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:entries="@array/ClassesWithoutAny" />
 
 </LinearLayout>

@@ -8,5 +8,17 @@
     <dimen name="card_icon_padding_left">0dp</dimen>
     <dimen name="card_icon_padding_right">-8dp</dimen>
     <dimen name="card_name_padding">0dp</dimen>
-
+    <dimen name="card_name_text_size">14sp</dimen>
+    <dimen name="card_stats_text_size">12sp</dimen>
+    <dimen name="card_class_size">26dp</dimen>
+    <dimen name="card_stats_image_size">24dp</dimen>
+    <dimen name="grid_column_width">150dp</dimen>
+    <dimen name="spinner_size">125dp</dimen>
+    <dimen name="pie_segment_label_font_size">10dp</dimen>
+    <dimen name="title_font_size">20dp</dimen>
+    <dimen name="domain_label_font_size">13dp</dimen>
+    <dimen name="range_label_font_size">13dp</dimen>
+    <dimen name="range_tick_label_font_size">15dp</dimen>
+    <dimen name="domain_tick_label_font_size">15dp</dimen>
+    <dimen name="legend_text_font_size">20dp</dimen>
 </resources>
