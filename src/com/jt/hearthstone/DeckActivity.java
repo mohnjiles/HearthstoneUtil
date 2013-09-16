@@ -58,6 +58,7 @@ public class DeckActivity extends Fragment {
 	TextView tvSet;
 	TextView tvCrafted;
 	TextView tvClass;
+	TextView tvNumCards;
 	ImageView ivCardImage;
 	PopupWindow pWindow;
 	static List<Cards> cardList;
@@ -78,24 +79,28 @@ public class DeckActivity extends Fragment {
 		Intent intent = getActivity().getIntent();
 		position = intent.getIntExtra("position", 0);
 		
-		aBar.setTitle(listDecks.get(position));
+		aBar.setTitle(DeckSelector.listDecks.get(position));
 		
 		cardList = getDeck(listDecks.get(position));
 		lvDeck = findById(V, R.id.lvDeck);
 		gvDeck = findById(V, R.id.gvDeck);
+		tvNumCards = findById(V, R.id.tvNumCards);
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 		
-		loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		if (!loader.isInited()) {
+			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		}
+		
 		
 		return V;
 	}
-
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-
+		tvNumCards.setText("" + cardList.size() + " / 30");
 		
 		gvDeck.setVisibility(View.INVISIBLE);
 		
@@ -184,8 +189,9 @@ public class DeckActivity extends Fragment {
 				public void onClick(DialogInterface dialog, int which) {
 					cardList.clear();
 					saveDeck(listDecks.get(position), cardList);
+					tvNumCards.setText("0 / 30");
 					adapter.notifyDataSetChanged();
-					lvDeck.setAdapter(adapter);
+					lvDeck.setAdapter(adapter);	
 				}
 			});
 			builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

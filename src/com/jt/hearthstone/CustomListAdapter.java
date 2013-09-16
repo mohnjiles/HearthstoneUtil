@@ -14,13 +14,14 @@ import android.widget.TextView;
 
 public class CustomListAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<Cards> cardList = CardListFragment.cardList; // Get card list from Fragment
+    private ArrayList<Cards> cardList; // Get card list from Fragment
 	public static String url;
 	ImageLoader imageLoader = CardListFragment.loader; // Get instance of ImageLoader
 	private String cardName;
 
-    public CustomListAdapter(Context c) {
+    public CustomListAdapter(Context c, ArrayList<Cards> cardList) {
         mContext = c;
+        this.cardList = cardList;
     }
 
     public int getCount() {
@@ -137,31 +138,31 @@ public class CustomListAdapter extends BaseAdapter {
     	if (cardList.get(position).getClasss() != null) {
     		switch (cardList.get(position).getClasss().intValue()) {
     		case 1:
-    			vh.ivClassIcon.setImageResource(R.drawable.warrior_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.warrior);
     			break;
     		case 2:
-    			vh.ivClassIcon.setImageResource(R.drawable.paladin_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.paladin);
     			break;
     		case 3:
-    			vh.ivClassIcon.setImageResource(R.drawable.hunter_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.hunter);
     			break;
     		case 4:
-    			vh.ivClassIcon.setImageResource(R.drawable.rogue_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.rogue);
     			break;
     		case 5:
-    			vh.ivClassIcon.setImageResource(R.drawable.priest_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.priest);
     			break;
     		case 7:
-    			vh.ivClassIcon.setImageResource(R.drawable.shaman_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.shaman);
     			break;
     		case 8:
-    			vh.ivClassIcon.setImageResource(R.drawable.mage_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.mage);
     			break;
     		case 9:
-    			vh.ivClassIcon.setImageResource(R.drawable.warlock_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.warlock);
     			break;
     		case 11:
-    			vh.ivClassIcon.setImageResource(R.drawable.druid_icon);
+    			vh.ivClassIcon.setImageResource(R.drawable.druid);
     			break;
     		default:
     			vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);

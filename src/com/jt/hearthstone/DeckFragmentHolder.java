@@ -9,18 +9,13 @@ import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
-import android.R.integer;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
@@ -28,9 +23,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.GridView;
-import android.widget.ListView;
 
 public class DeckFragmentHolder extends ActionBarActivity {
 
@@ -53,7 +45,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		myPager = (ViewPager) findViewById(R.id.pager);
 
 		position = getIntent().getIntExtra("position", 0);
-		cardList = getDeck(listDecks.get(position));
+		cardList = (List<Cards>) getDeck(listDecks.get(position));
 
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 		CardListFragment fragZero = new CardListFragment();
@@ -69,6 +61,41 @@ public class DeckFragmentHolder extends ActionBarActivity {
 				getSupportFragmentManager(), fragments);
 		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
+		setTitle(getIntent().getStringExtra("name"));
+		List<Integer> deckClasses = (List<Integer>) getDeck("deckclasses");
+		switch (deckClasses.get(position)) {
+		case 0:
+			getSupportActionBar().setIcon(R.drawable.druid);
+			break;
+		case 1:
+			getSupportActionBar().setIcon(R.drawable.hunter);
+			break;
+		case 2:
+			getSupportActionBar().setIcon(R.drawable.mage);
+			break;
+		case 3:
+			getSupportActionBar().setIcon(R.drawable.paladin);
+			break;
+		case 4:
+			getSupportActionBar().setIcon(R.drawable.priest);
+			break;
+		case 5:
+			getSupportActionBar().setIcon(R.drawable.rogue);
+			break;
+		case 6:
+			getSupportActionBar().setIcon(R.drawable.shaman);
+			break;
+		case 7:
+			getSupportActionBar().setIcon(R.drawable.warlock);
+			break;
+		case 8:
+			getSupportActionBar().setIcon(R.drawable.warrior);
+			break;
+		}
+		
+//		if (DeckSelector.deckClasses.get(position) == 0) {
+//			
+//		}
 	}
 
 	@Override
@@ -152,9 +179,9 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 	}
 
-	private List<Cards> getDeck(String deckName) {
+	private <T> List<?> getDeck(String deckName) {
 		InputStream instream = null;
-		List<Cards> list = null;
+		List<?> list = null;
 		try {
 			instream = openFileInput(deckName);
 		} catch (FileNotFoundException e) {
@@ -165,7 +192,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					list = (List<Cards>) objStream.readObject();
+					list = (List<?>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -178,7 +205,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 					e.printStackTrace();
 				}
 			} else {
-				list = new ArrayList<Cards>();
+				list = new ArrayList<T>();
 			}
 		} catch (StreamCorruptedException e) {
 			// TODO Auto-generated catch block

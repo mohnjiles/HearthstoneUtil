@@ -21,4 +21,9 @@
     <dimen name="range_tick_label_font_size">15dp</dimen>
     <dimen name="domain_tick_label_font_size">15dp</dimen>
     <dimen name="legend_text_font_size">20dp</dimen>
+    <dimen name="card_name_top_padding">16dp</dimen>
+    <dimen name="card_name_bottom_padding">-24dp</dimen>
+    <dimen name="card_name_bottom_padding_portrait">-16dp</dimen>
+    <dimen name="class_name_top_padding">36dp</dimen>
+    <dimen name="class_name_top_padding_portrait">0dp</dimen>
 </resources>

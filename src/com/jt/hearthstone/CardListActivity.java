@@ -191,7 +191,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Create a new instance of our ImageAdapter class
 		adapter = new ImageAdapter(this, cardList);
-		adapter2 = new CustomListAdapter(this);
+		adapter2 = new CustomListAdapter(this, cardList);
 
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
@@ -264,8 +264,8 @@ public class CardListActivity extends ActionBarActivity {
 
 				});
 		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
-				cardList, cards, grid, listCards, adapter, adapter2);
-		spinner.setOnItemSelectedListener(listener);
+				cardList, cards, grid, listCards, adapter, adapter2, DeckSelector.deckClasses);
+		//spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
 		// Get the decks from the file
@@ -282,7 +282,7 @@ public class CardListActivity extends ActionBarActivity {
 		mSearchView
 				.setOnQueryTextListener(new CustomSearchListener(cardList,
 						cards, grid, listCards, adapter, adapter2, searchItem,
-						spinner));
+						spinner, DeckSelector.deckClasses));
 		return true;
 	}
 

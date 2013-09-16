@@ -6,7 +6,7 @@
     <dimen name="card_icon">450dp</dimen>
     <dimen name="card_icon_width">300dp</dimen>
     <dimen name="card_icon_padding_left">-48dp</dimen>
-    <dimen name="card_icon_padding_right">-40dp</dimen>
+    <dimen name="card_icon_padding_right">-20dp</dimen>
     <dimen name="card_name_padding">48dp</dimen>
     <dimen name="card_name_text_size">16sp</dimen>
     <dimen name="card_stats_text_size">14sp</dimen>
@@ -14,5 +14,10 @@
     <dimen name="card_stats_image_size">30dp</dimen>
     <dimen name="grid_column_width">200dp</dimen>
     <dimen name="spinner_size">150dp</dimen>
+    <dimen name="card_name_top_padding">24dp</dimen>
+    <dimen name="card_name_bottom_padding">-36dp</dimen>
+    <dimen name="card_name_bottom_padding_portrait">-24dp</dimen>
+    <dimen name="class_name_top_padding">48dp</dimen>
+    <dimen name="class_name_top_padding_portrait">0dp</dimen>
 
 </resources>

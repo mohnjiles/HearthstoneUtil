@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
+import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,6 +29,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -44,6 +46,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -53,6 +56,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -69,6 +73,7 @@ public class CardListFragment extends Fragment {
 	PopupWindow pWindow;
 	public static CheckBox includeNeutralCards;
 	public static CheckBox cbReverse;
+	List<Integer> deckClasses = DeckSelector.deckClasses;
 	TextView tvCardName;
 	TextView tvType;
 	TextView tvQuality;
@@ -76,7 +81,7 @@ public class CardListFragment extends Fragment {
 	TextView tvCrafted;
 	TextView tvClass;
 	ImageView ivCardImage;
-	
+
 	ListView lvDeck = DeckActivity.lvDeck;
 	GridView gvDeck = DeckActivity.gvDeck;
 
@@ -104,8 +109,8 @@ public class CardListFragment extends Fragment {
 	public static ArrayList<String> deckList;
 	private int position;
 	private int menuItemIndex;
-	private int deckListPos;
-	
+	public static int deckListPos;
+
 	com.jt.hearthstone.DeckFragmentHolder.FragmentAdapter fragAdapter = DeckFragmentHolder.adapter;
 
 	public static List<Cards> deckOne;
@@ -134,7 +139,8 @@ public class CardListFragment extends Fragment {
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 
-		View V = inflater.inflate(R.layout.activity_card_list, container, false);
+		View V = inflater
+				.inflate(R.layout.activity_card_list, container, false);
 
 		// Get views with ButterKnife
 		grid = findById(V, R.id.gvDeck);
@@ -145,13 +151,13 @@ public class CardListFragment extends Fragment {
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
 		registerForContextMenu(listCards);
-		
+
 		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
 
 		Intent intent = getActivity().getIntent();
 		deckListPos = intent.getIntExtra("position", 0);
-		
+
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
@@ -180,8 +186,6 @@ public class CardListFragment extends Fragment {
 			}
 		});
 
-		
-
 		// Set the spinner (drop down selector) to listen to our custom listener
 
 		// Sort the card list with our own custom Comparator
@@ -190,7 +194,7 @@ public class CardListFragment extends Fragment {
 
 		// Create a new instance of our ImageAdapter class
 		adapter = new ImageAdapter(getActivity(), cardList);
-		adapter2 = new CustomListAdapter(getActivity());
+		adapter2 = new CustomListAdapter(getActivity(), cardList);
 
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
@@ -205,10 +209,18 @@ public class CardListFragment extends Fragment {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
-						if (isChecked && spinner.getSelectedItemPosition() != 0) {
+						if (isChecked) {
+							String mechanic = spinnerMechanic.getSelectedItem().toString();
 							for (Cards card : cards) {
-								if (card.getClasss() == null) {
+								if (card.getClasss() == null
+										&& !mechanic.equals("Any") && card.getDescription() != null 
+												&& card.getDescription().contains(mechanic)) {
+									
 									cardList.add(card);
+								} else {
+									if(card.getClasss() == null && mechanic.equals("Any")) {
+										cardList.add(card);
+									}
 								}
 							}
 
@@ -226,8 +238,7 @@ public class CardListFragment extends Fragment {
 							// other app?????
 						} else {
 							for (Cards card : cards) {
-								if (card.getClasss() == null
-										&& spinner.getSelectedItemPosition() != 0) {
+								if (card.getClasss() == null) {
 									cardList.remove(card);
 								}
 							}
@@ -262,16 +273,30 @@ public class CardListFragment extends Fragment {
 					}
 
 				});
+		deckClasses = (List<Integer>) getDeck("deckclasses");
 		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
-				cardList, cards, grid, listCards, adapter, adapter2);
-		spinner.setOnItemSelectedListener(listener);
+				cardList, cards, grid, listCards, adapter, adapter2,
+				deckClasses);
+		// spinner.setOnItemSelectedListener(listener);
+		String[] mechanicNames = getResources().getStringArray(R.array.Mechanic);
+		String[] sortNames = getResources().getStringArray(R.array.Sort);
+		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(),
+		         R.layout.spinner_row, R.id.name, sortNames);
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+		
+		ArrayAdapter<String> spinSortAdapter = new ArrayAdapter<String>(getActivity(),
+		         R.layout.spinner_row, R.id.name, mechanicNames);
+		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+		
+		spinnerSort.setAdapter(spinAdapter);
 		spinnerSort.setOnItemSelectedListener(listener);
+		spinnerMechanic.setAdapter(spinSortAdapter);
 		spinnerMechanic.setOnItemSelectedListener(listener);
 		setHasOptionsMenu(true);
 		return V;
 
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -286,7 +311,7 @@ public class CardListFragment extends Fragment {
 		mSearchView
 				.setOnQueryTextListener(new CustomSearchListener(cardList,
 						cards, grid, listCards, adapter, adapter2, searchItem,
-						spinner));
+						spinner, DeckSelector.deckClasses));
 	}
 
 	@Override
@@ -295,8 +320,7 @@ public class CardListFragment extends Fragment {
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
-			startActivity(new Intent(getActivity(),
-					SettingsActivity.class));
+			startActivity(new Intent(getActivity(), SettingsActivity.class));
 			return true;
 		case R.id.action_switch:
 			if (isGrid) {
@@ -326,7 +350,8 @@ public class CardListFragment extends Fragment {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
-			menu.add(1337, 0, 0, "Add to deck \"" + deckList.get(deckListPos) + "\"");
+			menu.add(1337, 0, 0, "Add to deck \"" + deckList.get(deckListPos)
+					+ "\"");
 		}
 	}
 
@@ -338,7 +363,7 @@ public class CardListFragment extends Fragment {
 			DeckFragmentHolder.adapter.notifyDataSetChanged();
 			return super.onContextItemSelected(item);
 		}
-		
+
 		return super.onContextItemSelected(item);
 	}
 
@@ -347,13 +372,13 @@ public class CardListFragment extends Fragment {
 			// get screen size of device
 			int screenSize = getResources().getConfiguration().screenLayout
 					& Configuration.SCREENLAYOUT_SIZE_MASK;
-	
+
 			// convert px to dips for multiple screens
 			int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
 							.getDisplayMetrics());
 			int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 460, getResources()
 							.getDisplayMetrics());
 			int dipsWidthLandscape_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
@@ -365,10 +390,10 @@ public class CardListFragment extends Fragment {
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
 							.getDisplayMetrics());
 			int dipsHeightPortrait_Large = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 600, getResources()
 							.getDisplayMetrics());
 			int dipsWidthLandscape_Large = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 650, getResources()
 							.getDisplayMetrics());
 			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
@@ -385,22 +410,23 @@ public class CardListFragment extends Fragment {
 			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
 							.getDisplayMetrics());
-	
+
 			// We need to get the instance of the LayoutInflater,
 			// Gotta give the PopupWindow a layout
-			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getActivity()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
-	
+
 			// make different popupWindows for different screen sizes
 			switch (screenSize) {
-	
+
 			// XLARGE = 10"+ Tablets usually
 			case Configuration.SCREENLAYOUT_SIZE_XLARGE:
 				doSomeWindow(layout, dipsWidthLandscape_Large,
 						dipsHeightLandscape_Large, dipsWidthPortrait_Large,
 						dipsHeightPortrait_Large);
 				break;
-	
+
 			// LARGE = 7"+ Tablets usually, maybe some giant phones
 			case Configuration.SCREENLAYOUT_SIZE_LARGE:
 				doSomeWindow(layout, // View of the popupWindow
@@ -409,7 +435,7 @@ public class CardListFragment extends Fragment {
 						dipsWidthPortrait_Large, // Width for portrait
 						dipsHeightPortrait_Large); // Height for portrait
 				break;
-	
+
 			// NORMAL = 95% of all phones
 			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
 				doSomeWindow(layout, dipsWidthLandscape_Normal,
@@ -422,27 +448,27 @@ public class CardListFragment extends Fragment {
 						dipsHeightPortrait_Small);
 				break;
 			}
-	
+
 			// Get card image
 			String url = "http://jt.comyr.com/images/"
 					+ cardList.get(position).getName().replace(" ", "%20")
 							.replace(":", "") + ".png";
 			loader.displayImage(url, ivCardImage);
-	
+
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
-	
+
 			int classs = 0;
 			if (cardList.get(position).getClasss() != null) {
 				classs = cardList.get(position).getClasss().intValue();
 			}
-	
+
 			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
 			int set = cardList.get(position).getSet().intValue();
-	
+
 			tvCrafted.setText(cardList.get(position).getDescription());
-	
+
 			if (classs == Classes.DRUID.getValue()) {
 				int druid = getResources().getColor(R.color.druid);
 				tvClass.setTextColor(druid);
@@ -483,7 +509,7 @@ public class CardListFragment extends Fragment {
 				tvClass.setTextColor(Color.GREEN);
 				tvClass.setText("All Classes");
 			}
-	
+
 			// Set the type (minion, ability, etc)
 			switch (type) {
 			case 3:
@@ -505,7 +531,7 @@ public class CardListFragment extends Fragment {
 				tvType.setVisibility(View.GONE);
 				break;
 			}
-	
+
 			// Set rarity of the card
 			switch (quality) {
 			case 0:
@@ -535,7 +561,7 @@ public class CardListFragment extends Fragment {
 				tvQuality.setVisibility(View.GONE); // Hides it.
 				break;
 			}
-	
+
 			switch (set) {
 			case 2:
 				tvSet.setText("Set: Basic");
@@ -550,7 +576,7 @@ public class CardListFragment extends Fragment {
 				tvSet.setText("Set: Missions");
 				break;
 			}
-	
+
 			// If we ran in to a problem
 		} catch (Exception e) {
 			Log.w("PopupWindow",
@@ -563,7 +589,7 @@ public class CardListFragment extends Fragment {
 	@SuppressWarnings("deprecation")
 	private void doSomeWindow(View layout, int widthLandscape,
 			int heightLandscape, int widthPortrait, int heightPortrait) {
-	
+
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			pWindow = new PopupWindow(layout, widthLandscape, heightLandscape,
 					true);
@@ -571,7 +597,7 @@ public class CardListFragment extends Fragment {
 			pWindow.setOutsideTouchable(true);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
-	
+
 		} else {
 			pWindow = new PopupWindow(layout, widthPortrait, heightPortrait,
 					true);
@@ -579,9 +605,9 @@ public class CardListFragment extends Fragment {
 			pWindow.setOutsideTouchable(true);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
-	
+
 		}
-	
+
 		ivCardImage = findById(pWindow.getContentView(), R.id.ivCardImages);
 		tvCardName = findById(pWindow.getContentView(), R.id.tvCardName);
 		tvClass = findById(pWindow.getContentView(), R.id.tvClass);
@@ -591,9 +617,9 @@ public class CardListFragment extends Fragment {
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
 	}
 
-	private List<Cards> getDeck(String deckName) {
+	private List<?> getDeck(String deckName) {
 		InputStream instream = null;
-		List<Cards> list = null;
+		List<?> list = null;
 		try {
 			instream = getActivity().openFileInput(deckName);
 		} catch (FileNotFoundException e) {
@@ -605,7 +631,7 @@ public class CardListFragment extends Fragment {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					list = (List<Cards>) objStream.readObject();
+					list = (List<?>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -649,17 +675,53 @@ public class CardListFragment extends Fragment {
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
 		if (getDeck(deckList.get(menuItemIndex)) != null) {
-			list = getDeck(deckList.get(menuItemIndex));
+			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
-
-		list.add(cardList.get(position));
+		if (list.size() < 30) {
+			list.add(cardList.get(position));
+		} else {
+			Toast.makeText(getActivity(), "Cannot have more than 30 cards in the deck", Toast.LENGTH_SHORT).show();
+		}
 		saveDeck(deckList.get(menuItemIndex), list);
 	}
-	
+
 	private void getDeckList() {
 		InputStream instream = null;
+		try {
+			instream = getActivity().openFileInput("deckclasses");
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					deckClasses = (ArrayList<Integer>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// Second one
 		try {
 			instream = getActivity().openFileInput("decklist");
 		} catch (FileNotFoundException e) {
@@ -692,7 +754,7 @@ public class CardListFragment extends Fragment {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void setupCardList() {
 		Gson gson = new Gson();
 		InputStream is = getResources().openRawResource(R.raw.cards);
@@ -725,15 +787,144 @@ public class CardListFragment extends Fragment {
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
 		// Load default card list
+		deckClasses = (List<Integer>) getDeck("deckclasses");
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
-				cardList.add(card);
+				switch (deckClasses.get(deckListPos)) {
+				case 0:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.DRUID
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 1:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.HUNTER
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 2:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.MAGE
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 3:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.PALADIN
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 4:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.PRIEST
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 5:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.ROGUE
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 6:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.SHAMAN
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 7:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.WARLOCK
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 8:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.WARRIOR
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				}
 			}
 		} else {
 			cardList.clear();
 			for (Cards card : cards) {
-				cardList.add(card);
+				switch (deckClasses.get(deckListPos)) {
+				case 0:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.DRUID
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 1:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.HUNTER
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 2:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.MAGE
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 3:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.PALADIN
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 4:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.PRIEST
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 5:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.ROGUE
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 6:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.SHAMAN
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 7:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.WARLOCK
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				case 8:
+					if (card.getClasss() != null
+							&& card.getClasss().intValue() == Classes.WARRIOR
+									.getValue()) {
+						cardList.add(card);
+					}
+					break;
+				}
 			}
 		}
 	}

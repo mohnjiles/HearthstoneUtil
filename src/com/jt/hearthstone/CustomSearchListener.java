@@ -2,6 +2,7 @@ package com.jt.hearthstone;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.R.integer;
 import android.support.v4.view.MenuItemCompat;
@@ -25,12 +26,14 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 	private ListView listCards;
 	private CheckBox cbGenerics = CardListFragment.includeNeutralCards;
 	private CheckBox cbReverse = CardListFragment.cbReverse;
+	private List<Integer> deckClasses;
+	private int deckListPos = CardListFragment.deckListPos;
 	int position = CustomOnItemSelectedListener.position;
 	boolean reverse = CardListFragment.reverse;
 	
 	public CustomSearchListener(ArrayList<Cards> cardList, Cards[] cards, GridView grid, 
 			ListView listCards, ImageAdapter adapter, CustomListAdapter adapter2, 
-			MenuItem searchItem, Spinner spinner) {
+			MenuItem searchItem, Spinner spinner, List<Integer> deckClasses) {
 		this.cardList = cardList;
 		this.cards = cards;
 		this.grid = grid;
@@ -39,41 +42,39 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 		this.spinner = spinner;
 		this.listCards = listCards;
 		this.adapter2 = adapter2;
+		this.deckClasses = deckClasses;
 	}
 	
     public boolean onQueryTextChange(String newText) {
     	if (!cardList.isEmpty()) {
 			cardList.clear();
 		}
-    	switch (spinner.getSelectedItemPosition()) {
+    	switch (deckClasses.get(deckListPos)) {
     	case 0:
-    		setCardList(newText);
-    		return false;
-    	case 1:
     		setCardList(newText, Classes.DRUID);
     		return false;
-    	case 2:
+    	case 1:
     		setCardList(newText, Classes.HUNTER);
     		return false;
-    	case 3:
+    	case 2:
     		setCardList(newText, Classes.MAGE);
     		return false;
-    	case 4:
+    	case 3:
     		setCardList(newText, Classes.PALADIN);
     		return false;
-    	case 5:
+    	case 4:
     		setCardList(newText, Classes.PRIEST);
     		return false;
-    	case 6:
+    	case 5:
     		setCardList(newText, Classes.ROGUE);
     		return false;
-    	case 7:
+    	case 6:
     		setCardList(newText, Classes.SHAMAN);
     		return false;
-    	case 8:
+    	case 7:
     		setCardList(newText, Classes.WARLOCK);
     		return false;
-    	case 9:
+    	case 8:
     		setCardList(newText, Classes.WARRIOR);
     		return false;
         default:

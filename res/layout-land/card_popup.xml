@@ -12,10 +12,10 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/ivCardImages"
-        android:layout_marginBottom="-24dp"
+        android:layout_marginBottom="@dimen/card_name_bottom_padding"
         android:layout_marginLeft="@dimen/card_name_padding"
         android:layout_marginRight="@dimen/card_name_padding"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="@dimen/card_name_top_padding"
         android:gravity="center"
         android:text="TextView"
         android:textColor="@color/white"
@@ -46,20 +46,8 @@
         android:layout_height="@dimen/card_icon"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvCardName"
-        android:layout_marginLeft="@dimen/card_icon_padding_left"
         android:layout_marginRight="@dimen/card_icon_padding_right"
         android:src="@drawable/cards" />
-
-    <TextView
-        android:id="@+id/tvClass"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ivCardImages"
-        android:layout_marginTop="24dp"
-        android:layout_toRightOf="@+id/ivCardImages"
-        android:text="Class"
-        android:textColor="#FFFFFF"
-        android:textSize="16sp" />
 
     <TextView
         android:id="@+id/tvSet"
@@ -83,5 +71,16 @@
         android:gravity="center"
         android:text="Crafted"
         android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tvClass"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/tvCardName"
+        android:layout_marginTop="@dimen/class_name_top_padding"
+        android:layout_toRightOf="@+id/ivCardImages"
+        android:text="Class"
+        android:textColor="#FFFFFF"
+        android:textSize="16sp" />
 
 </RelativeLayout>

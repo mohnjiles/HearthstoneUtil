@@ -9,6 +9,9 @@
      	<Preference android:title="Clear Caches"
                 android:key="button"
                 android:summary="Clears both disc and memory cache"/>
+     	<Preference android:title="Delete all decks"
+                android:key="delete"
+                android:summary="Deletes all decks from app and disk"/>
     </PreferenceCategory>
     
 </PreferenceScreen>

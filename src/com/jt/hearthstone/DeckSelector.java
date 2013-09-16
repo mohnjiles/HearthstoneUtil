@@ -36,6 +36,7 @@ public class DeckSelector extends ActionBarActivity {
 
 	ListView lvDecks;
 	public static ArrayList<String> listDecks = new ArrayList<String>();
+	public static ArrayList<Integer> deckClasses;
 	CustomDeckAdapter adapter;
 
 	List<Cards> deckOne = CardListActivity.deckOne;
@@ -60,6 +61,7 @@ public class DeckSelector extends ActionBarActivity {
 		lvDecks = findById(this, R.id.lvDecks);
 		// listDecks.add("Test");
 		registerForContextMenu(lvDecks);
+		deckClasses = (ArrayList<Integer>) getDeck("deckclasses");
 
 		InputStream instream = null;
 		try {
@@ -93,7 +95,7 @@ public class DeckSelector extends ActionBarActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new CustomDeckAdapter(this, listDecks);
+		adapter = new CustomDeckAdapter(this, listDecks, deckClasses);
 		lvDecks.setAdapter(adapter);
 		lvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
@@ -140,7 +142,9 @@ public class DeckSelector extends ActionBarActivity {
 			// the dialog_layout.xml file.
 			final EditText nameBox = (EditText) layout
 					.findViewById(R.id.etDeckName);
-			
+			final Spinner spinner = (Spinner) layout
+					.findViewById(R.id.spinClass);
+
 			// Building dialog
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setView(layout);
@@ -150,6 +154,7 @@ public class DeckSelector extends ActionBarActivity {
 						public void onClick(DialogInterface dialog, int which) {
 							dialog.dismiss();
 							listDecks.add(nameBox.getText().toString());
+							deckClasses.add(spinner.getSelectedItemPosition());
 							FileOutputStream fos = null;
 							try {
 								fos = openFileOutput("decklist",
@@ -162,6 +167,23 @@ public class DeckSelector extends ActionBarActivity {
 							try {
 								oos = new ObjectOutputStream(fos);
 								oos.writeObject(listDecks);
+								oos.close();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							/*************** save corresponding class number **********/
+							try {
+								fos = openFileOutput("deckclasses",
+										Context.MODE_PRIVATE);
+							} catch (FileNotFoundException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+
+							try {
+								oos = new ObjectOutputStream(fos);
+								oos.writeObject(deckClasses);
 								oos.close();
 							} catch (IOException e1) {
 								// TODO Auto-generated catch block
@@ -204,15 +226,23 @@ public class DeckSelector extends ActionBarActivity {
 		switch (position) {
 		case 0:
 			removeDeck(deckOne, position);
+			deckClasses.remove(position);
+			saveDeck("deckclasses", deckClasses);
 			break;
 		case 1:
 			removeDeck(deckTwo, position);
+			deckClasses.remove(position);
+			saveDeck("deckclasses", deckClasses);
 			break;
 		case 2:
 			removeDeck(deckThree, position);
+			deckClasses.remove(position);
+			saveDeck("deckclasses", deckClasses);
 			break;
 		case 3:
 			removeDeck(deckFour, position);
+			deckClasses.remove(position);
+			saveDeck("deckclasses", deckClasses);
 			break;
 		case 4:
 			removeDeck(deckFive, position);
@@ -233,7 +263,7 @@ public class DeckSelector extends ActionBarActivity {
 			removeDeck(deckTen, position);
 			break;
 		}
-		
+
 		listDecks.remove(position);
 		saveDeck("decklist", listDecks);
 		adapter.notifyDataSetChanged();
@@ -260,9 +290,9 @@ public class DeckSelector extends ActionBarActivity {
 		}
 	}
 
-	private List<Cards> getDeck(String deckName) {
+	private List<?> getDeck(String deckName) {
 		InputStream instream = null;
-		List<Cards> list = new ArrayList<Cards>();
+		List<?> list = new ArrayList<Cards>();
 		try {
 			instream = openFileInput(deckName);
 		} catch (FileNotFoundException e) {
@@ -274,7 +304,7 @@ public class DeckSelector extends ActionBarActivity {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					list = (List<Cards>) objStream.readObject();
+					list = (List<?>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -301,10 +331,11 @@ public class DeckSelector extends ActionBarActivity {
 
 	private void removeDeck(List<Cards> list, int position) {
 		try {
-			list = getDeck(listDecks.get(position));
+			list = (List<Cards>) getDeck(listDecks.get(position));
 			if (list != null) {
 				list.clear();
 				saveDeck(listDecks.get(position), list);
+				this.deleteFile(listDecks.get(position));
 			}
 		} catch (NullPointerException e1) {
 			// TODO Auto-generated catch block

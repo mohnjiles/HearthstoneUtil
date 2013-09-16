@@ -12,7 +12,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
+        android:layout_below="@+id/tvNumCards"
         android:background="#444444" >
+
     </ListView>
 
     <GridView
@@ -20,7 +22,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
+        android:layout_below="@+id/tvNumCards"
         android:numColumns="auto_fit" >
+
     </GridView>
+
+    <TextView
+        android:id="@+id/tvNumCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        android:text="30 / 30"
+        android:textColor="#FFFFFF" />
 
 </RelativeLayout>

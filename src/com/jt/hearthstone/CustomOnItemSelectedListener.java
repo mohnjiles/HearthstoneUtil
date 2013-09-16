@@ -2,6 +2,7 @@ package com.jt.hearthstone;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.view.View;
 import android.widget.AdapterView;
@@ -22,18 +23,21 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	private Spinner spinnerSort = CardListFragment.spinnerSort;
 	private Spinner spinnerClass = CardListFragment.spinner;
 	private ListView listCards;
+	private List<Integer> deckClasses;
 	public static int position = 0;
 	private boolean reverse = CardListActivity.reverse;
 
 	public CustomOnItemSelectedListener(ArrayList<Cards> cardList,
 			Cards[] cards, GridView grid, ListView listCards,
-			ImageAdapter adapter, CustomListAdapter adapter2) {
+			ImageAdapter adapter, CustomListAdapter adapter2,
+			List<Integer> classes) {
 		this.cardList = cardList;
 		this.cards = cards;
 		this.grid = grid;
 		this.adapter = adapter;
 		this.listCards = listCards;
 		this.adapter2 = adapter2;
+		this.deckClasses = classes;
 
 	}
 
@@ -93,14 +97,17 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 			listCards.setAdapter(adapter2);
 
 		} else if (spinner.getId() == R.id.spinnerMechanic) {
-			switch (spinnerClass.getSelectedItemPosition()) {
+			switch (deckClasses.get(CardListFragment.deckListPos)) {
 			case 0:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList();
+					setCardList(Classes.DRUID, "");
 				} else {
 					cardList.clear();
 					for (Cards card : cards) {
 						if (card.getDescription() != null
+								&& card.getClasss() != null
+								&& card.getClasss().intValue() == Classes.DRUID
+										.getValue()
 								&& card.getDescription().contains(
 										spinner.getSelectedItem().toString())) {
 							cardList.add(card);
@@ -119,41 +126,139 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 				break;
 			case 1:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList(Classes.DRUID);
+					setCardList(Classes.HUNTER, "");
 				} else {
-					setCardList(Classes.DRUID, spinner.getSelectedItem().toString());
+					setCardList(Classes.HUNTER, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 2:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList(Classes.HUNTER);
+					setCardList(Classes.MAGE, "");
 				} else {
-					setCardList(Classes.HUNTER, spinner.getSelectedItem().toString());
+					setCardList(Classes.MAGE, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 3:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList(Classes.MAGE);
+					setCardList(Classes.PALADIN, "");
 				} else {
-					setCardList(Classes.MAGE, spinner.getSelectedItem().toString());
+					setCardList(Classes.PALADIN, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 4:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList(Classes.PALADIN);
+					setCardList(Classes.PRIEST, "");
 				} else {
-					setCardList(Classes.PALADIN, spinner.getSelectedItem().toString());
+					setCardList(Classes.PRIEST, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 5:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
-					setCardList(Classes.PRIEST);
+					setCardList(Classes.ROGUE, "");
 				} else {
-					setCardList(Classes.PRIEST, spinner.getSelectedItem().toString());
+					setCardList(Classes.ROGUE, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
-
+			case 6:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.SHAMAN, "");
+				} else {
+					setCardList(Classes.SHAMAN, spinner.getSelectedItem()
+							.toString());
+				}
+				break;
+			case 7:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.WARLOCK, "");
+				} else {
+					setCardList(Classes.WARLOCK, spinner.getSelectedItem()
+							.toString());
+				}
+				break;
+			case 8:
+				if (spinner.getSelectedItem().toString().equals("Any")) {
+					setCardList(Classes.WARRIOR, "");
+				} else {
+					setCardList(Classes.WARRIOR, spinner.getSelectedItem()
+							.toString());
+				}
+				break;
 			}
+
+			// switch (spinnerClass.getSelectedItemPosition()) {
+			// case 0:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList();
+			// } else {
+			// cardList.clear();
+			// for (Cards card : cards) {
+			// if (card.getDescription() != null
+			// && card.getClasss() != null
+			// && deckClasses.get(position) == Classes.DRUID
+			// .getValue()
+			// && card.getDescription().contains(
+			// spinner.getSelectedItem().toString())) {
+			// cardList.add(card);
+			// }
+			// }
+			// Collections.sort(
+			// cardList,
+			// new CardComparator(spinnerSort
+			// .getSelectedItemPosition(), cbReverse
+			// .isChecked()));
+			// adapter.notifyDataSetChanged();
+			// adapter2.notifyDataSetChanged();
+			// grid.setAdapter(adapter);
+			// listCards.setAdapter(adapter2);
+			// }
+			// break;
+			// case 1:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList(Classes.DRUID);
+			// } else {
+			// setCardList(Classes.DRUID, spinner.getSelectedItem()
+			// .toString());
+			// }
+			// break;
+			// case 2:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList(Classes.HUNTER);
+			// } else {
+			// setCardList(Classes.HUNTER, spinner.getSelectedItem()
+			// .toString());
+			// }
+			// break;
+			// case 3:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList(Classes.MAGE);
+			// } else {
+			// setCardList(Classes.MAGE, spinner.getSelectedItem()
+			// .toString());
+			// }
+			// break;
+			// case 4:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList(Classes.PALADIN);
+			// } else {
+			// setCardList(Classes.PALADIN, spinner.getSelectedItem()
+			// .toString());
+			// }
+			// break;
+			// case 5:
+			// if (spinner.getSelectedItem().toString().equals("Any")) {
+			// setCardList(Classes.PRIEST);
+			// } else {
+			// setCardList(Classes.PRIEST, spinner.getSelectedItem()
+			// .toString());
+			// }
+			// break;
+			//
+			// }
 
 		}
 
@@ -171,18 +276,24 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	private void setCardList(Classes classes, String selectedItem) {
 		cardList.clear();
 		for (Cards card : cards) {
-			if (card.getDescription() != null
-					&& card.getClasss() != null
+			if (card.getDescription() != null && card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getDescription().contains(selectedItem)
 					&& !card.getName().equals(classes.getHeroName())) {
 				cardList.add(card);
 			}
+			if (CardListFragment.includeNeutralCards.isChecked()) {
+				if (card.getClasss() == null && card.getDescription() != null
+						&& card.getDescription().contains(selectedItem)
+						&& !card.getName().equals(classes.getHeroName())) {
+					cardList.add(card);
+				}
+			}
 		}
 		Collections.sort(cardList,
 				new CardComparator(spinnerSort.getSelectedItemPosition(),
 						cbReverse.isChecked()));
-		
+
 		adapter.notifyDataSetChanged();
 		adapter2.notifyDataSetChanged();
 		grid.setAdapter(adapter);
@@ -236,7 +347,12 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 					&& !name.equals(classArray[5].getHeroName())
 					&& !name.equals(classArray[6].getHeroName())
 					&& !name.equals(classArray[7].getHeroName())
-					&& !name.equals(classArray[8].getHeroName())) {
+					&& !name.equals(classArray[8].getHeroName())
+					&& card.getClasss() != null
+					&& card.getClasss().intValue() == Classes.DRUID.getValue()) {
+				cardList.add(card);
+			} else if (CardListFragment.includeNeutralCards.isChecked()
+					&& card.getClasss() == null) {
 				cardList.add(card);
 			}
 		}
