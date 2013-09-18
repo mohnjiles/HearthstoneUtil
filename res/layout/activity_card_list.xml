@@ -108,4 +108,37 @@
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
+    <RelativeLayout
+        android:id="@+id/rlPopup"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="#BC000000" >
+
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/press_and_hold" />
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/imageView2"
+            android:layout_centerHorizontal="true"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:gravity="center"
+            android:text="Press and hold a card to add it to the deck"
+            android:textColor="#FFFFFF"
+            android:textSize="20sp" />
+        
+    </RelativeLayout>
+
+    
+
 </RelativeLayout>
