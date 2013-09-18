@@ -24,54 +24,60 @@ public class InfoFragment extends Fragment {
 	ImageView ivFreeCardFour;
 	ImageView ivFreeCardFive;
 	int position;
-	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View V = inflater.inflate(R.layout.info_fragment, container, false);
-		
+
 		position = getActivity().getIntent().getIntExtra("position", 0);
-	
+
 		ivHeroPower = (ImageView) V.findViewById(R.id.ivHeroPower);
-		ivFreeCardOne = (ImageView) V.findViewById(R.id.ivFreeCardOne);
-		ivFreeCardTwo = (ImageView) V.findViewById(R.id.ivFreeCardTwo);
-		ivFreeCardThree = (ImageView) V.findViewById(R.id.ivFreeCardThree);
-		ivFreeCardFour = (ImageView) V.findViewById(R.id.ivFreeCardFour);
-		ivFreeCardFive = (ImageView) V.findViewById(R.id.ivFreeCardFive);
-		
-		
+
 		return V;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		DisplayImageOptions options = new DisplayImageOptions.Builder()
-        .showStubImage(R.drawable.ic_launcher)
-        .cacheInMemory(true)
-        .cacheOnDisc(true)
-        .build();
-		loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
-		
+				.showStubImage(R.drawable.ic_launcher).cacheInMemory(true)
+				.cacheOnDisc(true).build();
+		if (!loader.isInited()) {
+			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
+		}
+
 		switch (position) {
 		case 0: // Druid
-			loader.displayImage("http://jt.comyr.com/images/Shapeshift.png", ivHeroPower, options);
-			loader.displayImage("http://jt.comyr.com/images/Moonfire.png", ivFreeCardOne, options);
-			loader.displayImage("http://jt.comyr.com/images/Savage%20Roar.png", ivFreeCardTwo, options);
-			loader.displayImage("http://jt.comyr.com/images/Swipe.png", ivFreeCardThree, options);
-			loader.displayImage("http://jt.comyr.com/images/Starfire.png", ivFreeCardFour, options);
-			loader.displayImage("http://jt.comyr.com/images/Ironbark%20Protector.png", ivFreeCardFive, options);
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_017.png",
+					ivHeroPower, options);
 			break;
 		case 1: // Hunter
+			loader.displayImage("http://jt.comyr.com/images/big/DS1h_292.png", ivHeroPower, options);
 			break;
 		case 2: // Mage
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_034.png", ivHeroPower, options);
 			break;
-			// TODO: the rest of this
+		case 3: // Paladin
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_101.png", ivHeroPower, options);
+			break;
+		case 4: // Priest
+			loader.displayImage("http://jt.comyr.com/images/big/CS1h_001.png", ivHeroPower, options);
+			break;
+		case 5: // Rogue
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_083b.png", ivHeroPower, options);
+			break;
+		case 6: // Shaman
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_049.png", ivHeroPower, options);
+			break;
+		case 7: // Warlock
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_056.png", ivHeroPower, options);
+			break;
+		case 8: // Warrior
+			loader.displayImage("http://jt.comyr.com/images/big/CS2_102.png", ivHeroPower, options);
+			break;
 		}
-		
-		
-		
+
 	}
 }

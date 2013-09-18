@@ -14,7 +14,6 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/tvNumCards"
         android:background="#444444" >
-
     </ListView>
 
     <GridView
@@ -24,7 +23,6 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvNumCards"
         android:numColumns="auto_fit" >
-
     </GridView>
 
     <TextView
@@ -34,8 +32,20 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
         android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="30 / 30"
         android:textColor="#FFFFFF" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="@dimen/card_icon_width"
+        android:layout_height="@dimen/card_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:padding="16dp"
+        android:src="@drawable/one_finger_swipe_right" />
 
 </RelativeLayout>

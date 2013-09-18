@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Hearthstone Util</string>
+    <string name="app_name">Hearthstone Companion</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_settings">Settings Activity</string>
@@ -67,5 +67,6 @@
     <string name="title_activity_deck">DeckActivity</string>
     <string name="title_activity_chart">ChartActivity</string>
     <string name="title_activity_deck_fragment_holder">DeckFragmentHolder</string>
+    <string name="title_activity_basic_cards_fragment">BasicCardsFragment</string>
 
 </resources>

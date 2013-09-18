@@ -28,6 +28,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -147,6 +148,11 @@ public class DeckSelector extends ActionBarActivity {
 
 			// Building dialog
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			String[] classes = getResources().getStringArray(R.array.ClassesWithoutAny);
+			ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
+			         R.layout.spinner_row, R.id.name, classes);
+			spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+			spinner.setAdapter(spinAdapter);
 			builder.setView(layout);
 			builder.setPositiveButton("Save",
 					new DialogInterface.OnClickListener() {

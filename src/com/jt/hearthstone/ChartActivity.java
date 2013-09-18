@@ -52,12 +52,6 @@ public class ChartActivity extends Fragment {
 		position = getActivity().getIntent().getIntExtra("position", 0);
 		name = getActivity().getIntent().getStringExtra("name");
         layout = (RelativeLayout) V.findViewById(R.id.chartLayout);
-//        if (mChart != null) {
-//        	((ViewGroup) mChart.getParent()).removeView(mChart);
-//        	initChart();
-//            addSampleData();
-//        	layout.addView(mChart);
-//        } 
 
         
         return V;
@@ -73,7 +67,6 @@ public class ChartActivity extends Fragment {
         } else {
         	((ViewGroup) mChart.getParent()).removeView(mChart);
         	mCurrentSeries.clear();
-//        	initChart();
             addSampleData();
         	layout.addView(mChart);
         }

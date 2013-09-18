@@ -6,6 +6,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -70,7 +71,6 @@ public class CustomListAdapter extends BaseAdapter {
     	} else {
     		vh = (ViewHolder)convertView.getTag();
     	}
-    	
     	
 		int quality = cardList.get(position).getQuality().intValue();
 		

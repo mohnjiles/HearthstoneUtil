@@ -29,7 +29,7 @@ public class ClassesActivity extends ActionBarActivity {
 		
 	    classGrid.setOnItemClickListener(new OnItemClickListener() {
 	        public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-	        	// MAKE ME EXPLAIN INTENTS
+	        	
 	            Intent champPage = new Intent(ClassesActivity.this, ClassFragmentHolder.class);
 	            champPage.putExtra("position", position);
 	            startActivity(champPage);

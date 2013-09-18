@@ -17,8 +17,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
+import android.preference.PreferenceCategory;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -31,6 +33,10 @@ public class SettingsActivity extends PreferenceActivity{
 		super.onCreate(savedInstanceState);	
 		setTitle("Hearthstone Util Settings");
 		addPreferencesFromResource(R.xml.settings);
+		
+		CheckBoxPreference mCheckBoxPref = (CheckBoxPreference) findPreference("first_time");
+		PreferenceCategory mCategory = (PreferenceCategory) findPreference("search_category");
+		mCategory.removePreference(mCheckBoxPref);
 		
 		Preference button = (Preference) findPreference("button");
 		Preference button2 = (Preference) findPreference("delete");

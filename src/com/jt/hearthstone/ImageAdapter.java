@@ -46,7 +46,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
-    	url = "http://jt.comyr.com/images/" + cardList.get(position).getName().replace(" ", "%20").replace(":", "") + ".png";
+    	url = "http://jt.comyr.com/images/big/" + cardList.get(position).getImage() + ".png";
     	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
     	// We may eventually need to disable this based on further testing

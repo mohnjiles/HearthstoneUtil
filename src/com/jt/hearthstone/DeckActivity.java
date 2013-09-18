@@ -19,6 +19,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -47,7 +48,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class DeckActivity extends Fragment {
-	
+
 	TextView tvDeckTitle;
 	ArrayList<String> listDecks = DeckSelector.listDecks;
 	public static ListView lvDeck;
@@ -60,6 +61,7 @@ public class DeckActivity extends Fragment {
 	TextView tvClass;
 	TextView tvNumCards;
 	ImageView ivCardImage;
+	ImageView ivSwipe;
 	PopupWindow pWindow;
 	static List<Cards> cardList;
 	int position;
@@ -78,32 +80,38 @@ public class DeckActivity extends Fragment {
 		setHasOptionsMenu(true);
 		Intent intent = getActivity().getIntent();
 		position = intent.getIntExtra("position", 0);
-		
+
 		aBar.setTitle(DeckSelector.listDecks.get(position));
-		
+
 		cardList = getDeck(listDecks.get(position));
 		lvDeck = findById(V, R.id.lvDeck);
 		gvDeck = findById(V, R.id.gvDeck);
 		tvNumCards = findById(V, R.id.tvNumCards);
+		ivSwipe = findById(V, R.id.imageView1);
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
-		
+
 		if (!loader.isInited()) {
 			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		}
-		
-		
+
 		return V;
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
-		tvNumCards.setText("" + cardList.size() + " / 30");
-		
+
+		if (cardList.size() == 0) {
+			tvNumCards.setTextSize(20.0f);
+			tvNumCards.setText("Looks like there's nothing here. Swipe left to get started!");
+		} else {
+			tvNumCards.setText("" + cardList.size() + " / 30");
+			ivSwipe.setVisibility(View.GONE);
+		}
+
 		gvDeck.setVisibility(View.INVISIBLE);
-		
+
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
@@ -117,44 +125,43 @@ public class DeckActivity extends Fragment {
 			}
 		});
 
-		
 		adapter = new DeckListAdapter(getActivity(), position);
 		adapter2 = new ImageAdapter(getActivity(), cardList);
-		
+
 		lvDeck.setAdapter(adapter);
 		gvDeck.setAdapter(adapter2);
 	}
-	
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
-	    ContextMenuInfo menuInfo) {
+			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-	    if (v.getId()==R.id.lvDeck || v.getId() == R.id.gvDeck) {
-	        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
-	        menu.setHeaderTitle(cardList.get(info.position).getName());
-	        pos = info.position;
-	        String menuItems = "Remove card \"" + cardList.get(info.position).getName() + "\"";
-	        menu.add(Menu.FIRST, 0, 0, menuItems);
-	  }
+		if (v.getId() == R.id.lvDeck || v.getId() == R.id.gvDeck) {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+			menu.setHeaderTitle(cardList.get(info.position).getName());
+			pos = info.position;
+			String menuItems = "Remove card \""
+					+ cardList.get(info.position).getName() + "\"";
+			menu.add(Menu.FIRST, 0, 0, menuItems);
+		}
 	}
-	
+
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		if (item.getGroupId() == Menu.FIRST) {
 			cardList.remove(pos);
-		    Log.i("Card Removed", "Card removed, pos: " + pos);
-		    saveDeck(listDecks.get(position), cardList);
-		    Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
-		    adapter.notifyDataSetChanged();
+			Log.i("Card Removed", "Card removed, pos: " + pos);
+			saveDeck(listDecks.get(position), cardList);
+			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+			adapter.notifyDataSetChanged();
 			lvDeck.setAdapter(adapter);
-			
-		    DeckFragmentHolder.adapter.notifyDataSetChanged();
+
+			DeckFragmentHolder.adapter.notifyDataSetChanged();
 		}
-	    
-	    
-	    return super.onContextItemSelected(item);
+
+		return super.onContextItemSelected(item);
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.deck, menu);
@@ -183,50 +190,51 @@ public class DeckActivity extends Fragment {
 			AlertDialog dialog;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setTitle("Remove all cards from this deck?");
-			builder.setPositiveButton("Remove All", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					cardList.clear();
-					saveDeck(listDecks.get(position), cardList);
-					tvNumCards.setText("0 / 30");
-					adapter.notifyDataSetChanged();
-					lvDeck.setAdapter(adapter);	
-				}
-			});
-			builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();
-				}
-			});
+			builder.setPositiveButton("Remove All",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							cardList.clear();
+							saveDeck(listDecks.get(position), cardList);
+							tvNumCards.setText("0 / 30");
+							adapter.notifyDataSetChanged();
+							lvDeck.setAdapter(adapter);
+						}
+					});
+			builder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
 			dialog = builder.create();
 			dialog.show();
 		}
 		return super.onOptionsItemSelected(item);
 	}
 
-	
 	private void saveDeck(String deckName, Object object) {
 		FileOutputStream fos = null;
-		  try {
-			  fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
-		  } catch (FileNotFoundException e1) {
-			  // TODO Auto-generated catch block
-			  e1.printStackTrace();
-		  }
-	      ObjectOutputStream oos;
-		  try {
-			  oos = new ObjectOutputStream(fos);
-			  oos.writeObject(object);
-			  oos.close();
-		  } catch (IOException e1) {
-			  // TODO Auto-generated catch block
-			  e1.printStackTrace();
-		  }
+		try {
+			fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(object);
+			oos.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 	}
-	
+
 	private List<Cards> getDeck(String deckName) {
 		InputStream instream = null;
 		List<Cards> list = null;
@@ -235,7 +243,7 @@ public class DeckActivity extends Fragment {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-		
+
 		try {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
@@ -247,7 +255,7 @@ public class DeckActivity extends Fragment {
 					if (objStream != null) {
 						objStream.close();
 					}
-					
+
 				} catch (ClassNotFoundException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -264,7 +272,7 @@ public class DeckActivity extends Fragment {
 		}
 		return list;
 	}
-	
+
 	private void initiatePopupWindow(int position) {
 		try {
 			// get screen size of device
@@ -311,7 +319,8 @@ public class DeckActivity extends Fragment {
 
 			// We need to get the instance of the LayoutInflater,
 			// Gotta give the PopupWindow a layout
-			LayoutInflater inflater = (LayoutInflater) getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			LayoutInflater inflater = (LayoutInflater) getActivity()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
 
 			// make different popupWindows for different screen sizes
@@ -347,9 +356,8 @@ public class DeckActivity extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://jt.comyr.com/images/"
-					+ cardList.get(position).getName().replace(" ", "%20")
-							.replace(":", "") + ".png";
+			String url = "http://jt.comyr.com/images/big/"
+					+ cardList.get(position).getImage() + ".png";
 			loader.displayImage(url, ivCardImage);
 
 			// Get card name
@@ -363,7 +371,7 @@ public class DeckActivity extends Fragment {
 			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
 			int set = cardList.get(position).getSet().intValue();
-			
+
 			tvCrafted.setText(cardList.get(position).getDescription());
 
 			if (classs == Classes.DRUID.getValue()) {

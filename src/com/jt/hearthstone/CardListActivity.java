@@ -44,6 +44,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -129,7 +130,7 @@ public class CardListActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 
 		// Set main view to Activity_Main layout
-		setContentView(R.layout.activity_card_list);
+		setContentView(R.layout.card_list_standalone);
 
 		// Get views with ButterKnife
 		grid = findById(this, R.id.gvDeck);
@@ -149,7 +150,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Show Up button on ActionBar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
 
@@ -181,8 +182,6 @@ public class CardListActivity extends ActionBarActivity {
 			}
 		});
 
-		
-
 		// Set the spinner (drop down selector) to listen to our custom listener
 
 		// Sort the card list with our own custom Comparator
@@ -206,10 +205,22 @@ public class CardListActivity extends ActionBarActivity {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
-						if (isChecked && spinner.getSelectedItemPosition() != 0) {
+						if (isChecked  && !spinner.getSelectedItem().equals("All")) {
+							String mechanic = spinnerMechanic.getSelectedItem()
+									.toString();
 							for (Cards card : cards) {
-								if (card.getClasss() == null) {
+								if (card.getClasss() == null
+										&& !mechanic.equals("Any")
+										&& card.getDescription() != null
+										&& card.getDescription().contains(
+												mechanic)) {
+
 									cardList.add(card);
+								} else {
+									if (card.getClasss() == null
+											&& mechanic.equals("Any")) {
+										cardList.add(card);
+									}
 								}
 							}
 
@@ -227,8 +238,7 @@ public class CardListActivity extends ActionBarActivity {
 							// other app?????
 						} else {
 							for (Cards card : cards) {
-								if (card.getClasss() == null
-										&& spinner.getSelectedItemPosition() != 0) {
+								if (card.getClasss() == null  && !spinner.getSelectedItem().equals("All")) {
 									cardList.remove(card);
 								}
 							}
@@ -263,9 +273,9 @@ public class CardListActivity extends ActionBarActivity {
 					}
 
 				});
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
-				cardList, cards, grid, listCards, adapter, adapter2, DeckSelector.deckClasses);
-		//spinner.setOnItemSelectedListener(listener);
+		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
+				cardList, cards, grid, listCards, adapter, adapter2);
+		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
 		// Get the decks from the file
@@ -279,10 +289,9 @@ public class CardListActivity extends ActionBarActivity {
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView
-				.setOnQueryTextListener(new CustomSearchListener(cardList,
-						cards, grid, listCards, adapter, adapter2, searchItem,
-						spinner, DeckSelector.deckClasses));
+		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList,
+				cards, grid, listCards, adapter, adapter2, searchItem, spinner,
+				DeckSelector.deckClasses));
 		return true;
 	}
 
@@ -345,38 +354,86 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		menuItemIndex = item.getItemId();
+		final List<Integer> deckClasses = (List<Integer>) getDeck("deckclasses");
 		switch (menuItemIndex) {
 		case 0:
 			if (item.getTitle().equals("Add to new deck")) {
 				LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-			    View layout = inflater.inflate(R.layout.dialog_layout, (ViewGroup) findViewById(R.id.linearLayout));
-			//layout_root should be the name of the "top-level" layout node in the dialog_layout.xml file.
-			    final EditText nameBox = (EditText) layout.findViewById(R.id.etDeckName);
-			    
-			    //Building dialog
-			    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			    builder.setView(layout);
-			    builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-			        @Override
-			        public void onClick(DialogInterface dialog, int which) {
-			            dialog.dismiss();
-			            deckList.add(nameBox.getText().toString());
-			    		saveDeck("decklist", deckList);
-			    		ArrayList<Cards> newDeck = new ArrayList<Cards>();
-			    		saveDeck(nameBox.getText().toString(), newDeck);
-			    		addCards(newDeck, deckList.size() - 1);
-			        }
-			    });
-			    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-			        @Override
-			        public void onClick(DialogInterface dialog, int which) {
-			            dialog.dismiss();
-			        }
-			    });
-			    AlertDialog dialog = builder.create();
-			    dialog.show();
-			    
-			    return true;
+				View layout = inflater.inflate(R.layout.dialog_layout,
+						(ViewGroup) findViewById(R.id.linearLayout));
+				// layout_root should be the name of the "top-level" layout node
+				// in the dialog_layout.xml file.
+				final EditText nameBox = (EditText) layout
+						.findViewById(R.id.etDeckName);
+				final Spinner spinnerClass = (Spinner) layout
+						.findViewById(R.id.spinClass);
+
+				// Building dialog
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				String[] classes = getResources().getStringArray(R.array.ClassesWithoutAny);
+				ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
+				         R.layout.spinner_row, R.id.name, classes);
+				spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+				spinnerClass.setAdapter(spinAdapter);
+				builder.setView(layout);
+				builder.setPositiveButton("Save",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								dialog.dismiss();
+								deckList.add(nameBox.getText().toString());
+								deckClasses.add(spinnerClass.getSelectedItemPosition());
+								FileOutputStream fos = null;
+								try {
+									fos = openFileOutput("decklist",
+											Context.MODE_PRIVATE);
+								} catch (FileNotFoundException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								ObjectOutputStream oos;
+								try {
+									oos = new ObjectOutputStream(fos);
+									oos.writeObject(deckList);
+									oos.close();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								/*************** save corresponding class number **********/
+								try {
+									fos = openFileOutput("deckclasses",
+											Context.MODE_PRIVATE);
+								} catch (FileNotFoundException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+
+								try {
+									oos = new ObjectOutputStream(fos);
+									oos.writeObject(deckClasses);
+									oos.close();
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								ArrayList<Cards> newDeck = new ArrayList<Cards>();
+								saveDeck(nameBox.getText().toString(), newDeck);
+								addCards(newDeck, deckList.size() - 1);
+							}
+						});
+				builder.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.dismiss();
+							}
+						});
+				AlertDialog dialog = builder.create();
+				dialog.show();
+
+				return true;
 			} else {
 				addCards(deckOne, menuItemIndex);
 				return true;
@@ -418,13 +475,12 @@ public class CardListActivity extends ActionBarActivity {
 			// get screen size of device
 			int screenSize = getResources().getConfiguration().screenLayout
 					& Configuration.SCREENLAYOUT_SIZE_MASK;
-	
-			// convert px to dips for multiple screens
+
 			int dipsWidthPortrait_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
 							.getDisplayMetrics());
 			int dipsHeightPortrait_Normal = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 460, getResources()
 							.getDisplayMetrics());
 			int dipsWidthLandscape_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 475, getResources()
@@ -432,18 +488,20 @@ public class CardListActivity extends ActionBarActivity {
 			int dipsHeightLandscape_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
 							.getDisplayMetrics());
+			
 			int dipsWidthPortrait_Large = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
 							.getDisplayMetrics());
 			int dipsHeightPortrait_Large = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 600, getResources()
 							.getDisplayMetrics());
 			int dipsWidthLandscape_Large = (int) TypedValue.applyDimension(
-					TypedValue.COMPLEX_UNIT_DIP, 550, getResources()
+					TypedValue.COMPLEX_UNIT_DIP, 650, getResources()
 							.getDisplayMetrics());
 			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
 							.getDisplayMetrics());
+			
 			int dipsWidthPortrait_Small = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
 							.getDisplayMetrics());
@@ -456,22 +514,35 @@ public class CardListActivity extends ActionBarActivity {
 			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
 							.getDisplayMetrics());
-	
+			
+			int dipsWidthPortrait_XLarge = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 600, getResources()
+							.getDisplayMetrics());
+			int dipsHeightPortrait_XLarge = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 750, getResources()
+							.getDisplayMetrics());
+			int dipsWidthLandscape_XLarge = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 750, getResources()
+							.getDisplayMetrics());
+			int dipsHeightLandscape_XLarge = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_DIP, 600, getResources()
+							.getDisplayMetrics());
+
 			// We need to get the instance of the LayoutInflater,
 			// Gotta give the PopupWindow a layout
 			LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.card_popup, null);
-	
+
 			// make different popupWindows for different screen sizes
 			switch (screenSize) {
-	
+
 			// XLARGE = 10"+ Tablets usually
 			case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-				doSomeWindow(layout, dipsWidthLandscape_Large,
-						dipsHeightLandscape_Large, dipsWidthPortrait_Large,
-						dipsHeightPortrait_Large);
+				doSomeWindow(layout, dipsWidthLandscape_XLarge,
+						dipsHeightLandscape_XLarge, dipsWidthPortrait_XLarge,
+						dipsHeightPortrait_XLarge);
 				break;
-	
+
 			// LARGE = 7"+ Tablets usually, maybe some giant phones
 			case Configuration.SCREENLAYOUT_SIZE_LARGE:
 				doSomeWindow(layout, // View of the popupWindow
@@ -480,7 +551,7 @@ public class CardListActivity extends ActionBarActivity {
 						dipsWidthPortrait_Large, // Width for portrait
 						dipsHeightPortrait_Large); // Height for portrait
 				break;
-	
+
 			// NORMAL = 95% of all phones
 			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
 				doSomeWindow(layout, dipsWidthLandscape_Normal,
@@ -493,27 +564,26 @@ public class CardListActivity extends ActionBarActivity {
 						dipsHeightPortrait_Small);
 				break;
 			}
-	
+
 			// Get card image
-			String url = "http://jt.comyr.com/images/"
-					+ cardList.get(position).getName().replace(" ", "%20")
-							.replace(":", "") + ".png";
+			String url = "http://jt.comyr.com/images/big/"
+					+ cardList.get(position).getImage() + ".png";
 			loader.displayImage(url, ivCardImage);
-	
+
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
-	
+
 			int classs = 0;
 			if (cardList.get(position).getClasss() != null) {
 				classs = cardList.get(position).getClasss().intValue();
 			}
-	
+
 			int type = cardList.get(position).getType().intValue();
 			int quality = cardList.get(position).getQuality().intValue();
 			int set = cardList.get(position).getSet().intValue();
-	
+
 			tvCrafted.setText(cardList.get(position).getDescription());
-	
+
 			if (classs == Classes.DRUID.getValue()) {
 				int druid = getResources().getColor(R.color.druid);
 				tvClass.setTextColor(druid);
@@ -554,7 +624,7 @@ public class CardListActivity extends ActionBarActivity {
 				tvClass.setTextColor(Color.GREEN);
 				tvClass.setText("All Classes");
 			}
-	
+
 			// Set the type (minion, ability, etc)
 			switch (type) {
 			case 3:
@@ -576,7 +646,7 @@ public class CardListActivity extends ActionBarActivity {
 				tvType.setVisibility(View.GONE);
 				break;
 			}
-	
+
 			// Set rarity of the card
 			switch (quality) {
 			case 0:
@@ -606,7 +676,7 @@ public class CardListActivity extends ActionBarActivity {
 				tvQuality.setVisibility(View.GONE); // Hides it.
 				break;
 			}
-	
+
 			switch (set) {
 			case 2:
 				tvSet.setText("Set: Basic");
@@ -621,7 +691,7 @@ public class CardListActivity extends ActionBarActivity {
 				tvSet.setText("Set: Missions");
 				break;
 			}
-	
+
 			// If we ran in to a problem
 		} catch (Exception e) {
 			Log.w("PopupWindow",
@@ -634,7 +704,7 @@ public class CardListActivity extends ActionBarActivity {
 	@SuppressWarnings("deprecation")
 	private void doSomeWindow(View layout, int widthLandscape,
 			int heightLandscape, int widthPortrait, int heightPortrait) {
-	
+
 		if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			pWindow = new PopupWindow(layout, widthLandscape, heightLandscape,
 					true);
@@ -642,7 +712,7 @@ public class CardListActivity extends ActionBarActivity {
 			pWindow.setOutsideTouchable(true);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
-	
+
 		} else {
 			pWindow = new PopupWindow(layout, widthPortrait, heightPortrait,
 					true);
@@ -650,9 +720,9 @@ public class CardListActivity extends ActionBarActivity {
 			pWindow.setOutsideTouchable(true);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
-	
+
 		}
-	
+
 		ivCardImage = findById(pWindow.getContentView(), R.id.ivCardImages);
 		tvCardName = findById(pWindow.getContentView(), R.id.tvCardName);
 		tvClass = findById(pWindow.getContentView(), R.id.tvClass);
@@ -662,9 +732,9 @@ public class CardListActivity extends ActionBarActivity {
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
 	}
 
-	private List<Cards> getDeck(String deckName) {
+	private List<?> getDeck(String deckName) {
 		InputStream instream = null;
-		List<Cards> list = null;
+		List<?> list = null;
 		try {
 			instream = openFileInput(deckName);
 		} catch (FileNotFoundException e) {
@@ -676,7 +746,7 @@ public class CardListActivity extends ActionBarActivity {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					list = (List<Cards>) objStream.readObject();
+					list = (List<?>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -720,7 +790,7 @@ public class CardListActivity extends ActionBarActivity {
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
 		if (getDeck(deckList.get(menuItemIndex)) != null) {
-			list = getDeck(deckList.get(menuItemIndex));
+			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
@@ -728,7 +798,7 @@ public class CardListActivity extends ActionBarActivity {
 		list.add(cardList.get(position));
 		saveDeck(deckList.get(menuItemIndex), list);
 	}
-	
+
 	private void getDeckList() {
 		InputStream instream = null;
 		try {
@@ -763,7 +833,7 @@ public class CardListActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void setupCardList() {
 		Gson gson = new Gson();
 		InputStream is = getResources().openRawResource(R.raw.cards);

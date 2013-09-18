@@ -25,11 +25,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
@@ -54,6 +56,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,6 +84,7 @@ public class CardListFragment extends Fragment {
 	TextView tvCrafted;
 	TextView tvClass;
 	ImageView ivCardImage;
+	RelativeLayout rlPopup;
 
 	ListView lvDeck = DeckActivity.lvDeck;
 	GridView gvDeck = DeckActivity.gvDeck;
@@ -107,6 +111,7 @@ public class CardListFragment extends Fragment {
 	public static ImageLoader loader = ImageLoader.getInstance();
 	public static ArrayList<Cards> cardList;
 	public static ArrayList<String> deckList;
+	private SharedPreferences prefs;
 	private int position;
 	private int menuItemIndex;
 	public static int deckListPos;
@@ -150,7 +155,27 @@ public class CardListFragment extends Fragment {
 		spinner = findById(V, R.id.spinClass);
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
+		rlPopup = findById(V, R.id.rlPopup);
 		registerForContextMenu(listCards);
+		
+		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		boolean firstTime = prefs.getBoolean("first_time", true);
+		if (firstTime) {
+			rlPopup.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					prefs.edit().putBoolean("first_time", false).commit();
+					rlPopup.setVisibility(View.GONE);
+					
+				}
+			});
+			
+		} else {
+			rlPopup.setVisibility(View.GONE);
+		}
+		
+		
 
 		// Set grid invisible, list is default.
 		grid.setVisibility(View.INVISIBLE);
@@ -165,7 +190,10 @@ public class CardListFragment extends Fragment {
 				getActivity()).denyCacheImageMultipleSizesInMemory().build();
 
 		// Initialize the ImageLoader
-		loader.init(config);
+		if (!loader.isInited()) {
+			loader.init(config);
+		}
+		
 
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
@@ -450,9 +478,8 @@ public class CardListFragment extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://jt.comyr.com/images/"
-					+ cardList.get(position).getName().replace(" ", "%20")
-							.replace(":", "") + ".png";
+			String url = "http://jt.comyr.com/images/big/"
+					+ cardList.get(position).getImage() + ".png";
 			loader.displayImage(url, ivCardImage);
 
 			// Get card name

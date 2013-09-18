@@ -61,6 +61,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 				getSupportFragmentManager(), fragments);
 		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
+		myPager.setCurrentItem(1);
 		setTitle(getIntent().getStringExtra("name"));
 		List<Integer> deckClasses = (List<Integer>) getDeck("deckclasses");
 		switch (deckClasses.get(position)) {
@@ -92,10 +93,6 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			getSupportActionBar().setIcon(R.drawable.warrior);
 			break;
 		}
-		
-//		if (DeckSelector.deckClasses.get(position) == 0) {
-//			
-//		}
 	}
 
 	@Override

@@ -12,6 +12,9 @@
      	<Preference android:title="Delete all decks"
                 android:key="delete"
                 android:summary="Deletes all decks from app and disk"/>
+     	<CheckBoxPreference
+		    android:key="first_time"
+		    android:defaultValue="true" />
     </PreferenceCategory>
     
 </PreferenceScreen>

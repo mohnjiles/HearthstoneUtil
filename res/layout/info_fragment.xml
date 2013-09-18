@@ -29,67 +29,6 @@
             android:layout_centerHorizontal="true"
             android:src="@drawable/abc_ab_solid_dark_holo" />
 
-        <TextView
-            android:id="@+id/tvHealth"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_below="@+id/ivHeroPower"
-            android:layout_marginLeft="16dp"
-            android:text="Cards Earned by Leveling"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#FFFFFF" />
-
-        <HorizontalScrollView
-            android:id="@+id/horizontalScrollView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentRight="true"
-            android:layout_below="@+id/tvHealth" >
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="4dp"
-                android:orientation="horizontal" >
-
-				<ImageView
-		            android:id="@+id/ivFreeCardOne"
-		            android:layout_width="144dp"
-		            android:layout_height="206dp"
-		            android:src="@drawable/abc_ab_solid_dark_holo" />
-
-				<ImageView
-				    android:id="@+id/ivFreeCardTwo"
-				    android:layout_width="144dp"
-				    android:layout_height="206dp"
-				    android:layout_marginLeft="8dp"
-				    android:src="@drawable/abc_ab_solid_dark_holo" />
-
-				<ImageView
-		            android:id="@+id/ivFreeCardThree"
-		            android:layout_width="144dp"
-		            android:layout_height="206dp"
-		            android:layout_marginLeft="8dp"
-		            android:src="@drawable/abc_ab_solid_dark_holo" />
-				<ImageView
-		            android:id="@+id/ivFreeCardFour"
-		            android:layout_width="144dp"
-		            android:layout_height="206dp"
-		            android:layout_marginLeft="8dp"
-		            android:src="@drawable/abc_ab_solid_dark_holo" />
-				<ImageView
-		            android:id="@+id/ivFreeCardFive"
-		            android:layout_width="144dp"
-		            android:layout_height="206dp"
-		            android:layout_marginLeft="8dp"
-		            android:src="@drawable/abc_ab_solid_dark_holo" />		
-                
-            </LinearLayout>
-        </HorizontalScrollView>
-
     </RelativeLayout>
 
 </ScrollView>

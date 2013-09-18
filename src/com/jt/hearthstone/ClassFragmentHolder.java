@@ -54,47 +54,49 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 		// Create a new InfoFragment
 		InfoFragment fragmentOne = new InfoFragment();
+		BasicCardsFragment fragmentTwo = new BasicCardsFragment();
 		// Add it to our fragment holder
 		fragments.add(fragmentOne);
+		fragments.add(fragmentTwo);
 		
 		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
 		mViewPager.setAdapter(adapter);
 		
 		switch (position) {
 		case 0:
-			getSupportActionBar().setIcon(R.drawable.druid_icon);
+			getSupportActionBar().setIcon(R.drawable.druid);
 			setTitle("Druid");
 			break;
 		case 1:
-			getSupportActionBar().setIcon(R.drawable.hunter_icon);
+			getSupportActionBar().setIcon(R.drawable.hunter);
 			setTitle("Hunter");
 			break;
 		case 2:
-			getSupportActionBar().setIcon(R.drawable.mage_icon);
+			getSupportActionBar().setIcon(R.drawable.mage);
 			setTitle("Mage");
 			break;
 		case 3:
-			getSupportActionBar().setIcon(R.drawable.paladin_icon);
+			getSupportActionBar().setIcon(R.drawable.paladin);
 			setTitle("Paladin");
 			break;
 		case 4:
-			getSupportActionBar().setIcon(R.drawable.priest_icon);
+			getSupportActionBar().setIcon(R.drawable.priest);
 			setTitle("Priest");
 			break;
 		case 5:
-			getSupportActionBar().setIcon(R.drawable.rogue_icon);
+			getSupportActionBar().setIcon(R.drawable.rogue);
 			setTitle("Rogue");
 			break;
 		case 6:
-			getSupportActionBar().setIcon(R.drawable.shaman_icon);
+			getSupportActionBar().setIcon(R.drawable.shaman);
 			setTitle("Shaman");
 			break;
 		case 7:
-			getSupportActionBar().setIcon(R.drawable.warlock_icon);
+			getSupportActionBar().setIcon(R.drawable.warlock);
 			setTitle("Warlock");
 			break;
 		case 8:
-			getSupportActionBar().setIcon(R.drawable.warrior_icon);
+			getSupportActionBar().setIcon(R.drawable.warrior);
 			setTitle("Warrior");
 			break;
 		}
@@ -165,9 +167,9 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		     switch (position)
 		     {
 		     case 0:
-		    	 return "Info";
+		    	 return "Hero Power";
 		     case 1:
-		    	 return "Cards Available";
+		    	 return "Basic Cards";
 		     }
 			 return null;
 		    }
