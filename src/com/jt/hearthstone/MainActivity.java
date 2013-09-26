@@ -1,6 +1,5 @@
 package com.jt.hearthstone;
 
-import android.R.integer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -13,12 +12,15 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		// Set main view to Activity_Main layout
 		setContentView(R.layout.activity_main);
+		
 		// Show ActionBar (Title bar)
 		getSupportActionBar().show();
+		
 		// Set ActionBar Title
-		setTitle("Hearthstone Companion");
+		getSupportActionBar().setTitle("Hearthstone Companion");
 		
 	}
 

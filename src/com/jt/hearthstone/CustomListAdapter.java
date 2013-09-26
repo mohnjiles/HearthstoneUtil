@@ -1,12 +1,8 @@
 package com.jt.hearthstone;
 
 import java.util.ArrayList;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -16,8 +12,6 @@ import android.widget.TextView;
 public class CustomListAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<Cards> cardList; // Get card list from Fragment
-	public static String url;
-	ImageLoader imageLoader = CardListFragment.loader; // Get instance of ImageLoader
 	private String cardName;
 
     public CustomListAdapter(Context c, ArrayList<Cards> cardList) {

@@ -11,10 +11,6 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.xml.sax.ext.DeclHandler;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 import android.content.Context;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
@@ -24,14 +20,15 @@ import android.preference.PreferenceCategory;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.nostra13.universalimageloader.core.ImageLoader;
+
 public class SettingsActivity extends PreferenceActivity{
 	
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
-		
 		super.onCreate(savedInstanceState);	
-		setTitle("Hearthstone Util Settings");
+		setTitle("Hearthstone Companion Settings");
 		addPreferencesFromResource(R.xml.settings);
 		
 		CheckBoxPreference mCheckBoxPref = (CheckBoxPreference) findPreference("first_time");

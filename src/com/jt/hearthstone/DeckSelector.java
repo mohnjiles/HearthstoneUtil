@@ -10,10 +10,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -35,22 +35,15 @@ import android.widget.Spinner;
 
 public class DeckSelector extends ActionBarActivity {
 
-	ListView lvDecks;
-	public static ArrayList<String> listDecks = new ArrayList<String>();
-	public static ArrayList<Integer> deckClasses;
-	CustomDeckAdapter adapter;
 
-	List<Cards> deckOne = CardListActivity.deckOne;
-	List<Cards> deckTwo = CardListActivity.deckTwo;
-	List<Cards> deckThree = CardListActivity.deckThree;
-	List<Cards> deckFour = CardListActivity.deckFour;
-	List<Cards> deckFive = CardListActivity.deckFive;
-	List<Cards> deckSix = CardListActivity.deckSix;
-	List<Cards> deckSeven = CardListActivity.deckSeven;
-	List<Cards> deckEight = CardListActivity.deckEight;
-	List<Cards> deckNine = CardListActivity.deckNine;
-	List<Cards> deckTen = CardListActivity.deckTen;
-	int position;
+	static ArrayList<String> listDecks = new ArrayList<String>();
+	static ArrayList<Integer> deckClasses;
+	static ProgressDialog dialog;
+	
+	private ListView lvDecks;
+	
+	private CustomDeckAdapter adapter;
+	private int position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,9 +51,8 @@ public class DeckSelector extends ActionBarActivity {
 		setContentView(R.layout.activity_deck_selector);
 		// Show the Up button in the action bar.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		setTitle("Decks");
+		getSupportActionBar().setTitle("Decks");
 		lvDecks = findById(this, R.id.lvDecks);
-		// listDecks.add("Test");
 		registerForContextMenu(lvDecks);
 		deckClasses = (ArrayList<Integer>) getDeck("deckclasses");
 
@@ -148,9 +140,10 @@ public class DeckSelector extends ActionBarActivity {
 
 			// Building dialog
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			String[] classes = getResources().getStringArray(R.array.ClassesWithoutAny);
+			String[] classes = getResources().getStringArray(
+					R.array.ClassesWithoutAny);
 			ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
-			         R.layout.spinner_row, R.id.name, classes);
+					R.layout.spinner_row, R.id.name, classes);
 			spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 			spinner.setAdapter(spinAdapter);
 			builder.setView(layout);
@@ -161,40 +154,9 @@ public class DeckSelector extends ActionBarActivity {
 							dialog.dismiss();
 							listDecks.add(nameBox.getText().toString());
 							deckClasses.add(spinner.getSelectedItemPosition());
-							FileOutputStream fos = null;
-							try {
-								fos = openFileOutput("decklist",
-										Context.MODE_PRIVATE);
-							} catch (FileNotFoundException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-							ObjectOutputStream oos;
-							try {
-								oos = new ObjectOutputStream(fos);
-								oos.writeObject(listDecks);
-								oos.close();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							saveDeck("decklist", listDecks);
 							/*************** save corresponding class number **********/
-							try {
-								fos = openFileOutput("deckclasses",
-										Context.MODE_PRIVATE);
-							} catch (FileNotFoundException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-
-							try {
-								oos = new ObjectOutputStream(fos);
-								oos.writeObject(deckClasses);
-								oos.close();
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
+							saveDeck("deckclasses", deckClasses);
 							adapter.notifyDataSetChanged();
 							lvDecks.setAdapter(adapter);
 						}
@@ -229,46 +191,10 @@ public class DeckSelector extends ActionBarActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		switch (position) {
-		case 0:
-			removeDeck(deckOne, position);
-			deckClasses.remove(position);
-			saveDeck("deckclasses", deckClasses);
-			break;
-		case 1:
-			removeDeck(deckTwo, position);
-			deckClasses.remove(position);
-			saveDeck("deckclasses", deckClasses);
-			break;
-		case 2:
-			removeDeck(deckThree, position);
-			deckClasses.remove(position);
-			saveDeck("deckclasses", deckClasses);
-			break;
-		case 3:
-			removeDeck(deckFour, position);
-			deckClasses.remove(position);
-			saveDeck("deckclasses", deckClasses);
-			break;
-		case 4:
-			removeDeck(deckFive, position);
-			break;
-		case 5:
-			removeDeck(deckSix, position);
-			break;
-		case 6:
-			removeDeck(deckSeven, position);
-			break;
-		case 7:
-			removeDeck(deckEight, position);
-			break;
-		case 8:
-			removeDeck(deckNine, position);
-			break;
-		case 9:
-			removeDeck(deckTen, position);
-			break;
-		}
+		
+		this.deleteFile(listDecks.get(position));
+		deckClasses.remove(position);
+		saveDeck("deckclasses", deckClasses);
 
 		listDecks.remove(position);
 		saveDeck("decklist", listDecks);
@@ -333,20 +259,6 @@ public class DeckSelector extends ActionBarActivity {
 			e.printStackTrace();
 		}
 		return list;
-	}
-
-	private void removeDeck(List<Cards> list, int position) {
-		try {
-			list = (List<Cards>) getDeck(listDecks.get(position));
-			if (list != null) {
-				list.clear();
-				saveDeck(listDecks.get(position), list);
-				this.deleteFile(listDecks.get(position));
-			}
-		} catch (NullPointerException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	}
 
 }

@@ -12,14 +12,12 @@ import android.widget.TextView;
 
 public class DeckListAdapter extends BaseAdapter {
     private Context mContext;
-	public static String url;
 	private String cardName;
-	private int cardListNumber;
-	private List<Cards> cardList = DeckActivity.cardList;
+	private List<Cards> cardList;
 
-    public DeckListAdapter(Context c, int cardListPos) {
+    public DeckListAdapter(Context c, int cardListPos, List<Cards> cardList) {
         mContext = c;
-        cardListNumber = cardListPos;
+        this.cardList = cardList;
     }
     
     

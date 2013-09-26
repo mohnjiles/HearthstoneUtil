@@ -48,7 +48,7 @@
         android:layout_centerHorizontal="true" />
 
     <Spinner
-        android:id="@+id/spinnerSort"
+        android:id="@+id/spinSort"
         style="android:spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -89,7 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/cbReverse"
-        android:layout_below="@+id/spinnerSort"
+        android:layout_below="@+id/spinSort"
         android:layout_marginTop="30dp"
         android:text="Include Generic Cards"
         android:textColor="#FFFFFF"
@@ -100,7 +100,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/spinnerSort"
+        android:layout_below="@+id/spinSort"
         android:text="Reverse Sort"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />

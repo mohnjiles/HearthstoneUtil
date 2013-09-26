@@ -4,12 +4,10 @@ import static butterknife.Views.findById;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -17,20 +15,17 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
-import android.R.integer;
-import android.app.AlertDialog;
+import org.achartengine.renderer.SimpleSeriesRenderer;
+
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -50,8 +45,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -62,82 +55,51 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.jt.hearthstone.AsyncTasks.SaveDeck;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CardListFragment extends Fragment {
 
-	public static Spinner spinner;
-	public static Spinner spinnerSort;
-	public static Spinner spinnerMechanic;
-	GridView grid;
-	Cards[] cards;
-	ImageAdapter adapter;
-	PopupWindow pWindow;
-	public static CheckBox includeNeutralCards;
-	public static CheckBox cbReverse;
-	List<Integer> deckClasses = DeckSelector.deckClasses;
-	TextView tvCardName;
-	TextView tvType;
-	TextView tvQuality;
-	TextView tvSet;
-	TextView tvCrafted;
-	TextView tvClass;
-	ImageView ivCardImage;
-	RelativeLayout rlPopup;
+	static Spinner spinner;						
+	static Spinner spinnerSort;
+	static Spinner spinnerMechanic;
+	static ListView listCards;
+	static GridView grid;
+	static CheckBox includeNeutralCards;
+	static CheckBox cbReverse;
+	
+	static SearchView mSearchView;				
+	static ImageAdapter adapter;
+	static CustomListAdapter adapter2;
+	static int pos = CustomOnItemSelectedListener.position;
+	static int deckListPos;
+	static boolean reverse = false;
 
-	ListView lvDeck = DeckActivity.lvDeck;
-	GridView gvDeck = DeckActivity.gvDeck;
-
-	int druid = Classes.DRUID.getValue();
-	int hunter = Classes.HUNTER.getValue();
-	int mage = Classes.MAGE.getValue();
-	int paladin = Classes.PALADIN.getValue();
-	int priest = Classes.PRIEST.getValue();
-	int rogue = Classes.ROGUE.getValue();
-	int shaman = Classes.SHAMAN.getValue();
-	int warlock = Classes.WARLOCK.getValue();
-	int warrior = Classes.WARRIOR.getValue();
-	int pos = CustomOnItemSelectedListener.position;
-
-	boolean isGrid = false;
-	public static boolean reverse = false;
-
-	private SearchView mSearchView;
+	private TextView tvCardName;
+	private TextView tvType;
+	private TextView tvQuality;
+	private TextView tvSet;
+	private TextView tvCrafted;
+	private TextView tvClass;
+	private ImageView ivCardImage;
+	private RelativeLayout rlPopup;
+	private PopupWindow pWindow;
+	
 	private MenuItem searchItem;
-	private ListView listCards;
-
-	private CustomListAdapter adapter2;
-	public static ImageLoader loader = ImageLoader.getInstance();
-	public static ArrayList<Cards> cardList;
-	public static ArrayList<String> deckList;
+	private MenuItem listSwitcher;
 	private SharedPreferences prefs;
+	private List<Integer> deckClasses = DeckSelector.deckClasses;
+	private List<Cards> deckOne;
+	
+	private ImageLoader loader = ImageLoader.getInstance();
+	private ArrayList<Cards> cardList;
+	private ArrayList<String> deckList;
+	private Cards[] cards;
+
+	private boolean isGrid = false;
 	private int position;
-	private int menuItemIndex;
-	public static int deckListPos;
-
-	com.jt.hearthstone.DeckFragmentHolder.FragmentAdapter fragAdapter = DeckFragmentHolder.adapter;
-
-	public static List<Cards> deckOne;
-	public static List<Cards> deckTwo;
-	public static List<Cards> deckThree;
-	public static List<Cards> deckFour;
-	public static List<Cards> deckFive;
-	public static List<Cards> deckSix;
-	public static List<Cards> deckSeven;
-	public static List<Cards> deckEight;
-	public static List<Cards> deckNine;
-	public static List<Cards> deckTen;
-	public static List<Cards> deckEleven;
-	public static List<Cards> deckTwelve;
-	public static List<Cards> deckThirteen;
-	public static List<Cards> deckFourteen;
-	public static List<Cards> deckFifteen;
-	public static List<Cards> deckSixteen;
-	public static List<Cards> deckSeventeen;
-	public static List<Cards> deckEighteen;
-	public static List<Cards> deckNineteen;
-	public static List<Cards> deckTwenty;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -156,29 +118,44 @@ public class CardListFragment extends Fragment {
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
 		rlPopup = findById(V, R.id.rlPopup);
-		registerForContextMenu(listCards);
 		
+		registerForContextMenu(listCards);
+		registerForContextMenu(grid);
+
+		setHasOptionsMenu(true);
+		return V;
+
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
+
+		// Check to see if it's users first time
+		// If so, we show the overlay layout
 		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		boolean firstTime = prefs.getBoolean("first_time", true);
 		if (firstTime) {
 			rlPopup.setOnClickListener(new View.OnClickListener() {
-				
+
 				@Override
 				public void onClick(View v) {
 					prefs.edit().putBoolean("first_time", false).commit();
 					rlPopup.setVisibility(View.GONE);
-					
 				}
 			});
-			
+
 		} else {
 			rlPopup.setVisibility(View.GONE);
 		}
-		
-		
 
-		// Set grid invisible, list is default.
-		grid.setVisibility(View.INVISIBLE);
+		if (isGrid) {
+			listCards.setVisibility(View.INVISIBLE);
+			grid.setVisibility(View.VISIBLE);
+		} else {
+			grid.setVisibility(View.INVISIBLE);
+			listCards.setVisibility(View.VISIBLE);
+		}
 
 		Intent intent = getActivity().getIntent();
 		deckListPos = intent.getIntExtra("position", 0);
@@ -193,14 +170,15 @@ public class CardListFragment extends Fragment {
 		if (!loader.isInited()) {
 			loader.init(config);
 		}
-		
 
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
+		
 		// Get deck list from file
 		getDeckList();
 
+		/************ Listeners for PopupWindow ***************/
 		grid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
@@ -213,121 +191,30 @@ public class CardListFragment extends Fragment {
 				initiatePopupWindow(position);
 			}
 		});
-
-		// Set the spinner (drop down selector) to listen to our custom listener
-
-		// Sort the card list with our own custom Comparator
-		// -- this sorts by Mana Cost
-		Collections.sort(cardList, new CardComparator(pos, reverse));
-
-		// Create a new instance of our ImageAdapter class
-		adapter = new ImageAdapter(getActivity(), cardList);
-		adapter2 = new CustomListAdapter(getActivity(), cardList);
-
-		// Set the gridview's adapter to our custom adapter
-		grid.setAdapter(adapter);
-		listCards.setAdapter(adapter2);
-
-		// This works now! Listener for when CheckBox is checked
-		includeNeutralCards
-				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-					// Called when checkbox is checked or unchecked
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-						// if the user is checking the box, add generic cards
-						if (isChecked) {
-							String mechanic = spinnerMechanic.getSelectedItem().toString();
-							for (Cards card : cards) {
-								if (card.getClasss() == null
-										&& !mechanic.equals("Any") && card.getDescription() != null 
-												&& card.getDescription().contains(mechanic)) {
-									
-									cardList.add(card);
-								} else {
-									if(card.getClasss() == null && mechanic.equals("Any")) {
-										cardList.add(card);
-									}
-								}
-							}
-
-							Collections.sort(cardList, new CardComparator(
-									spinnerSort.getSelectedItemPosition(),
-									cbReverse.isChecked()));
-							adapter.notifyDataSetChanged();
-							adapter2.notifyDataSetChanged();
-							grid.setAdapter(adapter);
-							listCards.setAdapter(adapter2);
-
-							// Otherwise, user is unchecking the box, so remove
-							// all generic cards.
-							// Why haven't I been using more ArrayLists in my
-							// other app?????
-						} else {
-							for (Cards card : cards) {
-								if (card.getClasss() == null) {
-									cardList.remove(card);
-								}
-							}
-							Collections.sort(cardList, new CardComparator(
-									spinnerSort.getSelectedItemPosition(),
-									cbReverse.isChecked()));
-							adapter.notifyDataSetChanged();
-							adapter2.notifyDataSetChanged();
-							grid.setAdapter(adapter);
-							listCards.setAdapter(adapter2);
-						}
-					}
-
-				});
-
-		cbReverse
-				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-					// Called when checkbox is checked or unchecked
-					@Override
-					public void onCheckedChanged(CompoundButton buttonView,
-							boolean isChecked) {
-						reverse = isChecked;
-						Collections.sort(cardList, new CardComparator(
-								spinnerSort.getSelectedItemPosition(),
-								isChecked));
-						reverse = isChecked;
-						adapter.notifyDataSetChanged();
-						adapter2.notifyDataSetChanged();
-						grid.setAdapter(adapter);
-						listCards.setAdapter(adapter2);
-					}
-
-				});
+		
+		// Custom listener for CheckBoxes
+		CustomOnCheckedChangeListener checkListener = new CustomOnCheckedChangeListener(
+				spinnerSort, spinnerMechanic, cards, mSearchView, cardList);
+		
+		includeNeutralCards.setOnCheckedChangeListener(checkListener);
+		cbReverse.setOnCheckedChangeListener(checkListener);
+		
+		// Spinner setup (set items/adapters/etc)
 		deckClasses = (List<Integer>) getDeck("deckclasses");
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
-				cardList, cards, grid, listCards, adapter, adapter2,
-				deckClasses);
-		// spinner.setOnItemSelectedListener(listener);
-		String[] mechanicNames = getResources().getStringArray(R.array.Mechanic);
+		String[] mechanicNames = getResources()
+				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
-		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(),
-		         R.layout.spinner_row, R.id.name, sortNames);
+		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(
+				getActivity(), R.layout.spinner_row, R.id.name, sortNames);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-		
-		ArrayAdapter<String> spinSortAdapter = new ArrayAdapter<String>(getActivity(),
-		         R.layout.spinner_row, R.id.name, mechanicNames);
+
+		ArrayAdapter<String> spinSortAdapter = new ArrayAdapter<String>(
+				getActivity(), R.layout.spinner_row, R.id.name, mechanicNames);
 		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-		
+
 		spinnerSort.setAdapter(spinAdapter);
-		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setAdapter(spinSortAdapter);
-		spinnerMechanic.setOnItemSelectedListener(listener);
-		setHasOptionsMenu(true);
-		return V;
 
-	}
-
-	@Override
-	public void onActivityCreated(Bundle savedInstanceState) {
-		super.onActivityCreated(savedInstanceState);
 	}
 
 	@Override
@@ -335,11 +222,27 @@ public class CardListFragment extends Fragment {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
+		listSwitcher = menu.findItem(R.id.action_switch);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView
-				.setOnQueryTextListener(new CustomSearchListener(cardList,
-						cards, grid, listCards, adapter, adapter2, searchItem,
-						spinner, DeckSelector.deckClasses));
+		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList,
+				cards, grid, listCards, adapter, adapter2, searchItem, spinner,
+				DeckSelector.deckClasses, spinnerMechanic));
+
+		// Need to do the listener here (afaik) to get SearchView data
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
+				cardList, cards, grid, listCards, adapter, adapter2,
+				deckClasses, mSearchView);
+
+		spinnerSort.setOnItemSelectedListener(listener);
+		spinnerMechanic.setOnItemSelectedListener(listener);
+
+		if (isGrid) {
+			listSwitcher.setTitle("Switch to list view");
+			listSwitcher.setIcon(R.drawable.collections_view_as_list);
+		} else {
+			listSwitcher.setTitle("Switch to grid view");
+			listSwitcher.setIcon(R.drawable.collections_view_as_grid);
+		}
 	}
 
 	@Override
@@ -374,7 +277,7 @@ public class CardListFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		if (v.getId() == R.id.cardsList) {
+		if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
@@ -385,13 +288,10 @@ public class CardListFragment extends Fragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		menuItemIndex = item.getItemId();
 		if (item.getGroupId() == 1337) {
 			addCards(deckOne, deckListPos);
-			DeckFragmentHolder.adapter.notifyDataSetChanged();
 			return super.onContextItemSelected(item);
 		}
-
 		return super.onContextItemSelected(item);
 	}
 
@@ -478,10 +378,12 @@ public class CardListFragment extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://jt.comyr.com/images/big/"
+			String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			loader.displayImage(url, ivCardImage);
-
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+					.showStubImage(R.drawable.cards).cacheInMemory(false)
+					.cacheOnDisc(true).build();
+			loader.displayImage(url, ivCardImage, options);
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
 
@@ -681,25 +583,6 @@ public class CardListFragment extends Fragment {
 		return list;
 	}
 
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
-
 	private void addCards(List<Cards> list, int menuItemIndex) {
 		if (getDeck(deckList.get(menuItemIndex)) != null) {
 			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
@@ -709,46 +592,99 @@ public class CardListFragment extends Fragment {
 		if (list.size() < 30) {
 			list.add(cardList.get(position));
 		} else {
-			Toast.makeText(getActivity(), "Cannot have more than 30 cards in the deck", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(),
+					"Cannot have more than 30 cards in the deck",
+					Toast.LENGTH_SHORT).show();
 		}
-		saveDeck(deckList.get(menuItemIndex), list);
+	
+		ChartActivity.mCurrentSeries.add(cardList.get(position).getCost().intValue(), 1);
+		ChartActivity.layout.invalidate();
+		
+		AsyncTasks async = new AsyncTasks();
+		SaveDeck saveDeck = async.new SaveDeck(getActivity(),
+				deckList.get(menuItemIndex), list, menuItemIndex);
+		saveDeck.execute();
+//		GetDeckActivityDeck getDeck = async.new GetDeckActivityDeck(getActivity(), deckList.get(menuItemIndex), menuItemIndex);
+//		getDeck.execute();
+		if (ChartActivity.mChart == null) {
+			
+        } else {
+        	((ViewGroup) ChartActivity.mChart.getParent()).removeView(ChartActivity.mChart);
+        	ChartActivity.mCurrentSeries.clear();
+            addSampleData(list);
+            ChartActivity.layout2.addView(ChartActivity.mChart);
+        }
+		
+		if (ChartActivity.mPieChart == null) {
+			
+		} else {
+			((ViewGroup) ChartActivity.mPieChart.getParent()).removeView(ChartActivity.mPieChart);
+			ChartActivity.mSeries.clear();
+			ChartActivity.mRenderer2.removeAllRenderers();
+			addPieData(list);
+			ChartActivity.layout.addView(ChartActivity.mPieChart);
+		}
+	}
+	
+	private void addSampleData(List<Cards> cardList) {
+		int[] costs = new int[50];
+	 	for (Cards card : cardList) {
+	 		if (card.getCost() != null) {
+				costs[card.getCost().intValue()]++;
+				Log.i("cost", "" + costs[card.getCost().intValue()]);
+				ChartActivity.mCurrentSeries.add(card.getCost().intValue(), costs[card.getCost().intValue()]);
+	 		}
+	 	}
+	}
+	
+	private void addPieData(List<Cards> cardList) {
+		int minions = 0;
+		int abilities = 0;
+		int weapons = 0;
+		int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0), Color.rgb(60, 242, 0) };
+		int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3), Color.rgb(8, 196, 0) };
+		for (Cards card : cardList) {
+			if (card.getType() != null && card.getType().intValue() == 4) {
+				minions++;
+			} else if (card.getType() != null && card.getType().intValue() == 5) {
+				abilities++;
+			} else if (card.getType() != null && card.getType().intValue() == 7) {
+				weapons++;
+			}
+		}
+		if (abilities != 0) {
+			ChartActivity.mSeries.add("Spells", abilities);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[0]);
+			seriesRenderer.setGradientStop(20, colors2[0]);
+			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
+		if (minions != 0) {
+			ChartActivity.mSeries.add("Minions", minions);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[1]);
+			seriesRenderer.setGradientStop(20, colors2[1]);
+			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
+		if (weapons != 0) {
+			ChartActivity.mSeries.add("Weapons", weapons);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[2]);
+			seriesRenderer.setGradientStop(20, colors2[2]);
+			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
+		
 	}
 
 	private void getDeckList() {
 		InputStream instream = null;
-		try {
-			instream = getActivity().openFileInput("deckclasses");
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					deckClasses = (ArrayList<Integer>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		// Second one
 		try {
 			instream = getActivity().openFileInput("decklist");
 		} catch (FileNotFoundException e) {
@@ -814,7 +750,6 @@ public class CardListFragment extends Fragment {
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
 		// Load default card list
-		deckClasses = (List<Integer>) getDeck("deckclasses");
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
@@ -954,5 +889,12 @@ public class CardListFragment extends Fragment {
 				}
 			}
 		}
+		adapter = new ImageAdapter(getActivity(), cardList);
+		adapter2 = new CustomListAdapter(getActivity(), cardList);
+		Collections.sort(cardList, new CardComparator(pos, reverse));
+
+		// Set the gridview's adapter to our custom adapter
+		grid.setAdapter(adapter);
+		listCards.setAdapter(adapter2);
 	}
 }

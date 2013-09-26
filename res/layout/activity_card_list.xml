@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#666666"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     tools:context=".MainActivity" >
 
     <GridView
@@ -50,7 +52,8 @@
         android:layout_marginTop="6dp"
         android:gravity="center_vertical"
         android:text="Mechanic: "
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <Spinner
         android:id="@+id/spinnerMechanic"
@@ -83,7 +86,8 @@
         android:layout_marginLeft="8dp"
         android:gravity="center_vertical"
         android:text="Sort:"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <CheckBox
         android:id="@+id/cbGenerics"
@@ -95,7 +99,7 @@
         android:layout_marginRight="8dp"
         android:text="Generic Cards"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="@dimen/spinner_textview" />
 
     <CheckBox
         android:id="@+id/cbReverse"
@@ -106,7 +110,7 @@
         android:layout_alignTop="@+id/spinnerSort"
         android:text="Reverse Sort"
         android:textColor="#FFFFFF"
-        android:textSize="12sp" />
+        android:textSize="@dimen/spinner_textview" />
 
     <RelativeLayout
         android:id="@+id/rlPopup"

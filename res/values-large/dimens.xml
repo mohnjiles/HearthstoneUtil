@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="card_icon">450dp</dimen>
     <dimen name="card_icon_width">300dp</dimen>
-    <dimen name="card_icon_padding_left">-48dp</dimen>
+    <dimen name="card_icon_padding_left">-36dp</dimen>
     <dimen name="card_icon_padding_right">-20dp</dimen>
     <dimen name="card_name_padding">48dp</dimen>
     <dimen name="card_name_text_size">16sp</dimen>
@@ -19,5 +19,11 @@
     <dimen name="card_name_bottom_padding_portrait">-24dp</dimen>
     <dimen name="class_name_top_padding">48dp</dimen>
     <dimen name="class_name_top_padding_portrait">0dp</dimen>
+    <dimen name="grid_image_width">150dp</dimen>
+    <dimen name="grid_image_height">225dp</dimen>
+    
+    <!-- Text Sizes -->
+    <dimen name="card_list_textview">16sp</dimen>
+    <dimen name="spinner_textview">14sp</dimen>
 
 </resources>

@@ -13,8 +13,8 @@ import android.widget.AdapterView.OnItemClickListener;
 
 public class ClassesActivity extends ActionBarActivity {
 
-	GridView classGrid;
-	ClassAdapter adapter;
+	private GridView classGrid;
+	private ClassAdapter adapter;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +22,7 @@ public class ClassesActivity extends ActionBarActivity {
 		setContentView(R.layout.activity_classes);
 		getSupportActionBar().show();
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setTitle("Classes");
 		
 		classGrid = (GridView) findViewById(R.id.classGrid);
 		adapter = new ClassAdapter(this);

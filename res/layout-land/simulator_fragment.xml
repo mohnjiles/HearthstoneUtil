@@ -1,0 +1,63 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#666666"
+    tools:context=".SimulatorFragment" >
+
+    <GridView
+        android:id="@+id/gvCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/btnDrawAnother"
+        android:columnWidth="@dimen/grid_column_width"
+        android:numColumns="auto_fit" >
+
+    </GridView>
+
+    <Button
+        android:id="@+id/btnRedraw"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Draw new hand"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp" />
+
+    <Spinner
+        android:id="@+id/spinnerNumCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="8dp"
+        android:layout_toLeftOf="@+id/gvCard" />
+
+    <Button
+        android:id="@+id/btnDrawAnother"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnRedraw"
+        android:layout_alignRight="@+id/btnRedraw"
+        android:layout_below="@+id/btnRedraw"
+        android:text="Draw another card"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/spinnerNumCards"
+        android:layout_below="@+id/btnDrawAnother"
+        android:layout_marginTop="26dp"
+        android:layout_toLeftOf="@+id/gvCard"
+        android:gravity="center"
+        android:text="Starting hand size:"
+        android:textColor="#FFFFFF" />
+
+</RelativeLayout>

@@ -17,7 +17,7 @@
         android:gravity="center"
         android:text="TextView"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvClass"
@@ -29,7 +29,7 @@
         android:layout_marginTop="@dimen/class_name_top_padding_portrait"
         android:text="Class"
         android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvSet"
@@ -39,7 +39,8 @@
         android:layout_below="@+id/tvClass"
         android:layout_marginLeft="16dp"
         android:text="Set"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvType"
@@ -49,7 +50,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:text="Ability/Minion"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvCrafted"
@@ -62,7 +64,8 @@
         android:layout_marginTop="32dp"
         android:gravity="center"
         android:text="Crafted"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="@dimen/card_list_textview" />
 
     <ImageView
         android:id="@+id/ivCardImages"
@@ -79,6 +82,7 @@
         android:layout_alignRight="@+id/tvType"
         android:layout_below="@+id/tvType"
         android:text="QualityType"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
 </RelativeLayout>

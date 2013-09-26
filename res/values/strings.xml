@@ -56,6 +56,16 @@
         <item>Taunt</item>
         <item>Windfury</item>
     </string-array>
+    <string-array name="CardsToDraw">
+        <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
+        <item>8</item>
+        <item>9</item>
+        <item>10</item>
+        
+    </string-array>
 
     <string name="title_activity_card_list">CardListActivity</string>
     <string name="title_activity_classes">ClassesActivity</string>
@@ -68,5 +78,6 @@
     <string name="title_activity_chart">ChartActivity</string>
     <string name="title_activity_deck_fragment_holder">DeckFragmentHolder</string>
     <string name="title_activity_basic_cards_fragment">BasicCardsFragment</string>
+    <string name="title_activity_simulator_fragment">SimulatorFragment</string>
 
 </resources>

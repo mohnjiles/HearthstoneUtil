@@ -1,10 +1,7 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.View;
@@ -13,11 +10,15 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private List<Cards> cardList;
-	public static String url;
-	ImageLoader imageLoader = CardListActivity.loader; // Get instance of ImageLoader from main activity
+	private String url;
+	private ImageLoader imageLoader = ImageLoader.getInstance();
 
     public ImageAdapter(Context c, List<Cards> list) {
         mContext = c;
@@ -46,7 +47,7 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
-    	url = "http://jt.comyr.com/images/big/" + cardList.get(position).getImage() + ".png";
+    	url = "http://54.224.222.135/" + cardList.get(position).getImage() + ".png";
     	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
     	// We may eventually need to disable this based on further testing
@@ -54,9 +55,13 @@ public class ImageAdapter extends BaseAdapter {
     	// only a few KB each.
     	DisplayImageOptions options = new DisplayImageOptions.Builder()
         .showStubImage(R.drawable.cards)
-        .cacheInMemory(true)
+        .cacheInMemory(false)
         .cacheOnDisc(true)
         .build();
+    	
+    	if (!imageLoader.isInited()) {
+    		imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+    	}
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
     	// We do this because re-using views makes memory happy :)

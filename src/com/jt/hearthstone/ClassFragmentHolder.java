@@ -14,8 +14,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 public class ClassFragmentHolder extends ActionBarActivity {
 
@@ -31,11 +29,8 @@ public class ClassFragmentHolder extends ActionBarActivity {
 	/**
 	 * The {@link ViewPager} that will host the section contents.
 	 */
-	ViewPager mViewPager;
-	
-	ImageView ivClassIcon;
-	TextView tvClassName;
-	int position;
+	private ViewPager mViewPager;
+	private int position;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,39 +60,39 @@ public class ClassFragmentHolder extends ActionBarActivity {
 		switch (position) {
 		case 0:
 			getSupportActionBar().setIcon(R.drawable.druid);
-			setTitle("Druid");
+			getSupportActionBar().setTitle("Druid");
 			break;
 		case 1:
 			getSupportActionBar().setIcon(R.drawable.hunter);
-			setTitle("Hunter");
+			getSupportActionBar().setTitle("Hunter");
 			break;
 		case 2:
 			getSupportActionBar().setIcon(R.drawable.mage);
-			setTitle("Mage");
+			getSupportActionBar().setTitle("Mage");
 			break;
 		case 3:
 			getSupportActionBar().setIcon(R.drawable.paladin);
-			setTitle("Paladin");
+			getSupportActionBar().setTitle("Paladin");
 			break;
 		case 4:
 			getSupportActionBar().setIcon(R.drawable.priest);
-			setTitle("Priest");
+			getSupportActionBar().setTitle("Priest");
 			break;
 		case 5:
 			getSupportActionBar().setIcon(R.drawable.rogue);
-			setTitle("Rogue");
+			getSupportActionBar().setTitle("Rogue");
 			break;
 		case 6:
 			getSupportActionBar().setIcon(R.drawable.shaman);
-			setTitle("Shaman");
+			getSupportActionBar().setTitle("Shaman");
 			break;
 		case 7:
 			getSupportActionBar().setIcon(R.drawable.warlock);
-			setTitle("Warlock");
+			getSupportActionBar().setTitle("Warlock");
 			break;
 		case 8:
 			getSupportActionBar().setIcon(R.drawable.warrior);
-			setTitle("Warrior");
+			getSupportActionBar().setTitle("Warrior");
 			break;
 		}
 

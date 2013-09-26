@@ -2,8 +2,9 @@ package com.jt.hearthstone;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
@@ -14,35 +15,43 @@ import android.widget.Spinner;
 
 public class OnItemSelectedListenerStandalone implements OnItemSelectedListener {
 
-	ArrayList<Cards> cardList;
+	static int position = 0;
+	
+	private ArrayList<Cards> cardList;
 	private Cards[] cards;
-	private GridView grid;
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
+	
 	private CheckBox cbReverse = CardListActivity.cbReverse;
 	private Spinner spinnerSort = CardListActivity.spinnerSort;
 	private Spinner spinnerClass = CardListActivity.spinner;
 	private Spinner spinnerMechanic = CardListActivity.spinnerMechanic;
+	private SearchView mSearchView;
 	private ListView listCards;
-	public static int position = 0;
+	private GridView grid;
+
+	private String query;
 	private boolean reverse = CardListActivity.reverse;
 
 	public OnItemSelectedListenerStandalone(ArrayList<Cards> cardList,
 			Cards[] cards, GridView grid, ListView listCards,
-			ImageAdapter adapter, CustomListAdapter adapter2) {
+			ImageAdapter adapter, CustomListAdapter adapter2, SearchView searchView) {
 		this.cardList = cardList;
 		this.cards = cards;
 		this.grid = grid;
 		this.adapter = adapter;
 		this.listCards = listCards;
 		this.adapter2 = adapter2;
-
+		this.mSearchView = searchView;
+		
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
+		
 		Spinner spinner = (Spinner) parent;
+		
 		if (spinner.getId() == R.id.spinClass) {
 			switch (pos) {
 			// All Class Card List
@@ -53,6 +62,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			// Druid Class Card List
 			case 1:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
@@ -70,6 +80,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.HUNTER, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			// Mage Class Card List
 			case 3:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
@@ -87,6 +98,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.PALADIN, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			case 5:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.PRIEST);
@@ -94,6 +106,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.PRIEST, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			case 6:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.ROGUE);
@@ -101,6 +114,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.ROGUE, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			case 7:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.SHAMAN);
@@ -108,6 +122,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.SHAMAN, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			case 8:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARLOCK);
@@ -115,6 +130,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(Classes.WARLOCK, spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
+				
 			case 9:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARRIOR);
@@ -124,7 +140,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				break;
 			}
 
-		} else if (spinner.getId() == R.id.spinnerSort) {
+		} else if (spinner.getId() == R.id.spinSort) {
 			position = pos;
 			Collections.sort(cardList,
 					new CardComparator(pos, cbReverse.isChecked()));
@@ -136,12 +152,18 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		} else if (spinner.getId() == R.id.spinnerMechanic) {
 			switch (spinnerClass.getSelectedItemPosition()) {
 			case 0:
+				if (mSearchView != null) {
+					query = CardListActivity.mSearchView.getQuery().toString().toLowerCase();
+				} else {
+					query = "";
+				}
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList();
 				} else {
 					cardList.clear();
 					for (Cards card : cards) {
 						if (card.getDescription() != null
+								&& card.getName().toLowerCase().contains(query)
 								&& card.getDescription().contains(
 										spinner.getSelectedItem().toString())) {
 							cardList.add(card);
@@ -238,18 +260,27 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	 * any class other than "Any" from the Spinner
 	 */
 	private void setCardList(Classes classes, String selectedItem) {
+		if (mSearchView != null) {
+			query = mSearchView.getQuery().toString().toLowerCase();
+		} else {
+			query = "";
+		}
 		cardList.clear();
+		
 		for (Cards card : cards) {
 			if (card.getDescription() != null
 					&& card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getDescription().contains(selectedItem)
-					&& !card.getName().equals(classes.getHeroName())) {
+					&& !card.getName().equals(classes.getHeroName())
+					&& card.getName().toLowerCase().contains(query)) {
+				Log.i("setCardList(classes, string)", "" + query + "   " + card.getName().toLowerCase());
 				cardList.add(card);
 			} 
 			if (CardListActivity.includeNeutralCards.isChecked()) {
 				if (card.getClasss() == null && card.getDescription() != null
 						&& card.getDescription().contains(selectedItem)
+						&& card.getName().toLowerCase().contains(query)
 						&& !card.getName().equals(classes.getHeroName())) {
 					cardList.add(card);
 				}
@@ -266,16 +297,24 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	}
 
 	private void setCardList(Classes classes) {
+		if (mSearchView != null) {
+			query = mSearchView.getQuery().toString().toLowerCase();
+		} else {
+			query = "";
+		}
+		Log.i("setCardList(Classes)", "" + query);
 		// Clear the current ArrayList so we can repopulate it
 		cardList.clear();
 		// Repopulate the card list with class cards
 		for (Cards card : cards) {
 			if (card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
-					&& !card.getName().equals(classes.getHeroName())) {
+					&& !card.getName().equals(classes.getHeroName())
+					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
 			} else if (CardListActivity.includeNeutralCards.isChecked()
-					&& card.getClasss() == null) {
+					&& card.getClasss() == null
+					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
 			}
 
@@ -295,7 +334,13 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	 * you select "Any" from the Spinner Overloaded version of previous function
 	 */
 	private void setCardList() {
-		// Clear the current ArrayList so we can repopulate it
+		
+		if (mSearchView != null) {
+			query = mSearchView.getQuery().toString().toLowerCase();
+		} else {
+			query = "";
+		}
+		
 		Classes[] classArray = new Classes[] { Classes.DRUID, Classes.HUNTER,
 				Classes.MAGE, Classes.PALADIN, Classes.PRIEST, Classes.ROGUE,
 				Classes.SHAMAN, Classes.WARLOCK, Classes.WARRIOR };
@@ -303,6 +348,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		if (!cardList.isEmpty()) {
 			cardList.clear();
 		}
+		Log.i("setCardList()", "" + query);
 
 		// Repopulate the card list with class cards
 		for (Cards card : cards) {
@@ -315,10 +361,12 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !name.equals(classArray[5].getHeroName())
 					&& !name.equals(classArray[6].getHeroName())
 					&& !name.equals(classArray[7].getHeroName())
-					&& !name.equals(classArray[8].getHeroName())) {
+					&& !name.equals(classArray[8].getHeroName())
+					&& name.toLowerCase().contains(query)) {
 				cardList.add(card);
 			} else if (CardListActivity.includeNeutralCards.isChecked()
-					&& card.getClasss() == null) {
+					&& card.getClasss() == null
+					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
 			}
 		}
@@ -336,13 +384,19 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				Classes.MAGE, Classes.PALADIN, Classes.PRIEST, Classes.ROGUE,
 				Classes.SHAMAN, Classes.WARLOCK, Classes.WARRIOR };
 
+		if (mSearchView != null) {
+			query = mSearchView.getQuery().toString().toLowerCase();
+		} else {
+			query = "";
+		}
+		
 		if (!cardList.isEmpty()) {
 			cardList.clear();
 		}
-
+		Log.i("query", "" + query);
 		// Repopulate the card list with class cards
 		for (Cards card : cards) {
-			String name = card.getName();
+			String name = card.getName().toLowerCase();
 			if (!name.equals(classArray[0].getHeroName())
 					&& !name.equals(classArray[1].getHeroName())
 					&& !name.equals(classArray[2].getHeroName())
@@ -352,11 +406,13 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !name.equals(classArray[6].getHeroName())
 					&& !name.equals(classArray[7].getHeroName())
 					&& !name.equals(classArray[8].getHeroName())
+					&& card.getName().toLowerCase().contains(query)
 					&& card.getDescription() != null
 					&& card.getDescription().contains(selectedItem)) {
 				cardList.add(card);
 			} else if (CardListActivity.includeNeutralCards.isChecked()
-					&& card.getClasss() == null) {
+					&& card.getClasss() == null
+					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
 			}
 		}

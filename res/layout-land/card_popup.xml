@@ -9,6 +9,7 @@
         android:id="@+id/tvCardName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/ivCardImages"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/ivCardImages"
@@ -17,9 +18,10 @@
         android:layout_marginRight="@dimen/card_name_padding"
         android:layout_marginTop="@dimen/card_name_top_padding"
         android:gravity="center"
+        android:paddingLeft="@dimen/card_icon_padding_left"
         android:text="TextView"
         android:textColor="@color/white"
-        android:textSize="16sp" />
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvType"
@@ -29,7 +31,8 @@
         android:layout_alignParentRight="true"
         android:layout_marginRight="16dp"
         android:text="Ability/Minion"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvQuality"
@@ -38,7 +41,8 @@
         android:layout_alignRight="@+id/tvType"
         android:layout_below="@+id/tvType"
         android:text="QualityType"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <ImageView
         android:id="@+id/ivCardImages"
@@ -47,6 +51,7 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvCardName"
         android:layout_marginRight="@dimen/card_icon_padding_right"
+        android:paddingLeft="@dimen/card_icon_padding_left"
         android:src="@drawable/cards" />
 
     <TextView
@@ -57,7 +62,8 @@
         android:layout_alignBottom="@+id/tvQuality"
         android:layout_alignLeft="@+id/tvClass"
         android:text="Set"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvCrafted"
@@ -70,7 +76,8 @@
         android:layout_marginRight="16dp"
         android:gravity="center"
         android:text="Crafted"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="@dimen/card_list_textview" />
 
     <TextView
         android:id="@+id/tvClass"
@@ -81,6 +88,6 @@
         android:layout_toRightOf="@+id/ivCardImages"
         android:text="Class"
         android:textColor="#FFFFFF"
-        android:textSize="16sp" />
+        android:textSize="@dimen/card_list_textview" />
 
 </RelativeLayout>

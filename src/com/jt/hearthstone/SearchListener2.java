@@ -2,8 +2,8 @@ package com.jt.hearthstone;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
@@ -12,34 +12,35 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
 
-public class CustomSearchListener implements SearchView.OnQueryTextListener {
+@SuppressLint("DefaultLocale")
+public class SearchListener2 implements SearchView.OnQueryTextListener {
 
 	private ArrayList<Cards> cardList;
 	private Cards[] cards;
 	private GridView grid;
 	private ImageAdapter adapter;
 	private MenuItem searchItem;
-	private Spinner spinnerSort = CardListFragment.spinnerSort;
+	private Spinner spinner = CardListActivity.spinner;
+	private Spinner spinnerSort = CardListActivity.spinnerSort;
 	private Spinner spinnerMechanic;
 	private CustomListAdapter adapter2;
 	private ListView listCards;
-	private CheckBox cbGenerics = CardListFragment.includeNeutralCards;
-	private CheckBox cbReverse = CardListFragment.cbReverse;
-	private List<Integer> deckClasses;
-	private int deckListPos = CardListFragment.deckListPos;
+	private CheckBox cbGenerics = CardListActivity.includeNeutralCards;
+	private CheckBox cbReverse = CardListActivity.cbReverse;
+	static String currentText;
 
-	public CustomSearchListener(ArrayList<Cards> cardList, Cards[] cards,
+	public SearchListener2(ArrayList<Cards> cardList, Cards[] cards,
 			GridView grid, ListView listCards, ImageAdapter adapter,
 			CustomListAdapter adapter2, MenuItem searchItem, Spinner spinner,
-			List<Integer> deckClasses, Spinner spinnerMechanic) {
+			Spinner spinnerMechanic) {
 		this.cardList = cardList;
 		this.cards = cards;
 		this.grid = grid;
 		this.adapter = adapter;
 		this.searchItem = searchItem;
+		this.spinner = spinner;
 		this.listCards = listCards;
 		this.adapter2 = adapter2;
-		this.deckClasses = deckClasses;
 		this.spinnerMechanic = spinnerMechanic;
 	}
 
@@ -47,32 +48,36 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 		if (!cardList.isEmpty()) {
 			cardList.clear();
 		}
-		switch (deckClasses.get(deckListPos)) {
+		currentText = newText;
+		switch (spinner.getSelectedItemPosition()) {
 		case 0:
-			setCardList(newText, Classes.DRUID);
+			setCardList(newText);
 			return false;
 		case 1:
-			setCardList(newText, Classes.HUNTER);
+			setCardList(newText, Classes.DRUID);
 			return false;
 		case 2:
-			setCardList(newText, Classes.MAGE);
+			setCardList(newText, Classes.HUNTER);
 			return false;
 		case 3:
-			setCardList(newText, Classes.PALADIN);
+			setCardList(newText, Classes.MAGE);
 			return false;
 		case 4:
-			setCardList(newText, Classes.PRIEST);
+			setCardList(newText, Classes.PALADIN);
 			return false;
 		case 5:
-			setCardList(newText, Classes.ROGUE);
+			setCardList(newText, Classes.PRIEST);
 			return false;
 		case 6:
-			setCardList(newText, Classes.SHAMAN);
+			setCardList(newText, Classes.ROGUE);
 			return false;
 		case 7:
-			setCardList(newText, Classes.WARLOCK);
+			setCardList(newText, Classes.SHAMAN);
 			return false;
 		case 8:
+			setCardList(newText, Classes.WARLOCK);
+			return false;
+		case 9:
 			setCardList(newText, Classes.WARRIOR);
 			return false;
 		default:
@@ -101,10 +106,10 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 		for (Cards card : cards) {
 			if (card.getName().toLowerCase().contains(searchText)
 					&& !mechanic.equals("Any") && card.getDescription() != null
-					&& card.getDescription().equals(mechanic)) {
+					&& card.getDescription().contains(mechanic)) {
 				cardList.add(card);
-			} else if (card.getName().toLowerCase().contains(searchText)
-					&& mechanic.equals("Any")) {
+			} else if (mechanic.equals("Any")
+					&& card.getName().toLowerCase().contains(searchText)) {
 				cardList.add(card);
 			}
 		}
@@ -126,27 +131,26 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 		for (Cards card : cards) {
 			if (card.getClasss() != null
 					&& card.getClasss().intValue() == clazz.getValue()
+					&& card.getName().toLowerCase().contains(searchText)
 					&& !mechanic.equals("Any") && card.getDescription() != null
-					&& card.getDescription().contains(mechanic)
-					&& card.getName().toLowerCase().contains(searchText)) {
+					&& card.getDescription().contains(mechanic)) {
 				cardList.add(card);
 			} else if (card.getClasss() != null
 					&& card.getClasss().intValue() == clazz.getValue()
-					&& mechanic.equals("Any")
-					&& card.getName().toLowerCase().contains(searchText)) {
+					&& card.getName().toLowerCase().contains(searchText)
+					&& mechanic.equals("Any")) {
 				cardList.add(card);
 			}
 			if (cbGenerics.isChecked()) {
-				if (card.getClasss() == null
-						&& card.getName().toLowerCase().contains(searchText)
-						&& !mechanic.equals("Any")
-						&& card.getDescription() != null
-						&& card.getDescription().contains(mechanic)) {
-					cardList.add(card);
-				} else if (card.getClasss() == null
-						&& card.getName().toLowerCase().contains(searchText)
-						&& mechanic.equals("Any")) {
-					cardList.add(card);
+				if (card.getClasss() == null) {
+					if (card.getName().toLowerCase().contains(searchText)
+							&& !mechanic.equals("Any")
+							&& card.getDescription() != null
+							&& card.getDescription().contains(mechanic)) {
+						cardList.add(card);
+					} else if (card.getName().toLowerCase().contains(searchText) && mechanic.equals("Any")) {
+						cardList.add(card);
+					}
 				}
 			}
 

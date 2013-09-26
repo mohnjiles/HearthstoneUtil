@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#666666"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
     tools:context=".DeckActivity" >
 
     <ListView
@@ -22,7 +24,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvNumCards"
+        android:columnWidth="@dimen/grid_column_width"
         android:numColumns="auto_fit" >
+
     </GridView>
 
     <TextView

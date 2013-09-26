@@ -54,76 +54,58 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
-import butterknife.Views;
 
 import com.google.gson.Gson;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class CardListActivity extends ActionBarActivity {
 
-	public static Spinner spinner;
-	public static Spinner spinnerSort;
-	public static Spinner spinnerMechanic;
-	GridView grid;
-	Cards[] cards;
-	ImageAdapter adapter;
-	PopupWindow pWindow;
-	public static CheckBox includeNeutralCards;
-	public static CheckBox cbReverse;
-	TextView tvCardName;
-	TextView tvType;
-	TextView tvQuality;
-	TextView tvSet;
-	TextView tvCrafted;
-	TextView tvClass;
-	ImageView ivCardImage;
-
-	int druid = Classes.DRUID.getValue();
-	int hunter = Classes.HUNTER.getValue();
-	int mage = Classes.MAGE.getValue();
-	int paladin = Classes.PALADIN.getValue();
-	int priest = Classes.PRIEST.getValue();
-	int rogue = Classes.ROGUE.getValue();
-	int shaman = Classes.SHAMAN.getValue();
-	int warlock = Classes.WARLOCK.getValue();
-	int warrior = Classes.WARRIOR.getValue();
-	int pos = CustomOnItemSelectedListener.position;
-
-	boolean isGrid = false;
-	public static boolean reverse = false;
-
-	private SearchView mSearchView;
-	private MenuItem searchItem;
+	static Spinner spinner;
+	static Spinner spinnerSort;
+	static Spinner spinnerMechanic;
+	static CheckBox includeNeutralCards;
+	static CheckBox cbReverse;
+	static SearchView mSearchView;
+	
+	static boolean reverse = false;
+	
+	private GridView grid;
 	private ListView listCards;
+	private PopupWindow pWindow;
+	private TextView tvCardName;
+	private TextView tvType;
+	private TextView tvQuality;
+	private TextView tvSet;
+	private TextView tvCrafted;
+	private TextView tvClass;
+	private ImageView ivCardImage;
 
+	private MenuItem searchItem;
+	private List<Cards> deckOne;
+	private List<Cards> deckTwo;
+	private List<Cards> deckThree;
+	private List<Cards> deckFour;
+	private List<Cards> deckFive;
+	private List<Cards> deckSix;
+	private List<Cards> deckSeven;
+	private List<Cards> deckEight;
+	private List<Cards> deckNine;
+	private List<Cards> deckTen;
+	
+	private ArrayList<Cards> cardList;
+	private ArrayList<String> deckList;
+	private Cards[] cards;
+	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
-	public static ImageLoader loader = ImageLoader.getInstance();
-	public static ArrayList<Cards> cardList;
-	public static ArrayList<String> deckList;
+	private ImageLoader loader = ImageLoader.getInstance();
+
+	private int pos = OnItemSelectedListenerStandalone.position;
 	private int position;
 	private int menuItemIndex;
+	private boolean isGrid = false;
 
-	public static List<Cards> deckOne;
-	public static List<Cards> deckTwo;
-	public static List<Cards> deckThree;
-	public static List<Cards> deckFour;
-	public static List<Cards> deckFive;
-	public static List<Cards> deckSix;
-	public static List<Cards> deckSeven;
-	public static List<Cards> deckEight;
-	public static List<Cards> deckNine;
-	public static List<Cards> deckTen;
-	public static List<Cards> deckEleven;
-	public static List<Cards> deckTwelve;
-	public static List<Cards> deckThirteen;
-	public static List<Cards> deckFourteen;
-	public static List<Cards> deckFifteen;
-	public static List<Cards> deckSixteen;
-	public static List<Cards> deckSeventeen;
-	public static List<Cards> deckEighteen;
-	public static List<Cards> deckNineteen;
-	public static List<Cards> deckTwenty;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -138,15 +120,16 @@ public class CardListActivity extends ActionBarActivity {
 		includeNeutralCards = findById(this, R.id.cbGenerics);
 		cbReverse = findById(this, R.id.cbReverse);
 		spinner = findById(this, R.id.spinClass);
-		spinnerSort = findById(this, R.id.spinnerSort);
+		spinnerSort = findById(this, R.id.spinSort);
 		spinnerMechanic = findById(this, R.id.spinnerMechanic);
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
 		registerForContextMenu(listCards);
+		registerForContextMenu(grid);
 
 		// Set ActionBar Title
-		setTitle("Hearthstone Companion");
+		getSupportActionBar().setTitle("Hearthstone Companion");
 
 		// Show Up button on ActionBar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -161,7 +144,9 @@ public class CardListActivity extends ActionBarActivity {
 				this).denyCacheImageMultipleSizesInMemory().build();
 
 		// Initialize the ImageLoader
-		loader.init(config);
+		if (!loader.isInited()) {
+			loader.init(config);
+		}
 
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
@@ -205,20 +190,25 @@ public class CardListActivity extends ActionBarActivity {
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
 						// if the user is checking the box, add generic cards
-						if (isChecked  && !spinner.getSelectedItem().equals("All")) {
+						if (isChecked
+								&& !spinner.getSelectedItem().equals("All")) {
 							String mechanic = spinnerMechanic.getSelectedItem()
 									.toString();
 							for (Cards card : cards) {
 								if (card.getClasss() == null
 										&& !mechanic.equals("Any")
 										&& card.getDescription() != null
+										&& card.getName().contains(
+												mSearchView.getQuery())
 										&& card.getDescription().contains(
 												mechanic)) {
 
 									cardList.add(card);
 								} else {
 									if (card.getClasss() == null
-											&& mechanic.equals("Any")) {
+											&& mechanic.equals("Any")
+											&& card.getName().contains(
+													mSearchView.getQuery())) {
 										cardList.add(card);
 									}
 								}
@@ -238,7 +228,9 @@ public class CardListActivity extends ActionBarActivity {
 							// other app?????
 						} else {
 							for (Cards card : cards) {
-								if (card.getClasss() == null  && !spinner.getSelectedItem().equals("All")) {
+								if (card.getClasss() == null
+										&& !spinner.getSelectedItem().equals(
+												"All")) {
 									cardList.remove(card);
 								}
 							}
@@ -273,12 +265,27 @@ public class CardListActivity extends ActionBarActivity {
 					}
 
 				});
-		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
-				cardList, cards, grid, listCards, adapter, adapter2);
-		spinner.setOnItemSelectedListener(listener);
-		spinnerSort.setOnItemSelectedListener(listener);
-		spinnerMechanic.setOnItemSelectedListener(listener);
-		// Get the decks from the file
+		String[] mechanicNames = getResources()
+				.getStringArray(R.array.Mechanic);
+		String[] sortNames = getResources().getStringArray(R.array.Sort);
+		String[] classNames = getResources().getStringArray(R.array.Classes);
+
+		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
+				R.layout.spinner_row, R.id.name, classNames);
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		ArrayAdapter<String> spinSortAdapter = new ArrayAdapter<String>(this,
+				R.layout.spinner_row, R.id.name, sortNames);
+		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		ArrayAdapter<String> spinMechanicAdapter = new ArrayAdapter<String>(
+				this, R.layout.spinner_row, R.id.name, mechanicNames);
+		spinMechanicAdapter
+				.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		spinner.setAdapter(spinAdapter);
+		spinnerSort.setAdapter(spinSortAdapter);
+		spinnerMechanic.setAdapter(spinMechanicAdapter);
 
 	}
 
@@ -289,9 +296,16 @@ public class CardListActivity extends ActionBarActivity {
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new CustomSearchListener(cardList,
-				cards, grid, listCards, adapter, adapter2, searchItem, spinner,
-				DeckSelector.deckClasses));
+		mSearchView.setOnQueryTextListener(new SearchListener2(cardList, cards,
+				grid, listCards, adapter, adapter2, searchItem, spinner,
+				spinnerMechanic));
+
+		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
+				cardList, cards, grid, listCards, adapter, adapter2,
+				mSearchView);
+		spinner.setOnItemSelectedListener(listener);
+		spinnerSort.setOnItemSelectedListener(listener);
+		spinnerMechanic.setOnItemSelectedListener(listener);
 		return true;
 	}
 
@@ -370,19 +384,23 @@ public class CardListActivity extends ActionBarActivity {
 
 				// Building dialog
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				String[] classes = getResources().getStringArray(R.array.ClassesWithoutAny);
-				ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
-				         R.layout.spinner_row, R.id.name, classes);
-				spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+				String[] classes = getResources().getStringArray(
+						R.array.ClassesWithoutAny);
+				ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(
+						this, R.layout.spinner_row, R.id.name, classes);
+				spinAdapter
+						.setDropDownViewResource(R.layout.spinner_dropdown_row);
 				spinnerClass.setAdapter(spinAdapter);
 				builder.setView(layout);
 				builder.setPositiveButton("Save",
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							public void onClick(DialogInterface dialog,
+									int which) {
 								dialog.dismiss();
 								deckList.add(nameBox.getText().toString());
-								deckClasses.add(spinnerClass.getSelectedItemPosition());
+								deckClasses.add(spinnerClass
+										.getSelectedItemPosition());
 								FileOutputStream fos = null;
 								try {
 									fos = openFileOutput("decklist",
@@ -488,7 +506,7 @@ public class CardListActivity extends ActionBarActivity {
 			int dipsHeightLandscape_Normal = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 300, getResources()
 							.getDisplayMetrics());
-			
+
 			int dipsWidthPortrait_Large = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
 							.getDisplayMetrics());
@@ -501,7 +519,7 @@ public class CardListActivity extends ActionBarActivity {
 			int dipsHeightLandscape_Large = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 425, getResources()
 							.getDisplayMetrics());
-			
+
 			int dipsWidthPortrait_Small = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
 							.getDisplayMetrics());
@@ -514,7 +532,7 @@ public class CardListActivity extends ActionBarActivity {
 			int dipsHeightLandscape_Small = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 200, getResources()
 							.getDisplayMetrics());
-			
+
 			int dipsWidthPortrait_XLarge = (int) TypedValue.applyDimension(
 					TypedValue.COMPLEX_UNIT_DIP, 600, getResources()
 							.getDisplayMetrics());
@@ -566,9 +584,12 @@ public class CardListActivity extends ActionBarActivity {
 			}
 
 			// Get card image
-			String url = "http://jt.comyr.com/images/big/"
+			String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			loader.displayImage(url, ivCardImage);
+			DisplayImageOptions options = new DisplayImageOptions.Builder()
+					.showStubImage(R.drawable.cards).cacheInMemory(false)
+					.cacheOnDisc(true).build();
+			loader.displayImage(url, ivCardImage, options);
 
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());

@@ -17,7 +17,7 @@
 	    android:gravity="left"
 	    android:text="aggg"
 	    android:textColor="#FFFFFF"
-	    android:textSize="12sp" />
+	    android:textSize="@dimen/spinner_textview" />
 
 	<ImageView
 	    android:id="@+id/imageView1"
