@@ -21,18 +21,24 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+/**
+ * Fragment that holds five ImageViews to display Basic class cards
+ * 
+ * @author JT
+ * 
+ */
 public class BasicCardsFragment extends Fragment {
 
 	private ImageLoader loader = ImageLoader.getInstance();
-	
+
 	private ImageView ivFreeCardOne;
 	private ImageView ivFreeCardTwo;
 	private ImageView ivFreeCardThree;
 	private ImageView ivFreeCardFour;
 	private ImageView ivFreeCardFive;
-	
+
 	private Cards[] cards;
-	
+
 	private String url = "http://54.224.222.135/";
 	private int position;
 
@@ -111,6 +117,7 @@ public class BasicCardsFragment extends Fragment {
 		}
 	}
 
+	// GSON to POJO
 	private void getCards() {
 		Gson gson = new Gson();
 		InputStream is = getResources().openRawResource(R.raw.cards);
@@ -144,6 +151,16 @@ public class BasicCardsFragment extends Fragment {
 		cards = gson.fromJson(jsonString, Cards[].class);
 	}
 
+	/**
+	 * Function that sets card images based on the name
+	 * of the card passed to it.
+	 * 
+	 * @param card1 Name of the first card to load, as a String
+	 * @param card2 Name of the second card to load, as a String
+	 * @param card3 Name of the third card to load, as a String
+	 * @param card4 Name of the fourth card to load, as a String
+	 * @param card5 Name of the fifth card to load, as a String
+	 */
 	private void setCards(String card1, String card2, String card3,
 			String card4, String card5) {
 		for (Cards card : cards) {

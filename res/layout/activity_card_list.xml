@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#666666"
+    android:background="@drawable/app_bg"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     tools:context=".MainActivity" >
@@ -52,7 +52,7 @@
         android:layout_marginTop="6dp"
         android:gravity="center_vertical"
         android:text="Mechanic: "
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="@dimen/card_list_textview" />
 
     <Spinner
@@ -86,7 +86,7 @@
         android:layout_marginLeft="8dp"
         android:gravity="center_vertical"
         android:text="Sort:"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="@dimen/card_list_textview" />
 
     <CheckBox
@@ -97,8 +97,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/TextView01"
         android:layout_marginRight="8dp"
-        android:text="Generic Cards"
-        android:textColor="#FFFFFF"
+        android:text="Neutral Cards"
+        android:textColor="#000000"
         android:textSize="@dimen/spinner_textview" />
 
     <CheckBox
@@ -109,7 +109,7 @@
         android:layout_alignLeft="@+id/cbGenerics"
         android:layout_alignTop="@+id/spinnerSort"
         android:text="Reverse Sort"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="@dimen/spinner_textview" />
 
     <RelativeLayout
@@ -121,7 +121,7 @@
         android:background="#BC000000" >
 
         <ImageView
-            android:id="@+id/imageView2"
+            android:id="@+id/ivBackground"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -132,7 +132,7 @@
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@+id/imageView2"
+            android:layout_above="@+id/ivBackground"
             android:layout_centerHorizontal="true"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"

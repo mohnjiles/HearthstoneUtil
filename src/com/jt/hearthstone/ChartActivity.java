@@ -14,6 +14,7 @@ import org.achartengine.renderer.XYMultipleSeriesRenderer;
 import org.achartengine.renderer.XYSeriesRenderer;
 
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -21,32 +22,49 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 public class ChartActivity extends Fragment {
-	static GraphicalView mChart;
-	static GraphicalView mPieChart;
-	static LinearLayout layout;
-	static LinearLayout layout2;
+	public GraphicalView mChart;
+	public GraphicalView mPieChart;
+	public LinearLayout layout;
+	public LinearLayout layout2;
 
-	static XYSeries mCurrentSeries = new XYSeries("Cards");
-	static DefaultRenderer mRenderer2 = new DefaultRenderer();
-	static CategorySeries mSeries = new CategorySeries("Card Types");
+	public XYSeries mCurrentSeries = new XYSeries("Cards");
+	public DefaultRenderer mRenderer2 = new DefaultRenderer();
+	public CategorySeries mSeries = new CategorySeries("Card Types");
 
-	private List<Cards> cardList = DeckActivity.cardList;
+	private List<Cards> cardList;
 	private XYSeriesRenderer mCurrentRenderer;
 	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
+	
+	private TextView tvType;
+	private TextView tvMana;
+	
+	private DeckActivity deckFrag;
 
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/belwebd.ttf");
+		
 		// Inflate the layout for this fragment
 
 		View V = inflater.inflate(R.layout.activity_chart, container, false);
 		layout = (LinearLayout) V.findViewById(R.id.barLayout);
 		layout2 = (LinearLayout) V.findViewById(R.id.pieLayout);
+		tvMana = (TextView) V.findViewById(R.id.textView2);
+		tvType = (TextView) V.findViewById(R.id.textView1);
 
+		tvMana.setTypeface(font);
+		tvType.setTypeface(font);
+		
+		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager().findFragmentByTag(makeFragmentName(R.id.pager, 1));
+		cardList = deckFrag.cardList;
+		
 		return V;
 	}
 
@@ -84,7 +102,7 @@ public class ChartActivity extends Fragment {
 
 	private void addSampleData() {
 		int[] costs = new int[50];
-		cardList = DeckActivity.cardList;
+		cardList = deckFrag.cardList;
 		for (Cards card : cardList) {
 			if (card.getCost() != null) {
 				costs[card.getCost().intValue()]++;
@@ -130,9 +148,9 @@ public class ChartActivity extends Fragment {
 		int minions = 0;
 		int series = 0;
 
-		int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
+		final int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
 				Color.rgb(60, 242, 0) };
-		int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
+		final int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
 				Color.rgb(8, 196, 0) };
 		
 		mRenderer2.setStartAngle(180);
@@ -140,10 +158,10 @@ public class ChartActivity extends Fragment {
 		mRenderer2.setPanEnabled(false);
 		mRenderer2.setInScroll(true);
 		mRenderer2.setLabelsTextSize(14.0f);
-		mRenderer2.setLabelsColor(Color.WHITE);
+		mRenderer2.setLabelsColor(Color.BLACK);
 		mRenderer2.setShowLegend(false);
 		
-		cardList = DeckActivity.cardList;
+		cardList = deckFrag.cardList;
 
 		for (Cards card : cardList) {
 			if (card.getType() != null && card.getType().intValue() == 4) {
@@ -176,6 +194,10 @@ public class ChartActivity extends Fragment {
 			seriesRenderer.setGradientStop(20, colors2[i]);
 			mRenderer2.addSeriesRenderer(seriesRenderer);
 		}
+	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
 	}
 
 

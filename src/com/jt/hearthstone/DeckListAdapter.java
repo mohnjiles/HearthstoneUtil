@@ -1,9 +1,18 @@
 package com.jt.hearthstone;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.os.AsyncTask;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -36,6 +45,7 @@ public class DeckListAdapter extends BaseAdapter {
     // Custom ViewHolder class to make scrolling smoother
     static class ViewHolderTwo {
     	ImageView ivClassIcon = null;
+		ImageView ivBackground = null;
     	TextView tvCardName = null;
     	TextView tvManaCost = null;
     	TextView tvAttack = null;
@@ -49,6 +59,7 @@ public class DeckListAdapter extends BaseAdapter {
     	String attack = null;
     	String health = null;
     	String mana = null;
+    	Typeface font = TypefaceCache.get(mContext.getAssets(), "fonts/belwebd.ttf");
     	
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
@@ -62,6 +73,8 @@ public class DeckListAdapter extends BaseAdapter {
     		vh.tvAttack = (TextView) convertView.findViewById(R.id.tvAttack);
     		vh.tvHealth = (TextView) convertView.findViewById(R.id.tvHealth);
     		vh.tvManaCost = (TextView) convertView.findViewById(R.id.tvMana);
+    		vh.ivBackground = (ImageView) convertView
+					.findViewById(R.id.ivBackground);
     		convertView.setTag(vh);	
     		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
     		
@@ -69,6 +82,18 @@ public class DeckListAdapter extends BaseAdapter {
     		vh = (ViewHolderTwo)convertView.getTag();
     	}
     	
+		String mDrawablename = "files_" + cardList.get(position).getImage().toLowerCase() + "_rect";
+		int resID = mContext.getResources().getIdentifier(mDrawablename, "drawable", mContext.getPackageName());
+		
+		vh.ivBackground.setImageResource(resID);
+
+		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		vh.tvCardName.setTypeface(font);
+		vh.tvAttack.setTypeface(font);
+		vh.tvHealth.setTypeface(font);
+		vh.tvManaCost.setTypeface(font);
     	
 		int quality = cardList.get(position).getQuality().intValue();
 		
@@ -173,5 +198,4 @@ public class DeckListAdapter extends BaseAdapter {
     	return convertView;
     	
     }
-
 }

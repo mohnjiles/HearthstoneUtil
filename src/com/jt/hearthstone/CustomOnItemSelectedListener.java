@@ -1,55 +1,32 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 import android.annotation.SuppressLint;
-import android.support.v7.widget.SearchView;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.CheckBox;
-import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Spinner;
 
 @SuppressLint("DefaultLocale")
 public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 
-	private ArrayList<Cards> cardList;
-	private Cards[] cards;
-	private GridView grid;
-	private ImageAdapter adapter;
-	private CustomListAdapter adapter2;
-	private CheckBox cbReverse = CardListFragment.cbReverse;
-	private Spinner spinnerSort = CardListFragment.spinnerSort;
-	private ListView listCards;
-	private String query;
-	private SearchView mSearchView;
-	private List<Integer> deckClasses;
+	private CardListFragment cardListFrag;
 	static int position = 0;
-	private boolean reverse = CardListActivity.reverse;
+	private String query;
 
-	public CustomOnItemSelectedListener(ArrayList<Cards> cardList,
-			Cards[] cards, GridView grid, ListView listCards,
-			ImageAdapter adapter, CustomListAdapter adapter2,
-			List<Integer> classes, SearchView mSearchView) {
-		this.cardList = cardList;
-		this.cards = cards;
-		this.grid = grid;
-		this.adapter = adapter;
-		this.listCards = listCards;
-		this.adapter2 = adapter2;
-		this.deckClasses = classes;
-		this.mSearchView = mSearchView;
+	public CustomOnItemSelectedListener(FragmentActivity activity) {
 
+		cardListFrag = (CardListFragment) activity.getSupportFragmentManager()
+				.findFragmentByTag(makeFragmentName(R.id.pager, 0));
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
-		
+
 		Spinner spinner = (Spinner) parent;
 		if (spinner.getId() == R.id.spinClass) {
 			switch (pos) {
@@ -95,45 +72,27 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 
 		} else if (spinner.getId() == R.id.spinnerSort) {
 			position = pos;
-			Collections.sort(cardList,
-					new CardComparator(pos, cbReverse.isChecked()));
-			adapter.notifyDataSetChanged();
-			adapter2.notifyDataSetChanged();
-			grid.setAdapter(adapter);
-			listCards.setAdapter(adapter2);
+			Collections.sort(cardListFrag.cardList, new CardComparator(pos,
+					cardListFrag.cbReverse.isChecked()));
+			cardListFrag.adapter.notifyDataSetChanged();
+			cardListFrag.adapter2.notifyDataSetChanged();
+			cardListFrag.grid.setAdapter(cardListFrag.adapter);
+			cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 
 		} else if (spinner.getId() == R.id.spinnerMechanic) {
-			switch (deckClasses.get(CardListFragment.deckListPos)) {
-			case 0:
-				if (mSearchView != null) {
-					query = mSearchView.getQuery().toString().toLowerCase();
+			switch (cardListFrag.deckClasses.get(cardListFrag.deckListPos)) {
+			case 0: 
+				if (cardListFrag.mSearchView != null) {
+					query = cardListFrag.mSearchView.getQuery().toString()
+							.toLowerCase();
 				} else {
 					query = "";
 				}
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.DRUID, "");
 				} else {
-					cardList.clear();
-					for (Cards card : cards) {
-						if (card.getDescription() != null
-								&& card.getClasss() != null
-								&& card.getClasss().intValue() == Classes.DRUID
-										.getValue()
-								&& card.getName().toLowerCase().contains(query)
-								&& card.getDescription().contains(
-										spinner.getSelectedItem().toString())) {
-							cardList.add(card);
-						}
-					}
-					Collections.sort(
-							cardList,
-							new CardComparator(spinnerSort
-									.getSelectedItemPosition(), cbReverse
-									.isChecked()));
-					adapter.notifyDataSetChanged();
-					adapter2.notifyDataSetChanged();
-					grid.setAdapter(adapter);
-					listCards.setAdapter(adapter2);
+					setCardList(Classes.DRUID, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 1:
@@ -215,65 +174,73 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	 * any class other than "Any" from the Spinner
 	 */
 	private void setCardList(Classes classes, String selectedItem) {
-		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+		if (cardListFrag.mSearchView != null) {
+			query = cardListFrag.mSearchView.getQuery().toString()
+					.toLowerCase();
 		} else {
 			query = "";
 		}
-		cardList.clear();
-		for (Cards card : cards) {
+		cardListFrag.cardList.clear();
+		for (Cards card : cardListFrag.cards) {
 			if (card.getDescription() != null && card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getDescription().contains(selectedItem)
 					&& card.getName().toLowerCase().contains(query)
 					&& !card.getName().equals(classes.getHeroName())) {
-				cardList.add(card);
+				cardListFrag.cardList.add(card);
 			}
-			if (CardListFragment.includeNeutralCards.isChecked()) {
-				if (card.getClasss() == null && card.getDescription() != null
-						&& card.getDescription().contains(selectedItem)
-						&& card.getName().toLowerCase().contains(query)
-						&& !card.getName().equals(classes.getHeroName())) {
-					cardList.add(card);
-				}
+			if (cardListFrag.includeNeutralCards.isChecked()
+					&& card.getClasss() == null
+					&& card.getDescription() != null
+					&& card.getDescription().contains(selectedItem)
+					&& card.getName().toLowerCase().contains(query)
+					&& !card.getName().equals(classes.getHeroName())) {
+				cardListFrag.cardList.add(card);
+				Log.w("NEUTRAL CARDS", "WE ADD NEUTRAL CARDS HERE");
 			}
 		}
-		Collections.sort(cardList,
-				new CardComparator(spinnerSort.getSelectedItemPosition(),
-						cbReverse.isChecked()));
+		Collections.sort(cardListFrag.cardList, new CardComparator(
+				cardListFrag.spinnerSort.getSelectedItemPosition(),
+				cardListFrag.cbReverse.isChecked()));
 
-		adapter.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
-		grid.setAdapter(adapter);
-		listCards.setAdapter(adapter2);
+		cardListFrag.adapter.notifyDataSetChanged();
+		cardListFrag.adapter2.notifyDataSetChanged();
+		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 	}
 
 	private void setCardList(Classes classes) {
-		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+		if (cardListFrag.mSearchView != null) {
+			query = cardListFrag.mSearchView.getQuery().toString()
+					.toLowerCase();
 		} else {
 			query = "";
 		}
 		// Clear the current ArrayList so we can repopulate it
-		cardList.clear();
-		// Repopulate the card list with class cards
-		for (Cards card : cards) {
+		cardListFrag.cardList.clear();
+		// Repopulate the card list with class cardListFrag.cards
+		for (Cards card : cardListFrag.cards) {
 			if (card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getName().toLowerCase().contains(query)
 					&& !card.getName().equals(classes.getHeroName())) {
-				cardList.add(card);
+				cardListFrag.cardList.add(card);
+			}
+			if (cardListFrag.includeNeutralCards.isChecked()
+					&& card.getName().toLowerCase().contains(query)
+					&& card.getClasss() == null) {
+				cardListFrag.cardList.add(card);
 			}
 
 		}
 
-		Collections.sort(cardList,
-				new CardComparator(spinnerSort.getSelectedItemPosition(),
-						cbReverse.isChecked()));
-		adapter.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
-		grid.setAdapter(adapter);
-		listCards.setAdapter(adapter2);
+		Collections.sort(cardListFrag.cardList, new CardComparator(
+				cardListFrag.spinnerSort.getSelectedItemPosition(),
+				cardListFrag.cbReverse.isChecked()));
+		cardListFrag.adapter.notifyDataSetChanged();
+		cardListFrag.adapter2.notifyDataSetChanged();
+		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 	}
 
 	/*
@@ -281,8 +248,9 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	 * you select "Any" from the Spinner Overloaded version of previous function
 	 */
 	private void setCardList() {
-		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+		if (cardListFrag.mSearchView != null) {
+			query = cardListFrag.mSearchView.getQuery().toString()
+					.toLowerCase();
 		} else {
 			query = "";
 		}
@@ -291,12 +259,12 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 				Classes.MAGE, Classes.PALADIN, Classes.PRIEST, Classes.ROGUE,
 				Classes.SHAMAN, Classes.WARLOCK, Classes.WARRIOR };
 
-		if (!cardList.isEmpty()) {
-			cardList.clear();
+		if (!cardListFrag.cardList.isEmpty()) {
+			cardListFrag.cardList.clear();
 		}
 
-		// Repopulate the card list with class cards
-		for (Cards card : cards) {
+		// Repopulate the card list with class cardListFrag.cards
+		for (Cards card : cardListFrag.cards) {
 			String name = card.getName();
 			if (!name.equals(classArray[0].getHeroName())
 					&& !name.equals(classArray[1].getHeroName())
@@ -310,19 +278,23 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 					&& card.getName().toLowerCase().contains(query)
 					&& card.getClasss() != null
 					&& card.getClasss().intValue() == Classes.DRUID.getValue()) {
-				cardList.add(card);
-			} else if (CardListFragment.includeNeutralCards.isChecked()
+				cardListFrag.cardList.add(card);
+			}
+			if (cardListFrag.includeNeutralCards.isChecked()
 					&& card.getName().toLowerCase().contains(query)
 					&& card.getClasss() == null) {
-				cardList.add(card);
+				cardListFrag.cardList.add(card);
 			}
 		}
-		Collections.sort(cardList,
-				new CardComparator(spinnerSort.getSelectedItemPosition(),
-						reverse));
-		adapter.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
-		grid.setAdapter(adapter);
-		listCards.setAdapter(adapter2);
+		Collections.sort(cardListFrag.cardList, new CardComparator(
+				cardListFrag.spinnerSort.getSelectedItemPosition(), cardListFrag.reverse));
+		cardListFrag.adapter.notifyDataSetChanged();
+		cardListFrag.adapter2.notifyDataSetChanged();
+		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
+	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
 	}
 }

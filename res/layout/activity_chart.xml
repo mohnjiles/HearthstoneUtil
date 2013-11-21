@@ -3,6 +3,7 @@
     android:id="@+id/scrollView1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/app_bg"
     android:fillViewport="true"
     android:padding="8dp"
     tools:context=".ChartActivity" >
@@ -11,7 +12,6 @@
         android:id="@+id/chartLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#666666"
         android:orientation="vertical" >
 
         <TextView
@@ -20,13 +20,12 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Type Breakdown"
-            android:textColor="#FFFFFF" />
+            android:textColor="#000000" />
 
         <LinearLayout
             android:id="@+id/barLayout"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:background="#666666"
             android:orientation="vertical" >
         </LinearLayout>
         
@@ -36,13 +35,12 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="Mana Curve"
-            android:textColor="#FFFFFF" />
+            android:textColor="#000000" />
         
         <LinearLayout
             android:id="@+id/pieLayout"
             android:layout_width="match_parent"
             android:layout_height="350dp"
-            android:background="#666666"
             android:orientation="vertical" >
         </LinearLayout>
     </LinearLayout>

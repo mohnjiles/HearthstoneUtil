@@ -3,8 +3,11 @@ package com.jt.hearthstone;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static butterknife.Views.findById;
+
 import android.annotation.SuppressLint;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.view.MenuItem;
 import android.widget.CheckBox;
@@ -20,28 +23,31 @@ public class SearchListener2 implements SearchView.OnQueryTextListener {
 	private GridView grid;
 	private ImageAdapter adapter;
 	private MenuItem searchItem;
-	private Spinner spinner = CardListActivity.spinner;
-	private Spinner spinnerSort = CardListActivity.spinnerSort;
+	private Spinner spinner;
+	private Spinner spinnerSort;
 	private Spinner spinnerMechanic;
 	private CustomListAdapter adapter2;
 	private ListView listCards;
-	private CheckBox cbGenerics = CardListActivity.includeNeutralCards;
-	private CheckBox cbReverse = CardListActivity.cbReverse;
+	private CheckBox cbGenerics;
+	private CheckBox cbReverse;
 	static String currentText;
 
-	public SearchListener2(ArrayList<Cards> cardList, Cards[] cards,
+	public SearchListener2(ActionBarActivity activity, ArrayList<Cards> cardList, Cards[] cards,
 			GridView grid, ListView listCards, ImageAdapter adapter,
-			CustomListAdapter adapter2, MenuItem searchItem, Spinner spinner,
-			Spinner spinnerMechanic) {
+			CustomListAdapter adapter2, MenuItem searchItem) {
 		this.cardList = cardList;
 		this.cards = cards;
 		this.grid = grid;
 		this.adapter = adapter;
 		this.searchItem = searchItem;
-		this.spinner = spinner;
 		this.listCards = listCards;
 		this.adapter2 = adapter2;
-		this.spinnerMechanic = spinnerMechanic;
+		
+		spinner = findById(activity, R.id.spinClass);
+		spinnerSort = findById(activity, R.id.spinSort);
+		spinnerMechanic = findById(activity, R.id.spinnerMechanic);
+		cbGenerics = findById(activity, R.id.cbGenerics);
+		cbReverse = findById(activity, R.id.cbReverse);
 	}
 
 	public boolean onQueryTextChange(String newText) {

@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#666666"
+    android:background="@drawable/app_bg"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -16,9 +16,12 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
         android:onClick="cardListPressed"
         android:text="Card List"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnClasses"
@@ -27,9 +30,12 @@
         android:layout_alignLeft="@+id/btnCardList"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/btnCardList"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_selector_3"
         android:onClick="classesPressed"
         android:text="Classes"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
 
     <Button
         android:id="@+id/btnDeckBuilder"
@@ -38,8 +44,11 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/btnClasses"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_selector_2"
         android:onClick="deckSelectorPressed"
         android:text="Deck Builder"
-        android:textColor="#FFFFFF" />
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
 
 </RelativeLayout>

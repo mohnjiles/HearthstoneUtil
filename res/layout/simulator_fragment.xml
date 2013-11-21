@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#666666"
+    android:background="@drawable/app_bg"
     tools:context=".SimulatorFragment" >
 
     <GridView
@@ -22,11 +22,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="16dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
+        android:layout_toLeftOf="@+id/imageView1"
+        android:background="@drawable/btn_selector_3"
         android:text="Draw new hand"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:textColor="#000000"
+        android:textSize="12sp" />
 
     <Button
         android:id="@+id/btnDrawAnother"
@@ -34,11 +36,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_marginRight="16dp"
+        android:layout_marginRight="4dp"
         android:layout_marginTop="8dp"
+        android:layout_toRightOf="@+id/imageView1"
+        android:background="@drawable/btn_selector_3"
         android:text="Draw another card"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        android:textColor="#000000"
+        android:textSize="12sp" />
 
     <TextView
         android:id="@+id/textView1"
@@ -50,7 +54,7 @@
         android:layout_marginLeft="16dp"
         android:gravity="center"
         android:text="Starting hand size:"
-        android:textColor="#FFFFFF" />
+        android:textColor="#000000" />
 
     <Spinner
         android:id="@+id/spinnerNumCards"
@@ -60,5 +64,12 @@
         android:layout_marginLeft="8dp"
         android:layout_marginRight="16dp"
         android:layout_toRightOf="@+id/textView1" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="8dp"
+        android:layout_height="8dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

@@ -3,7 +3,7 @@
     android:id="@+id/deckLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#666666"
+    android:background="@drawable/app_bg"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
     tools:context=".DeckActivity" >
@@ -14,8 +14,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/tvNumCards"
-        android:background="#444444" >
+        android:layout_below="@+id/tvNumCards" >
+
     </ListView>
 
     <GridView
@@ -41,14 +41,14 @@
         android:layout_marginTop="8dp"
         android:gravity="center"
         android:text="30 / 30"
-        android:textColor="#FFFFFF" />
+        android:textColor="#000000" />
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="@dimen/card_icon_width"
         android:layout_height="@dimen/card_icon"
+        android:layout_alignTop="@+id/lvDeck"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
         android:padding="16dp"
         android:src="@drawable/one_finger_swipe_right" />
 

@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="#666666"
+    android:background="#b89d75"
     android:orientation="horizontal" >
 
 	<TextView
@@ -16,7 +16,7 @@
 	    android:layout_marginTop="8dp"
 	    android:gravity="left"
 	    android:text="aggg"
-	    android:textColor="#FFFFFF"
+	    android:textColor="#000000"
 	    android:textSize="@dimen/spinner_textview" />
 
 	<ImageView

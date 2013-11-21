@@ -3,7 +3,10 @@ package com.jt.hearthstone;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -47,6 +50,8 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
     	ViewHolder vh;
+    	Typeface font = TypefaceCache.get(mContext.getAssets(),
+				"fonts/belwebd.ttf");
     	url = "http://54.224.222.135/" + cardList.get(position).getImage() + ".png";
     	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
@@ -55,7 +60,7 @@ public class ImageAdapter extends BaseAdapter {
     	// only a few KB each.
     	DisplayImageOptions options = new DisplayImageOptions.Builder()
         .showStubImage(R.drawable.cards)
-        .cacheInMemory(false)
+        .cacheInMemory(true)
         .cacheOnDisc(true)
         .build();
     	
@@ -77,10 +82,8 @@ public class ImageAdapter extends BaseAdapter {
     	} else {
     		vh = (ViewHolder)convertView.getTag();
     	}
-    	// Set the TextView color to black, even though we can do this in XML.
-    	// On second thought, do we even need the TextView?
-		vh.tv.setTextColor(Color.WHITE);
 		// Set the Text of the TextView
+    	vh.tv.setTypeface(font);
     	vh.tv.setText(cardList.get(position).getName());
     	// Load the image for the ImageView
     	imageLoader.displayImage(url, vh.iv, options);

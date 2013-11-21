@@ -25,6 +25,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -44,7 +45,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -60,17 +60,20 @@ import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 public class CardListActivity extends ActionBarActivity {
 
-	static Spinner spinner;
-	static Spinner spinnerSort;
-	static Spinner spinnerMechanic;
-	static CheckBox includeNeutralCards;
-	static CheckBox cbReverse;
-	static SearchView mSearchView;
-	
+	Spinner spinner;
+	Spinner spinnerSort;
+	Spinner spinnerMechanic;
+	CheckBox includeNeutralCards;
+	CheckBox cbReverse;
+	SearchView mSearchView;
+
 	static boolean reverse = false;
-	
+
 	private GridView grid;
 	private ListView listCards;
 	private PopupWindow pWindow;
@@ -80,6 +83,9 @@ public class CardListActivity extends ActionBarActivity {
 	private TextView tvSet;
 	private TextView tvCrafted;
 	private TextView tvClass;
+	private TextView tvMechanic;
+	private TextView tvSort;
+	private TextView tvClassSort;
 	private ImageView ivCardImage;
 
 	private MenuItem searchItem;
@@ -93,19 +99,20 @@ public class CardListActivity extends ActionBarActivity {
 	private List<Cards> deckEight;
 	private List<Cards> deckNine;
 	private List<Cards> deckTen;
-	
+
 	private ArrayList<Cards> cardList;
 	private ArrayList<String> deckList;
 	private Cards[] cards;
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
 	private ImageLoader loader = ImageLoader.getInstance();
+	private String query;
 
 	private int pos = OnItemSelectedListenerStandalone.position;
 	private int position;
 	private int menuItemIndex;
 	private boolean isGrid = false;
-
+	private Typeface font;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -113,6 +120,8 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Set main view to Activity_Main layout
 		setContentView(R.layout.card_list_standalone);
+
+		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
 		// Get views with ButterKnife
 		grid = findById(this, R.id.gvDeck);
@@ -122,6 +131,9 @@ public class CardListActivity extends ActionBarActivity {
 		spinner = findById(this, R.id.spinClass);
 		spinnerSort = findById(this, R.id.spinSort);
 		spinnerMechanic = findById(this, R.id.spinnerMechanic);
+		tvClassSort = findById(this, R.id.tvInstructions);
+		tvSort = findById(this, R.id.textView2);
+		tvMechanic = findById(this, R.id.TextView01);
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
@@ -189,6 +201,14 @@ public class CardListActivity extends ActionBarActivity {
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
+
+						if (mSearchView != null) {
+							query = mSearchView.getQuery().toString()
+									.toLowerCase();
+						} else {
+							query = "";
+						}
+
 						// if the user is checking the box, add generic cards
 						if (isChecked
 								&& !spinner.getSelectedItem().equals("All")) {
@@ -198,8 +218,8 @@ public class CardListActivity extends ActionBarActivity {
 								if (card.getClasss() == null
 										&& !mechanic.equals("Any")
 										&& card.getDescription() != null
-										&& card.getName().contains(
-												mSearchView.getQuery())
+										&& card.getName().toLowerCase()
+												.contains(query)
 										&& card.getDescription().contains(
 												mechanic)) {
 
@@ -207,8 +227,8 @@ public class CardListActivity extends ActionBarActivity {
 								} else {
 									if (card.getClasss() == null
 											&& mechanic.equals("Any")
-											&& card.getName().contains(
-													mSearchView.getQuery())) {
+											&& card.getName().toLowerCase()
+													.contains(query)) {
 										cardList.add(card);
 									}
 								}
@@ -265,27 +285,37 @@ public class CardListActivity extends ActionBarActivity {
 					}
 
 				});
+
+		// Arrays to load into the Spinners
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
 		String[] classNames = getResources().getStringArray(R.array.Classes);
 
-		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
+		// Setup Adapters and set the spinners to listen to them.
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
 				R.layout.spinner_row, R.id.name, classNames);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
-		ArrayAdapter<String> spinSortAdapter = new ArrayAdapter<String>(this,
+		CustomArrayAdapter spinSortAdapter = new CustomArrayAdapter(this,
 				R.layout.spinner_row, R.id.name, sortNames);
 		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
-		ArrayAdapter<String> spinMechanicAdapter = new ArrayAdapter<String>(
-				this, R.layout.spinner_row, R.id.name, mechanicNames);
+		CustomArrayAdapter spinMechanicAdapter = new CustomArrayAdapter(this,
+				R.layout.spinner_row, R.id.name, mechanicNames);
 		spinMechanicAdapter
 				.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
 		spinner.setAdapter(spinAdapter);
 		spinnerSort.setAdapter(spinSortAdapter);
 		spinnerMechanic.setAdapter(spinMechanicAdapter);
+
+		// Set UI fonts
+		cbReverse.setTypeface(font);
+		includeNeutralCards.setTypeface(font);
+		tvClassSort.setTypeface(font);
+		tvSort.setTypeface(font);
+		tvMechanic.setTypeface(font);
 
 	}
 
@@ -296,13 +326,11 @@ public class CardListActivity extends ActionBarActivity {
 		inflater.inflate(R.menu.card_list, menu);
 		searchItem = menu.findItem(R.id.action_search);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new SearchListener2(cardList, cards,
-				grid, listCards, adapter, adapter2, searchItem, spinner,
-				spinnerMechanic));
+		mSearchView.setOnQueryTextListener(new SearchListener2(this, cardList,
+				cards, grid, listCards, adapter, adapter2, searchItem));
 
 		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
-				cardList, cards, grid, listCards, adapter, adapter2,
-				mSearchView);
+				this, mSearchView, cardList, cards, adapter, adapter2);
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
@@ -324,6 +352,7 @@ public class CardListActivity extends ActionBarActivity {
 			NavUtils.navigateUpFromSameTask(this);
 			return true;
 		case R.id.action_switch:
+			// Switches between GridView and ListView visibility
 			if (isGrid) {
 				grid.setVisibility(View.INVISIBLE);
 				listCards.setVisibility(View.VISIBLE);
@@ -386,8 +415,8 @@ public class CardListActivity extends ActionBarActivity {
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
 				String[] classes = getResources().getStringArray(
 						R.array.ClassesWithoutAny);
-				ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(
-						this, R.layout.spinner_row, R.id.name, classes);
+				CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
+						R.layout.spinner_row, R.id.name, classes);
 				spinAdapter
 						.setDropDownViewResource(R.layout.spinner_dropdown_row);
 				spinnerClass.setAdapter(spinAdapter);
@@ -586,10 +615,25 @@ public class CardListActivity extends ActionBarActivity {
 			// Get card image
 			String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			final String goldenUrl = "http://54.224.222.135/Golden/"
+					+ cardList.get(position).getImage() + "_premium.png";
+			final DisplayImageOptions options = new DisplayImageOptions.Builder()
 					.showStubImage(R.drawable.cards).cacheInMemory(false)
 					.cacheOnDisc(true).build();
 			loader.displayImage(url, ivCardImage, options);
+
+			ivCardImage.setOnClickListener(new View.OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					if (v.getTag() == null || v.getTag() == "Standard") {
+						loader.cancelDisplayTask((ImageView) v);
+						loader.displayImage(goldenUrl, (ImageView) v, options);
+						v.setTag("Premium");
+					}
+
+				}
+			});
 
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
@@ -731,6 +775,7 @@ public class CardListActivity extends ActionBarActivity {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -739,6 +784,7 @@ public class CardListActivity extends ActionBarActivity {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -751,6 +797,13 @@ public class CardListActivity extends ActionBarActivity {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
+
+		tvCardName.setTypeface(font);
+		tvClass.setTypeface(font);
+		tvCrafted.setTypeface(font);
+		tvQuality.setTypeface(font);
+		tvSet.setTypeface(font);
+		tvType.setTypeface(font);
 	}
 
 	private List<?> getDeck(String deckName) {
@@ -810,6 +863,17 @@ public class CardListActivity extends ActionBarActivity {
 	}
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
+
+		// Add check for full deck
+		if (getDeck(deckList.get(menuItemIndex)).size() == 30) {
+
+			Crouton.makeText(
+					this,
+					"Cannot add card. Deck \"" + deckList.get(menuItemIndex)
+							+ "\" is full.", Style.ALERT).show();
+			return;
+		}
+
 		if (getDeck(deckList.get(menuItemIndex)) != null) {
 			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
 		} else {

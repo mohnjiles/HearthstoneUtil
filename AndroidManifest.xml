@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jt.hearthstone"
-    android:versionCode="8"
-    android:versionName="0.8" >
+    android:versionCode="9"
+    android:versionName="0.9" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-sdk
         android:minSdkVersion="8"
-        android:targetSdkVersion="18" />
+        android:targetSdkVersion="19" />
 
     <application
         android:allowBackup="true"
@@ -88,6 +88,20 @@
         <activity
             android:name="com.jt.hearthstone.SimulatorFragment"
             android:label="@string/title_activity_simulator_fragment" >
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.ArenaSimulator"
+            android:label="@string/title_activity_arena_simulator"
+            android:screenOrientation="landscape"
+            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.ArenaFragment"
+            android:label="@string/title_activity_arena_fragment" >
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.ArenaDeckFragment"
+            android:label="@string/title_activity_arena_deck_fragment" >
         </activity>
     </application>
 

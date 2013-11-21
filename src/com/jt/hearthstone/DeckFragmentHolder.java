@@ -1,9 +1,19 @@
 package com.jt.hearthstone;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Parcelable;
@@ -11,14 +21,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.jt.hearthstone.AsyncTasks.GetClassesDeck;
 
 public class DeckFragmentHolder extends ActionBarActivity {
 
@@ -28,6 +39,15 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	static List<Integer> deckClasses;
 	static FragmentAdapter adapter;
 	static ProgressDialog dialog;
+	private MenuItem searchItem;
+	private SearchView mSearchView;
+	int screenSize;
+	static int previousPage = 1;
+	
+	private CardListFragment cardListFrag;
+	private DeckActivity deckFrag;
+	private ChartActivity chartFrag;
+	private SimulatorFragment simFrag;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,34 +60,85 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		position = getIntent().getIntExtra("position", 0);
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-		CardListFragment fragZero = new CardListFragment();
-		fragments.add(fragZero);
+		cardListFrag = new CardListFragment();
+		fragments.add(cardListFrag);
 
-		DeckActivity fragmentOne = new DeckActivity();
-		fragments.add(fragmentOne);
+		deckFrag = new DeckActivity();
+		fragments.add(deckFrag);
 
-		ChartActivity fragTwo = new ChartActivity();
-		fragments.add(fragTwo);
+		chartFrag = new ChartActivity();
+		fragments.add(chartFrag);
 
-		SimulatorFragment fragThree = new SimulatorFragment();
-		fragments.add(fragThree);
-		
+		simFrag = new SimulatorFragment();
+		fragments.add(simFrag);
+
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
-		AsyncTasks async = new AsyncTasks();
-		GetClassesDeck getDeck = async.new GetClassesDeck(this, position);
-		getDeck.execute();
+		// AsyncTasks async = new AsyncTasks();
+		// GetClassesDeck getDeck = async.new GetClassesDeck(this, position);
+		// getDeck.execute();
+
+		setStuff(getCards());
+
+		screenSize = getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		myPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+			@Override
+			public void onPageSelected(int arg0) {
+				previousPage = arg0;
+
+			}
+
+			@Override
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
+
+		switch (screenSize) {
+		case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+			getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
+			break;
+		case Configuration.SCREENLAYOUT_SIZE_LARGE:
+		case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				getMenuInflater().inflate(R.menu.cards_tablet, menu);
+				searchItem = menu.findItem(R.id.action_search);
+				mSearchView = (SearchView) MenuItemCompat
+						.getActionView(searchItem);
+				mSearchView.setOnQueryTextListener(new CustomSearchListener(
+						this));
+			} else {
+				getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
+			}
+			break;
+		default:
+			getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
+			break;
+		}
+
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+
+		CardListFragment cardListFrag = (CardListFragment) getSupportFragmentManager()
+				.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// This ID represents the Home or Up button. In the case of this
@@ -79,6 +150,58 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return super.onOptionsItemSelected(item);
+		case R.id.action_switch:
+			if (screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL
+					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				boolean isGrid = cardListFrag.grid.getVisibility() == View.VISIBLE;
+				if (isGrid) {
+					cardListFrag.grid.setVisibility(View.INVISIBLE);
+					cardListFrag.listCards.setVisibility(View.VISIBLE);
+					deckFrag.gvDeck.setVisibility(View.INVISIBLE);
+					deckFrag.lvDeck.setVisibility(View.VISIBLE);
+					item.setTitle("Switch to grid view");
+					item.setIcon(R.drawable.collections_view_as_grid);
+					return super.onOptionsItemSelected(item);
+				} else {
+					cardListFrag.grid.setVisibility(View.VISIBLE);
+					cardListFrag.listCards.setVisibility(View.INVISIBLE);
+					deckFrag.gvDeck.setVisibility(View.VISIBLE);
+					deckFrag.lvDeck.setVisibility(View.INVISIBLE);
+					item.setTitle("Switch to list view");
+					item.setIcon(R.drawable.collections_view_as_list);
+					return super.onOptionsItemSelected(item);
+				}
+			}
+		case R.id.action_clear:
+			if (screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL
+					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+				AlertDialog dialog;
+				AlertDialog.Builder builder = new AlertDialog.Builder(this);
+				builder.setTitle("Remove all cards from this deck?");
+				builder.setPositiveButton("Remove All",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								deckFrag.cardList.clear();
+;
+								saveDeck(DeckSelector.listDecks.get(position), deckFrag.cardList);
+								deckFrag.tvNumCards.setText("0 / 30");
+							}
+						});
+				builder.setNegativeButton("Cancel",
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface dialog,
+									int which) {
+								dialog.cancel();
+							}
+						});
+				dialog = builder.create();
+				dialog.show();
+			}
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -159,4 +282,184 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			return null;
 		}
 	}
+
+	private List<Integer> getCards() {
+		InputStream instream = null;
+		List<Integer> list = null;
+		try {
+			instream = openFileInput("deckclasses");
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<Integer>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			} else {
+				list = new ArrayList<Integer>();
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	private void setStuff(List<Integer> result) {
+		myPager.setOffscreenPageLimit(3);
+		myPager.setAdapter(adapter);
+		myPager.setCurrentItem(previousPage);
+
+		aBar.setTitle(getIntent().getStringExtra("name"));
+		switch (result.get(position)) {
+		case 0:
+			aBar.setIcon(R.drawable.druid);
+			break;
+		case 1:
+			aBar.setIcon(R.drawable.hunter);
+			break;
+		case 2:
+			aBar.setIcon(R.drawable.mage);
+			break;
+		case 3:
+			aBar.setIcon(R.drawable.paladin);
+			break;
+		case 4:
+			aBar.setIcon(R.drawable.priest);
+			break;
+		case 5:
+			aBar.setIcon(R.drawable.rogue);
+			break;
+		case 6:
+			aBar.setIcon(R.drawable.shaman);
+			break;
+		case 7:
+			aBar.setIcon(R.drawable.warlock);
+			break;
+		case 8:
+			aBar.setIcon(R.drawable.warrior);
+			break;
+		}
+	}
+	
+	
+
+	public void saveDeck(String deckName, Object object) { 
+		FileOutputStream fos = null;
+		try {
+			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
+		} catch (FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(fos);
+			oos.writeObject(object);
+			oos.close();
+			fos.close();
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		doSomeStuff((List<Cards>)getDeck(deckName), deckName);
+	}
+
+	public void doSomeStuff(List<Cards> result, String deckName) { 
+		int sp = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_SP, 10, getResources()
+						.getDisplayMetrics());
+		int bigSp = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
+						.getDisplayMetrics());
+		
+		int screenSize = getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+		if (result == null) {
+			result = (List<Cards>) getDeck(deckName);
+		}
+		deckFrag.cardList = result;
+		if (result.size() == 0
+				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			deckFrag.tvNumCards.setTextSize(bigSp);
+			deckFrag.tvNumCards
+					.setText("Looks like there's nothing here. Swipe right to get started!");
+			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+		} else if (result.size() == 0
+				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			deckFrag.tvNumCards.setTextSize(bigSp);
+			deckFrag.tvNumCards
+					.setText("Looks like there's nothing here. Add cards from the left to get started!");
+			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+		} else {
+			deckFrag.tvNumCards.setTextSize(sp);
+			deckFrag.tvNumCards.setText("" + result.size() + " / 30");
+			deckFrag.ivSwipe.setVisibility(View.GONE);
+		}
+		deckFrag.adapter2 = new ImageAdapter(this, result);
+		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
+		deckFrag.adapter = new DeckListAdapter(this, position,
+				result);
+		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
+	}
+
+	private List<?> getDeck(String deckName) {
+		InputStream instream = null;
+		List<?> list = null;
+		try {
+			instream = openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			list = new ArrayList<Cards>();
+			e.printStackTrace();
+		}
+	
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<?>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+	
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
+	}
+	
+
 }

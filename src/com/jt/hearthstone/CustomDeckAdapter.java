@@ -1,14 +1,10 @@
 package com.jt.hearthstone;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -43,11 +39,13 @@ public class CustomDeckAdapter extends BaseAdapter {
 	static class ViewHolderTwo {
 		TextView tvDeckName;
 		ImageView ivClassImage;
+		ImageView ivDeckBg;
 	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		ViewHolderTwo vh;
+		Typeface font = TypefaceCache.get(mContext.getAssets(), "fonts/belwebd.ttf");
 		// If our view is null, then inflate it.
 		// We do this because re-using views makes memory happy :)
 		if (convertView == null) {
@@ -58,6 +56,8 @@ public class CustomDeckAdapter extends BaseAdapter {
 					.findViewById(R.id.tvCardTitle);
 			vh.ivClassImage = (ImageView) convertView
 					.findViewById(R.id.ivClassImage);
+			vh.ivDeckBg = (ImageView) convertView
+					.findViewById(R.id.ivDeckBg);
 			convertView.setTag(vh);
 
 		} else {
@@ -65,6 +65,9 @@ public class CustomDeckAdapter extends BaseAdapter {
 		}
 
 		vh.tvDeckName.setText(deckList.get(position));
+		vh.tvDeckName.setTypeface(font);
+		vh.ivDeckBg.setBackgroundResource(R.drawable.warrior_bg);
+		
 		switch (cardClasses.get(position)) {
 		case 0:
 			vh.ivClassImage.setImageResource(R.drawable.druid);

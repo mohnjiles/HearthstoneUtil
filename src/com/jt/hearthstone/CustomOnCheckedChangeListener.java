@@ -3,96 +3,98 @@ package com.jt.hearthstone;
 import java.util.Collections;
 import java.util.List;
 
+import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.SearchView;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Spinner;
 
 public class CustomOnCheckedChangeListener implements OnCheckedChangeListener {
 
-	private Spinner spinnerSort;
-	private Spinner spinnerMechanic;
-	private Cards[] cards;
-	private List<Cards> cardList;
+	private FragmentActivity activity;
+	private String query;
 
-	public CustomOnCheckedChangeListener(Spinner spinnerSort,
-			Spinner spinnerMechanic, Cards[] cards, SearchView mSearchView,
-			List<Cards> cardList) {
-		this.spinnerSort = spinnerSort;
-		this.spinnerMechanic = spinnerMechanic;
-		this.cards = cards;
-		this.cardList = cardList;
+	public CustomOnCheckedChangeListener(FragmentActivity activity) {
+		this.activity = activity;
 	}
 
 	@Override
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		CardListFragment cardListFrag = (CardListFragment) activity
+				.getSupportFragmentManager().findFragmentByTag(
+						makeFragmentName(R.id.pager, 0));
+
+		if (cardListFrag.mSearchView != null) {
+			query = cardListFrag.mSearchView.getQuery().toString()
+					.toLowerCase();
+		} else {
+			query = "";
+		}
+
 		switch (buttonView.getId()) {
 		case R.id.cbGenerics:
 			if (isChecked) {
-				String mechanic = spinnerMechanic.getSelectedItem().toString();
-				for (Cards card : cards) {
+				String mechanic = cardListFrag.spinnerMechanic
+						.getSelectedItem().toString();
+				for (Cards card : cardListFrag.cards) {
 					if (card.getClasss() == null
-							&& card.getName().contains(CardListFragment.mSearchView.getQuery())
+							&& card.getName().toLowerCase().contains(query)
 							&& !mechanic.equals("Any")
 							&& card.getDescription() != null
 							&& card.getDescription().contains(mechanic)) {
 
-						cardList.add(card);
+						cardListFrag.cardList.add(card);
 					} else {
-						if (card.getClasss() == null
-								&& mechanic.equals("Any")
-								&& card.getName().contains(
-										CardListFragment.mSearchView.getQuery())) {
-							cardList.add(card);
+						if (card.getClasss() == null && mechanic.equals("Any")
+								&& card.getName().toLowerCase().contains(query)) {
+							cardListFrag.cardList.add(card);
 						}
 					}
 				}
 
-				Collections.sort(
-						cardList,
-						new CardComparator(spinnerSort
-								.getSelectedItemPosition(),
-								CardListFragment.cbReverse.isChecked()));
-				CardListFragment.adapter.notifyDataSetChanged();
-				CardListFragment.adapter2.notifyDataSetChanged();
-				CardListFragment.grid.setAdapter(CardListFragment.adapter);
-				CardListFragment.listCards
-						.setAdapter(CardListFragment.adapter2);
+				Collections.sort(cardListFrag.cardList, new CardComparator(
+						cardListFrag.spinnerSort.getSelectedItemPosition(),
+						cardListFrag.cbReverse.isChecked()));
+				cardListFrag.adapter.notifyDataSetChanged();
+				cardListFrag.adapter2.notifyDataSetChanged();
+				cardListFrag.grid.setAdapter(cardListFrag.adapter);
+				cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 
 				// Otherwise, user is unchecking the box, so remove
 				// all generic cards.
 				// Why haven't I been using more ArrayLists in my
 				// other app?????
 			} else {
-				for (Cards card : cards) {
+				for (Cards card : cardListFrag.cards) {
 					if (card.getClasss() == null) {
-						cardList.remove(card);
+						cardListFrag.cardList.remove(card);
 					}
 				}
-				Collections.sort(
-						cardList,
-						new CardComparator(spinnerSort
-								.getSelectedItemPosition(),
-								CardListFragment.cbReverse.isChecked()));
-				CardListFragment.adapter.notifyDataSetChanged();
-				CardListFragment.adapter2.notifyDataSetChanged();
-				CardListFragment.grid.setAdapter(CardListFragment.adapter);
-				CardListFragment.listCards
-						.setAdapter(CardListFragment.adapter2);
+				Collections.sort(cardListFrag.cardList, new CardComparator(
+						cardListFrag.spinnerSort.getSelectedItemPosition(),
+						cardListFrag.cbReverse.isChecked()));
+				cardListFrag.adapter.notifyDataSetChanged();
+				cardListFrag.adapter2.notifyDataSetChanged();
+				cardListFrag.grid.setAdapter(cardListFrag.adapter);
+				cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 			}
 			break;
 		case R.id.cbReverse:
-			CardListFragment.reverse = isChecked;
-			Collections.sort(cardList, new CardComparator(
-					spinnerSort.getSelectedItemPosition(),
+			cardListFrag.reverse = isChecked;
+			Collections.sort(cardListFrag.cardList, new CardComparator(
+					cardListFrag.spinnerSort.getSelectedItemPosition(),
 					isChecked));
-			CardListFragment.adapter.notifyDataSetChanged();
-			CardListFragment.adapter2.notifyDataSetChanged();
-			CardListFragment.grid.setAdapter(CardListFragment.adapter);
-			CardListFragment.listCards.setAdapter(CardListFragment.adapter2);
+			cardListFrag.adapter.notifyDataSetChanged();
+			cardListFrag.adapter2.notifyDataSetChanged();
+			cardListFrag.grid.setAdapter(cardListFrag.adapter);
+			cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 			break;
 		}
 
+	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
 	}
 
 }

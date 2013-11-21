@@ -1,8 +1,11 @@
 package com.jt.hearthstone;
 
 import java.util.ArrayList;
+import static butterknife.Views.findById;
 import java.util.Collections;
 
+import android.content.pm.ActivityInfo;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
@@ -16,42 +19,48 @@ import android.widget.Spinner;
 public class OnItemSelectedListenerStandalone implements OnItemSelectedListener {
 
 	static int position = 0;
-	
+
 	private ArrayList<Cards> cardList;
 	private Cards[] cards;
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
-	
-	private CheckBox cbReverse = CardListActivity.cbReverse;
-	private Spinner spinnerSort = CardListActivity.spinnerSort;
-	private Spinner spinnerClass = CardListActivity.spinner;
-	private Spinner spinnerMechanic = CardListActivity.spinnerMechanic;
+
+	private CheckBox cbReverse;
+	private CheckBox includeNeutralCards;
+	private Spinner spinnerSort;
+	private Spinner spinnerClass;
+	private Spinner spinnerMechanic;
 	private SearchView mSearchView;
 	private ListView listCards;
 	private GridView grid;
-
 	private String query;
-	private boolean reverse = CardListActivity.reverse;
+	private boolean reverse;
 
-	public OnItemSelectedListenerStandalone(ArrayList<Cards> cardList,
-			Cards[] cards, GridView grid, ListView listCards,
-			ImageAdapter adapter, CustomListAdapter adapter2, SearchView searchView) {
+	public OnItemSelectedListenerStandalone(ActionBarActivity activity,
+			SearchView mSearchView, ArrayList<Cards> cardList, Cards[] cards,
+			ImageAdapter adapter, CustomListAdapter adapter2) {
+		this.mSearchView = mSearchView;
 		this.cardList = cardList;
 		this.cards = cards;
-		this.grid = grid;
 		this.adapter = adapter;
-		this.listCards = listCards;
 		this.adapter2 = adapter2;
-		this.mSearchView = searchView;
+
+		spinnerClass = findById(activity, R.id.spinClass);
+		spinnerMechanic = findById(activity, R.id.spinnerMechanic);
+		spinnerSort = findById(activity, R.id.spinSort);
+		includeNeutralCards = findById(activity, R.id.cbGenerics);
+		cbReverse = findById(activity, R.id.cbReverse);
+		listCards = findById(activity, R.id.cardsList);
+		grid = findById(activity, R.id.gvDeck);
 		
 	}
 
 	@Override
 	public void onItemSelected(AdapterView<?> parent, View view, int pos,
 			long id) {
-		
+
 		Spinner spinner = (Spinner) parent;
-		
+
 		if (spinner.getId() == R.id.spinClass) {
 			switch (pos) {
 			// All Class Card List
@@ -62,13 +71,14 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					setCardList(spinnerMechanic.getSelectedItem().toString());
 				}
 				break;
-				
+
 			// Druid Class Card List
 			case 1:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.DRUID);
 				} else {
-					setCardList(Classes.DRUID, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.DRUID, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
 
@@ -77,16 +87,18 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.HUNTER);
 				} else {
-					setCardList(Classes.HUNTER, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.HUNTER, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			// Mage Class Card List
 			case 3:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.MAGE);
 				} else {
-					setCardList(Classes.MAGE, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.MAGE, spinnerMechanic.getSelectedItem()
+							.toString());
 				}
 				break;
 
@@ -95,47 +107,53 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.PALADIN);
 				} else {
-					setCardList(Classes.PALADIN, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.PALADIN, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			case 5:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.PRIEST);
 				} else {
-					setCardList(Classes.PRIEST, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.PRIEST, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			case 6:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.ROGUE);
 				} else {
-					setCardList(Classes.ROGUE, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.ROGUE, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			case 7:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.SHAMAN);
 				} else {
-					setCardList(Classes.SHAMAN, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.SHAMAN, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			case 8:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARLOCK);
 				} else {
-					setCardList(Classes.WARLOCK, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.WARLOCK, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
-				
+
 			case 9:
 				if (spinnerMechanic.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARRIOR);
 				} else {
-					setCardList(Classes.WARRIOR, spinnerMechanic.getSelectedItem().toString());
+					setCardList(Classes.WARRIOR, spinnerMechanic
+							.getSelectedItem().toString());
 				}
 				break;
 			}
@@ -153,7 +171,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 			switch (spinnerClass.getSelectedItemPosition()) {
 			case 0:
 				if (mSearchView != null) {
-					query = CardListActivity.mSearchView.getQuery().toString().toLowerCase();
+					query = mSearchView.getQuery().toString().toLowerCase();
 				} else {
 					query = "";
 				}
@@ -184,63 +202,72 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.DRUID);
 				} else {
-					setCardList(Classes.DRUID, spinner.getSelectedItem().toString());
+					setCardList(Classes.DRUID, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 2:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.HUNTER);
 				} else {
-					setCardList(Classes.HUNTER, spinner.getSelectedItem().toString());
+					setCardList(Classes.HUNTER, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 3:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.MAGE);
 				} else {
-					setCardList(Classes.MAGE, spinner.getSelectedItem().toString());
+					setCardList(Classes.MAGE, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 4:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.PALADIN);
 				} else {
-					setCardList(Classes.PALADIN, spinner.getSelectedItem().toString());
+					setCardList(Classes.PALADIN, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 5:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.PRIEST);
 				} else {
-					setCardList(Classes.PRIEST, spinner.getSelectedItem().toString());
+					setCardList(Classes.PRIEST, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 6:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.ROGUE);
 				} else {
-					setCardList(Classes.ROGUE, spinner.getSelectedItem().toString());
+					setCardList(Classes.ROGUE, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 7:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.SHAMAN);
 				} else {
-					setCardList(Classes.SHAMAN, spinner.getSelectedItem().toString());
+					setCardList(Classes.SHAMAN, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 8:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARLOCK);
 				} else {
-					setCardList(Classes.WARLOCK, spinner.getSelectedItem().toString());
+					setCardList(Classes.WARLOCK, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 			case 9:
 				if (spinner.getSelectedItem().toString().equals("Any")) {
 					setCardList(Classes.WARRIOR);
 				} else {
-					setCardList(Classes.WARRIOR, spinner.getSelectedItem().toString());
+					setCardList(Classes.WARRIOR, spinner.getSelectedItem()
+							.toString());
 				}
 				break;
 
@@ -266,18 +293,18 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 			query = "";
 		}
 		cardList.clear();
-		
+
 		for (Cards card : cards) {
-			if (card.getDescription() != null
-					&& card.getClasss() != null
+			if (card.getDescription() != null && card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getDescription().contains(selectedItem)
 					&& !card.getName().equals(classes.getHeroName())
 					&& card.getName().toLowerCase().contains(query)) {
-				Log.i("setCardList(classes, string)", "" + query + "   " + card.getName().toLowerCase());
+				Log.i("setCardList(classes, string)", "" + query + "   "
+						+ card.getName().toLowerCase());
 				cardList.add(card);
-			} 
-			if (CardListActivity.includeNeutralCards.isChecked()) {
+			}
+			if (includeNeutralCards.isChecked()) {
 				if (card.getClasss() == null && card.getDescription() != null
 						&& card.getDescription().contains(selectedItem)
 						&& card.getName().toLowerCase().contains(query)
@@ -312,7 +339,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !card.getName().equals(classes.getHeroName())
 					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
-			} else if (CardListActivity.includeNeutralCards.isChecked()
+			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
 					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
@@ -334,13 +361,13 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	 * you select "Any" from the Spinner Overloaded version of previous function
 	 */
 	private void setCardList() {
-		
+
 		if (mSearchView != null) {
 			query = mSearchView.getQuery().toString().toLowerCase();
 		} else {
 			query = "";
 		}
-		
+
 		Classes[] classArray = new Classes[] { Classes.DRUID, Classes.HUNTER,
 				Classes.MAGE, Classes.PALADIN, Classes.PRIEST, Classes.ROGUE,
 				Classes.SHAMAN, Classes.WARLOCK, Classes.WARRIOR };
@@ -364,7 +391,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !name.equals(classArray[8].getHeroName())
 					&& name.toLowerCase().contains(query)) {
 				cardList.add(card);
-			} else if (CardListActivity.includeNeutralCards.isChecked()
+			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
 					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
@@ -378,6 +405,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		grid.setAdapter(adapter);
 		listCards.setAdapter(adapter2);
 	}
+
 	private void setCardList(String selectedItem) {
 		// Clear the current ArrayList so we can repopulate it
 		Classes[] classArray = new Classes[] { Classes.DRUID, Classes.HUNTER,
@@ -389,7 +417,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		} else {
 			query = "";
 		}
-		
+
 		if (!cardList.isEmpty()) {
 			cardList.clear();
 		}
@@ -410,7 +438,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& card.getDescription() != null
 					&& card.getDescription().contains(selectedItem)) {
 				cardList.add(card);
-			} else if (CardListActivity.includeNeutralCards.isChecked()
+			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
 					&& card.getName().toLowerCase().contains(query)) {
 				cardList.add(card);
@@ -424,4 +452,9 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		grid.setAdapter(adapter);
 		listCards.setAdapter(adapter2);
 	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
+	}
+
 }

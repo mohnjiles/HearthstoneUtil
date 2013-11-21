@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -42,23 +43,21 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
-import com.jt.hearthstone.AsyncTasks.GetDeckActivityDeck;
-import com.jt.hearthstone.AsyncTasks.SaveDeck;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class DeckActivity extends Fragment {
 
-	static ListView lvDeck;
-	static GridView gvDeck;
-	static TextView tvNumCards;
-	static ImageView ivSwipe;
+	ListView lvDeck;
+	GridView gvDeck;
+	TextView tvNumCards;
+	ImageView ivSwipe;
 
-	static DeckListAdapter adapter;
-	static ImageAdapter adapter2;
+	DeckListAdapter adapter;
+	ImageAdapter adapter2;
 
-	static List<Cards> cardList;
+	List<Cards> cardList;
 
 	private TextView tvCardName;
 	private TextView tvType;
@@ -75,17 +74,20 @@ public class DeckActivity extends Fragment {
 	private int position;
 	private int pos;
 	private boolean isGrid = false;
+	private Typeface font;
+
+	private ChartActivity chartFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View V = inflater.inflate(R.layout.activity_deck, container, false);
-		// Show the Up button in the action bar.
-		setHasOptionsMenu(true);
+
+		font = TypefaceCache
+				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
+
 		Intent intent = getActivity().getIntent();
 		position = intent.getIntExtra("position", 0);
-
-		// aBar.setTitle(DeckSelector.listDecks.get(position));
 
 		cardList = getDeck(listDecks.get(position));
 		lvDeck = findById(V, R.id.lvDeck);
@@ -95,9 +97,23 @@ public class DeckActivity extends Fragment {
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 
+		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
+				.findFragmentByTag(makeFragmentName(R.id.pager, 2));
+
 		if (!loader.isInited()) {
 			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		}
+
+		int screenSize = getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+		if (screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE
+				|| getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+			setHasOptionsMenu(true);
+		}
+		if (cardList.size() != 0) {
+			ivSwipe.setVisibility(View.GONE);
+		}
+		tvNumCards.setTypeface(font);
 
 		return V;
 	}
@@ -106,10 +122,9 @@ public class DeckActivity extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		AsyncTasks async = new AsyncTasks();
-		GetDeckActivityDeck getDeck = async.new GetDeckActivityDeck(
-				getActivity(), listDecks.get(position), position);
-		getDeck.execute();
+		doSomeStuff((List<Cards>) getDeck(listDecks.get(position)),
+				listDecks.get(position));
+
 		if (isGrid) {
 			lvDeck.setVisibility(View.INVISIBLE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -150,8 +165,9 @@ public class DeckActivity extends Fragment {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 
-		final int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				14, getResources().getDisplayMetrics());
+		final int bigSp = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
+						.getDisplayMetrics());
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 
@@ -166,37 +182,39 @@ public class DeckActivity extends Fragment {
 			gvDeck.setAdapter(adapter2);
 			tvNumCards.setText("" + cardList.size() + " / 30");
 
-			if (cardList.size() == 0 && screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			if (cardList.size() == 0
+					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
 				tvNumCards.setTextSize(bigSp);
 				tvNumCards
 						.setText("Looks like there's nothing here. Swipe right to get started!");
 				ivSwipe.setVisibility(View.VISIBLE);
-			} else if (cardList.size() == 0 && screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			} else if (cardList.size() == 0
+					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
 				tvNumCards.setTextSize(bigSp);
 				tvNumCards
 						.setText("Looks like there's nothing here. Add cards from the left to get started!");
 				ivSwipe.setVisibility(View.VISIBLE);
 			}
 
-			if (ChartActivity.mChart == null) {
+			if (chartFrag.mChart == null) {
 
 			} else {
-				((ViewGroup) ChartActivity.mChart.getParent())
-						.removeView(ChartActivity.mChart);
-				ChartActivity.mCurrentSeries.clear();
+				((ViewGroup) chartFrag.mChart.getParent())
+						.removeView(chartFrag.mChart);
+				chartFrag.mCurrentSeries.clear();
 				addSampleData();
-				ChartActivity.layout2.addView(ChartActivity.mChart);
+				chartFrag.layout2.addView(chartFrag.mChart);
 			}
 
-			if (ChartActivity.mPieChart == null) {
+			if (chartFrag.mPieChart == null) {
 
 			} else {
-				((ViewGroup) ChartActivity.mPieChart.getParent())
-						.removeView(ChartActivity.mPieChart);
-				ChartActivity.mSeries.clear();
-				ChartActivity.mRenderer2.removeAllRenderers();
+				((ViewGroup) chartFrag.mPieChart.getParent())
+						.removeView(chartFrag.mPieChart);
+				chartFrag.mSeries.clear();
+				chartFrag.mRenderer2.removeAllRenderers();
 				addPieData(cardList);
-				ChartActivity.layout.addView(ChartActivity.mPieChart);
+				chartFrag.layout.addView(chartFrag.mPieChart);
 			}
 
 		}
@@ -248,11 +266,7 @@ public class DeckActivity extends Fragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							cardList.clear();
-							AsyncTasks async = new AsyncTasks();
-							SaveDeck saveDeck = async.new SaveDeck(
-									getActivity(), listDecks.get(position),
-									cardList, position);
-							saveDeck.execute();
+							saveDeck(listDecks.get(position), cardList);
 							tvNumCards.setText("0 / 30");
 						}
 					});
@@ -294,6 +308,8 @@ public class DeckActivity extends Fragment {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
+
+		doSomeStuff((List<Cards>) getDeck(deckName), deckName);
 	}
 
 	private void initiatePopupWindow(int position) {
@@ -526,6 +542,7 @@ public class DeckActivity extends Fragment {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -534,6 +551,7 @@ public class DeckActivity extends Fragment {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -546,6 +564,13 @@ public class DeckActivity extends Fragment {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
+
+		tvCardName.setTypeface(font);
+		tvClass.setTypeface(font);
+		tvCrafted.setTypeface(font);
+		tvQuality.setTypeface(font);
+		tvSet.setTypeface(font);
+		tvType.setTypeface(font);
 
 	}
 
@@ -594,7 +619,7 @@ public class DeckActivity extends Fragment {
 			if (card.getCost() != null) {
 				costs[card.getCost().intValue()]++;
 				Log.i("cost", "" + costs[card.getCost().intValue()]);
-				ChartActivity.mCurrentSeries.add(card.getCost().intValue(),
+				chartFrag.mCurrentSeries.add(card.getCost().intValue(),
 						costs[card.getCost().intValue()]);
 			}
 		}
@@ -604,9 +629,9 @@ public class DeckActivity extends Fragment {
 		int minions = 0;
 		int abilities = 0;
 		int weapons = 0;
-		int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
+		final int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
 				Color.rgb(60, 242, 0) };
-		int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
+		final int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
 				Color.rgb(8, 196, 0) };
 		for (Cards card : cardList) {
 			if (card.getType() != null && card.getType().intValue() == 4) {
@@ -618,32 +643,76 @@ public class DeckActivity extends Fragment {
 			}
 		}
 		if (abilities != 0) {
-			ChartActivity.mSeries.add("Spells", abilities);
+			chartFrag.mSeries.add("Spells", abilities);
 			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
 			seriesRenderer.setDisplayChartValues(true);
 			seriesRenderer.setGradientEnabled(true);
 			seriesRenderer.setGradientStart(0, colors[0]);
 			seriesRenderer.setGradientStop(20, colors2[0]);
-			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
 		}
 		if (minions != 0) {
-			ChartActivity.mSeries.add("Minions", minions);
+			chartFrag.mSeries.add("Minions", minions);
 			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
 			seriesRenderer.setDisplayChartValues(true);
 			seriesRenderer.setGradientEnabled(true);
 			seriesRenderer.setGradientStart(0, colors[1]);
 			seriesRenderer.setGradientStop(20, colors2[1]);
-			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
 		}
 		if (weapons != 0) {
-			ChartActivity.mSeries.add("Weapons", weapons);
+			chartFrag.mSeries.add("Weapons", weapons);
 			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
 			seriesRenderer.setDisplayChartValues(true);
 			seriesRenderer.setGradientEnabled(true);
 			seriesRenderer.setGradientStart(0, colors[2]);
 			seriesRenderer.setGradientStop(20, colors2[2]);
-			ChartActivity.mRenderer2.addSeriesRenderer(seriesRenderer);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
 		}
 	}
 
+	public void doSomeStuff(List<Cards> result, String deckName) {
+		
+		// Get text sizes in sp
+		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				10, getActivity().getResources().getDisplayMetrics());
+		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				14, getActivity().getResources().getDisplayMetrics());
+
+		// Get screen size
+		int screenSize = getActivity().getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+		
+		// If a null list was passed, try to manually lookup deck
+		if (result == null) {
+			result = (List<Cards>) getDeck(deckName);
+		}
+		cardList = result;
+		if (result.size() == 0
+				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			tvNumCards.setTextSize(bigSp);
+			tvNumCards
+					.setText("Looks like there's nothing here. Swipe right to get started!");
+			ivSwipe.setVisibility(View.VISIBLE);
+		} else if (result.size() == 0
+				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			tvNumCards.setTextSize(bigSp);
+			tvNumCards
+					.setText("Looks like there's nothing here. Add cards from the left to get started!");
+			ivSwipe.setVisibility(View.VISIBLE);
+		} else {
+			tvNumCards.setTextSize(sp);
+			tvNumCards.setText("" + result.size() + " / 30");
+			ivSwipe.setVisibility(View.GONE);
+		}
+		adapter2 = new ImageAdapter(getActivity(), result);
+		gvDeck.setAdapter(adapter2);
+		adapter = new DeckListAdapter(getActivity(), position,
+				result);
+		lvDeck.setAdapter(adapter);
+	}
+
+	private static String makeFragmentName(int viewId, int index) {
+		return "android:switcher:" + viewId + ":" + index;
+	}
 }

@@ -11,15 +11,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import android.R.integer;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,19 +23,23 @@ import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemClickListener;
+
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SimulatorFragment extends Fragment {
 
@@ -53,6 +53,7 @@ public class SimulatorFragment extends Fragment {
 	private TextView tvSet;
 	private TextView tvCrafted;
 	private TextView tvClass;
+	private TextView tvStartingSize;
 	private ImageView ivCardImage;
 	private PopupWindow pWindow;
 
@@ -64,6 +65,8 @@ public class SimulatorFragment extends Fragment {
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
 	private int numCards;
+	
+	private Typeface font;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -76,6 +79,8 @@ public class SimulatorFragment extends Fragment {
 		btnRedraw = findById(V, R.id.btnRedraw);
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
+		tvStartingSize = findById(V, R.id.textView1);
+		
 
 		return V;
 	}
@@ -84,6 +89,12 @@ public class SimulatorFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		font = TypefaceCache.get(getActivity().getAssets(), "fonts/belwebd.ttf");
+		
+		btnRedraw.setTypeface(font);
+		btnDrawAnother.setTypeface(font);
+		tvStartingSize.setTypeface(font);
+		
 		Intent intent = getActivity().getIntent();
 		final int position = intent.getIntExtra("position", 0);
 
@@ -143,8 +154,8 @@ public class SimulatorFragment extends Fragment {
 					adapter.notifyDataSetChanged();
 					gvCards.setAdapter(adapter);
 				} else {
-					Toast.makeText(getActivity(),
-							"Not enough cards in the deck.", Toast.LENGTH_SHORT)
+					Crouton.makeText(getActivity(),
+							"Not enough cards in the deck.", Style.ALERT)
 							.show();
 				}
 
@@ -162,15 +173,15 @@ public class SimulatorFragment extends Fragment {
 					gvCards.setAdapter(adapter);
 					gvCards.setSelection(index + 1);
 				} else {
-					Toast.makeText(getActivity(), "No more cards.",
-							Toast.LENGTH_SHORT).show();
+					Crouton.makeText(getActivity(), "No more cards.",
+							Style.ALERT).show();
 				}
 			}
 		});
 
 		String[] cardsToDraw = getResources().getStringArray(
 				R.array.CardsToDraw);
-		ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(
 				getActivity(), R.layout.spinner_row, R.id.name, cardsToDraw);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
@@ -407,6 +418,7 @@ public class SimulatorFragment extends Fragment {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -415,6 +427,7 @@ public class SimulatorFragment extends Fragment {
 					true);
 			pWindow.setBackgroundDrawable(new BitmapDrawable());
 			pWindow.setOutsideTouchable(true);
+			pWindow.setAnimationStyle(R.style.AnimationPopup);
 			pWindow.showAtLocation(layout, Gravity.CENTER, 0, 0);
 			pWindow.setFocusable(true);
 
@@ -427,6 +440,13 @@ public class SimulatorFragment extends Fragment {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
+		
+		tvCardName.setTypeface(font);
+		tvClass.setTypeface(font);
+		tvCrafted.setTypeface(font);
+		tvQuality.setTypeface(font);
+		tvSet.setTypeface(font);
+		tvType.setTypeface(font);
 	}
 
 	private List<Cards> getDeck(String deckName) {

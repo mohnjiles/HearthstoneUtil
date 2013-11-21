@@ -16,7 +16,7 @@
 	    android:gravity="left"
 	    android:singleLine="true"
 	    android:text="aggg"
-	    android:textColor="#FFFFFF"
+	    android:textColor="#000000"
 	    android:textSize="@dimen/spinner_textview" />
 
 </RelativeLayout>

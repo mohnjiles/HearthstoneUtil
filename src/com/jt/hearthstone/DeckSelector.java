@@ -17,6 +17,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
@@ -32,6 +33,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class DeckSelector extends ActionBarActivity {
 
@@ -44,6 +46,8 @@ public class DeckSelector extends ActionBarActivity {
 	
 	private CustomDeckAdapter adapter;
 	private int position;
+	
+	private Typeface font;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +59,8 @@ public class DeckSelector extends ActionBarActivity {
 		lvDecks = findById(this, R.id.lvDecks);
 		registerForContextMenu(lvDecks);
 		deckClasses = (ArrayList<Integer>) getDeck("deckclasses");
+		
+		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
 		InputStream instream = null;
 		try {
@@ -137,14 +143,22 @@ public class DeckSelector extends ActionBarActivity {
 					.findViewById(R.id.etDeckName);
 			final Spinner spinner = (Spinner) layout
 					.findViewById(R.id.spinClass);
+			final TextView tvOne = (TextView) layout
+					.findViewById(R.id.TextView01);
+			final TextView tvTwo = (TextView) layout
+					.findViewById(R.id.tvNumCards);
+			
+			tvOne.setTypeface(font);
+			tvTwo.setTypeface(font);
 
 			// Building dialog
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			String[] classes = getResources().getStringArray(
 					R.array.ClassesWithoutAny);
-			ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this,
+			CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
 					R.layout.spinner_row, R.id.name, classes);
 			spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+			nameBox.setTypeface(font);
 			spinner.setAdapter(spinAdapter);
 			builder.setView(layout);
 			builder.setPositiveButton("Save",

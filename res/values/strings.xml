@@ -64,7 +64,6 @@
         <item>8</item>
         <item>9</item>
         <item>10</item>
-        
     </string-array>
 
     <string name="title_activity_card_list">CardListActivity</string>
@@ -79,5 +78,8 @@
     <string name="title_activity_deck_fragment_holder">DeckFragmentHolder</string>
     <string name="title_activity_basic_cards_fragment">BasicCardsFragment</string>
     <string name="title_activity_simulator_fragment">SimulatorFragment</string>
+    <string name="title_activity_arena_simulator">ArenaSimulator</string>
+    <string name="title_activity_arena_fragment">ArenaFragment</string>
+    <string name="title_activity_arena_deck_fragment">ArenaDeckFragment</string>
 
 </resources>

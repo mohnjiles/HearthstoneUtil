@@ -22,6 +22,9 @@ import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 public class SettingsActivity extends PreferenceActivity{
 	
 	@SuppressWarnings("deprecation")
@@ -44,7 +47,7 @@ public class SettingsActivity extends PreferenceActivity{
 				ImageLoader loader = ImageLoader.getInstance();
 				loader.clearDiscCache();
 				loader.clearMemoryCache();
-				Toast.makeText(SettingsActivity.this, "Caches cleared.", Toast.LENGTH_SHORT).show();
+				Crouton.makeText(SettingsActivity.this, "Caches cleared.", Style.INFO).show();
 				return true;
 			}
 		});
@@ -56,14 +59,14 @@ public class SettingsActivity extends PreferenceActivity{
 				List<Integer> classesDeck = (List<Integer>) getDeck("deckclasses");
 				if (deckList.size() > 0) {
 					deckList.clear();
-					Toast.makeText(SettingsActivity.this, "Deck List cleared.", Toast.LENGTH_SHORT).show();
+					Crouton.makeText(SettingsActivity.this, "Deck List cleared.", Style.INFO).show();
 					Log.i("deckList.clear()", "Deck list cleared");
 					saveDeck("decklist", deckList);
 					Log.i("Deck saved", "Deck List Saved");
 				}
 				if (classesDeck.size() > 0) {
 					classesDeck.clear();
-					Toast.makeText(SettingsActivity.this, "Deck Classes cleared.", Toast.LENGTH_SHORT).show();
+					Crouton.makeText(SettingsActivity.this, "Deck Classes cleared.", Style.INFO).show();
 					Log.i("deckClasses.clear()", "Deck Classes cleared.");
 					saveDeck("deckclasses", classesDeck);
 					Log.i("Deck saved", "Deck Classes Saved");
