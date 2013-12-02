@@ -1,5 +1,6 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -9,7 +10,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import static butterknife.Views.findById;
 
 public class MainActivity extends ActionBarActivity {
 	private Button btnCardList;

@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.Serializable;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import javax.security.auth.PrivateCredentialPermission;
+
+import android.R.integer;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -50,6 +54,7 @@ public class ArenaFragment extends Fragment {
 	private Classes selectedClass;
 	CustomListAdapter adapter;
 	int doOnce = 0;
+	ArenaDeckFragment deckFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -60,10 +65,10 @@ public class ArenaFragment extends Fragment {
 		 */
 		View v = inflater.inflate(R.layout.arena_fragment, container, false);
 
-		ivItem1 = findById(v, R.id.ivItem1);
-		ivItem2 = findById(v, R.id.ivItem2);
-		ivItem3 = findById(v, R.id.ivItem3);
-		textView = findById(v, R.id.textView1);
+		ivItem1 = (ImageView) v.findViewById(R.id.ivItem1);
+		ivItem2 = (ImageView) v.findViewById(R.id.ivItem2);
+		ivItem3 = (ImageView) v.findViewById(R.id.ivItem3);
+		textView = (TextView) v.findViewById(R.id.textView1);
 
 		/*
 		 * Tells the parent activity to let this fragment create it's own
@@ -75,9 +80,41 @@ public class ArenaFragment extends Fragment {
 
 	}
 
+//	@Override
+//	public void onSaveInstanceState(Bundle outState) {
+//
+//		if (listDeck == null) {
+//			listDeck = new ArrayList<Cards>();
+//		}
+//
+//		if (selectedClass != null) {
+//			outState.putSerializable("selectedClass", selectedClass);
+//		}
+//
+//		if (listChoices.size() > 0) {
+//			outState.putSerializable("card_0", listChoices.get(0));
+//			outState.putSerializable("card_1", listChoices.get(1));
+//			outState.putSerializable("card_2", listChoices.get(2));
+//		}
+//
+//		if (listDeck.size() > 0) {
+//			outState.putSerializable("listDeck", listDeck);
+//		}
+//
+//		getActivity().getSupportFragmentManager().putFragment(outState,
+//				ArenaDeckFragment.class.getName(), deckFrag);
+//
+//		super.onSaveInstanceState(outState);
+//
+//	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		deckFrag = (ArenaDeckFragment) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 1));
 
 		// Initiate ImageLoader if it's not already initiated.
 		if (loader.isInited() == false) {
@@ -87,8 +124,8 @@ public class ArenaFragment extends Fragment {
 		}
 
 		// Show a "Loading..." (stub) image
-		options = new DisplayImageOptions.Builder().showStubImage(
-				R.drawable.cards).build();
+		options = new DisplayImageOptions.Builder().cacheOnDisc(true)
+				.showStubImage(R.drawable.cards).build();
 
 		/*
 		 * Set the ImageViews to listen to our custom OnClickListener (Handles
@@ -107,10 +144,70 @@ public class ArenaFragment extends Fragment {
 		// Populate cards array with GSON
 		getCards();
 
-		// Start the arena!
-		pickRandomHero();
+//		if (savedInstanceState != null) {
+//			deckFrag = (ArenaDeckFragment) getActivity()
+//					.getSupportFragmentManager().getFragment(
+//							savedInstanceState,
+//							ArenaDeckFragment.class.getName());
+//			doOnce = 1;
+//			listChoices.clear();
+//			listChoices.add((Cards) savedInstanceState
+//					.getSerializable("card_0"));
+//			listChoices.add((Cards) savedInstanceState
+//					.getSerializable("card_1"));
+//			listChoices.add((Cards) savedInstanceState
+//					.getSerializable("card_2"));
+//
+//			ivItem1.setTag((Classes) savedInstanceState
+//					.getSerializable("selectedClass"));
+//			ivItem2.setTag((Classes) savedInstanceState
+//					.getSerializable("selectedClass"));
+//			ivItem3.setTag((Classes) savedInstanceState
+//					.getSerializable("selectedClass"));
+//
+//			selectedClass = (Classes) savedInstanceState
+//					.getSerializable("selectedClass");
+//
+//			listDeck = (ArrayList<Cards>) savedInstanceState
+//					.getSerializable("listDeck");
+//
+//			if (listDeck != null && listDeck.size() < 30) {
+//				textView.setText("Choose a card (" + listDeck.size() + " / 30)");
+//			} else {
+//				textView.setText("Swipe left to see your finished deck!");
+//				ivItem1.setVisibility(View.GONE);
+//				ivItem2.setVisibility(View.GONE);
+//				ivItem3.setVisibility(View.GONE);
+//			}
+//
+//			if (adapter == null) {
+//				adapter = new CustomListAdapter(getActivity(), listDeck);
+//				deckFrag.lvArena.setAdapter(adapter);
+//			} else {
+//				adapter.notifyDataSetChanged();
+//				deckFrag.lvArena.setAdapter(adapter);
+//			}
+//
+//			if (listDeck != null && listDeck.size() < 30) {
+//				loader.displayImage(
+//						"http://54.224.222.135/"
+//								+ listChoices.get(0).getImage() + ".png",
+//						ivItem1, options);
+//				loader.displayImage(
+//						"http://54.224.222.135/"
+//								+ listChoices.get(1).getImage() + ".png",
+//						ivItem2, options);
+//				loader.displayImage(
+//						"http://54.224.222.135/"
+//								+ listChoices.get(2).getImage() + ".png",
+//						ivItem3, options);
+//			}
+//		} else {
+			// Start the arena!
+			pickRandomHero();
+//		}
 
-		// 
+		//
 		adapter = new CustomListAdapter(getActivity(), listDeck);
 
 	}
@@ -127,16 +224,22 @@ public class ArenaFragment extends Fragment {
 
 		ArenaDeckFragment deckFrag = (ArenaDeckFragment) getActivity()
 				.getSupportFragmentManager().findFragmentByTag(
-						makeFragmentName(R.id.pager, 1));
+						Utils.makeFragmentName(R.id.pager, 1));
 
 		@Override
 		public void onClick(View v) {
 
+			if (listDeck == null) {
+				listDeck = new ArrayList<Cards>();
+			}
 			// If the heroes never get shown? (for some reason?) try again.
 			if (v.getTag() == null) {
 				pickRandomHero();
 			} else {
 				lvArena = deckFrag.lvArena;
+				if (lvArena == null) {
+					lvArena = (ListView) getView().findViewById(R.id.lvArena);
+				}
 				if (doOnce == 0) { // Do once
 					// Save the class the user has chosen
 					selectedClass = (Classes) v.getTag();
@@ -277,9 +380,9 @@ public class ArenaFragment extends Fragment {
 		listChoices.clear();
 		double random = Math.random();
 
-		/* ************ LEGENDARY ************
-		 * ~5% chance if either first or last choice of 3
-		 * Otherwise, ~1% chance
+		/*
+		 * ************ LEGENDARY ************ ~5% chance if either first or
+		 * last choice of 3 Otherwise, ~1% chance
 		 */
 		if (random >= 0.99
 				|| ((listDeck.size() == 0 || listDeck.size() == 29) && random >= 0.95)) {
@@ -290,10 +393,10 @@ public class ArenaFragment extends Fragment {
 					listChoices.add(card);
 				}
 			}
-			
+
 			// Shuffle the list for maximum randomness
 			Collections.shuffle(listChoices);
-			
+
 			// Then pick the first 3 cards, and load their images.
 			loader.displayImage("http://54.224.222.135/"
 					+ listChoices.get(0).getImage() + ".png", ivItem1, options);
@@ -302,9 +405,10 @@ public class ArenaFragment extends Fragment {
 			loader.displayImage("http://54.224.222.135/"
 					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
 
-		} 
-		/* ************ EPIC ************
-		 * ~10% chance if either first or last choice of 3.
+		}
+		/*
+		 * ************ EPIC ************ ~10% chance if either first or last
+		 * choice of 3.
 		 * 
 		 * Otherwise, ~4% chance
 		 */
@@ -324,10 +428,10 @@ public class ArenaFragment extends Fragment {
 					+ listChoices.get(1).getImage() + ".png", ivItem2, options);
 			loader.displayImage("http://54.224.222.135/"
 					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
-		} 
-		/* ************ RARE ************
-		 * ~100% chance if either first or last choice of 3 (unless a higher
-		 * rarity is chosen).
+		}
+		/*
+		 * ************ RARE ************ ~100% chance if either first or last
+		 * choice of 3 (unless a higher rarity is chosen).
 		 * 
 		 * Otherwise, ~10% chance
 		 */
@@ -401,10 +505,6 @@ public class ArenaFragment extends Fragment {
 
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
-	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
 	}
 
 }

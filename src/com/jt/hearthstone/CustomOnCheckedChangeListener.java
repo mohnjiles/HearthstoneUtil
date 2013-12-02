@@ -22,7 +22,7 @@ public class CustomOnCheckedChangeListener implements OnCheckedChangeListener {
 	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 		CardListFragment cardListFrag = (CardListFragment) activity
 				.getSupportFragmentManager().findFragmentByTag(
-						makeFragmentName(R.id.pager, 0));
+						Utils.makeFragmentName(R.id.pager, 0));
 
 		if (cardListFrag.mSearchView != null) {
 			query = cardListFrag.mSearchView.getQuery().toString()
@@ -91,10 +91,6 @@ public class CustomOnCheckedChangeListener implements OnCheckedChangeListener {
 			break;
 		}
 
-	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
 	}
 
 }

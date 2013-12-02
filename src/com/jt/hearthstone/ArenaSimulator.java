@@ -1,5 +1,6 @@
 package com.jt.hearthstone;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import android.content.res.Configuration;
@@ -9,30 +10,33 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 
 /**
- * Parent class for Arena-related Fragments.
- * Sets up and loads ViewPager and Fragments.
+ * Parent class for Arena-related Fragments. Sets up and loads ViewPager and
+ * Fragments.
  * 
  * @author JT
- *
+ * 
  */
 public class ArenaSimulator extends ActionBarActivity {
 
 	ViewPager myPager;
+	FragmentAdapter adapter;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_arena_simulator);
-		
+
 		getSupportActionBar().setTitle("Arena Simulator");
-		
+
 		// Show the Back arrow in the action bar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -42,15 +46,14 @@ public class ArenaSimulator extends ActionBarActivity {
 
 		ArenaFragment fragZero = new ArenaFragment();
 		fragments.add(fragZero);
-		
+
 		ArenaDeckFragment fragOne = new ArenaDeckFragment();
 		fragments.add(fragOne);
-		
-		FragmentAdapter adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
-		
+		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
 		myPager.setAdapter(adapter);
 
 	}
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -58,7 +61,7 @@ public class ArenaSimulator extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.arena_simulator, menu);
 		return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
@@ -71,7 +74,7 @@ public class ArenaSimulator extends ActionBarActivity {
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
 			NavUtils.navigateUpFromSameTask(this);
-			return super.onOptionsItemSelected(item);
+			return true;
 		case R.id.action_restart:
 			restartArena();
 			return super.onOptionsItemSelected(item);
@@ -80,12 +83,15 @@ public class ArenaSimulator extends ActionBarActivity {
 	}
 
 	/**
-	 * Custom FragmentPagerAdapter class used to populate the
-	 * ViewPager
+	 * Custom FragmentPagerAdapter class used to populate the ViewPager
+	 * 
 	 * @author JT
-	 *
+	 * 
 	 */
-	public class FragmentAdapter extends FragmentPagerAdapter {
+	public class FragmentAdapter extends FragmentPagerAdapter implements
+			Serializable {
+
+		private static final long serialVersionUID = 1337L;
 
 		FragmentManager mManager;
 		ArrayList<Fragment> localFragmentArray;
@@ -98,7 +104,6 @@ public class ArenaSimulator extends ActionBarActivity {
 			localFragmentArray = loadFragment;
 			mManager = fm;
 		}
-		
 
 		@Override
 		public Fragment getItem(int arg0) {
@@ -132,30 +137,28 @@ public class ArenaSimulator extends ActionBarActivity {
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-				switch (position) {
-				case 0:
-					return "Arena";
-				case 1:
-					return "Deck";
-				}
+			switch (position) {
+			case 0:
+				return "Arena";
+			case 1:
+				return "Deck";
+			}
 			return null;
 		}
 	}
-	
+
 	private void restartArena() {
-		ArenaFragment frag = (ArenaFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(R.id.pager, 0));
-		ArenaDeckFragment frag2 = (ArenaDeckFragment) getSupportFragmentManager().findFragmentByTag(makeFragmentName(R.id.pager, 1));
+		ArenaFragment frag = (ArenaFragment) getSupportFragmentManager()
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
+		ArenaDeckFragment frag2 = (ArenaDeckFragment) getSupportFragmentManager()
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 		frag.doOnce = 0;
 		frag.listDeck.clear();
 		frag.textView.setText("Choose a Hero");
 		frag.pickRandomHero();
-		
+
 		frag2.lvArena.setAdapter(frag.adapter);
 		frag2.tvDeckSize.setText("0 / 30");
-	}
-	
-	private static String makeFragmentName(int viewId, int index) {
-	     return "android:switcher:" + viewId + ":" + index;
 	}
 
 }

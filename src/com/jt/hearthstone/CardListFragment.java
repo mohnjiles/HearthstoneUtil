@@ -29,6 +29,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
@@ -56,6 +57,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.nineoldandroids.animation.AnimatorInflater;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -142,9 +145,9 @@ public class CardListFragment extends Fragment {
 		registerForContextMenu(grid);
 
 		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 2));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 2));
 		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 1));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
@@ -230,7 +233,7 @@ public class CardListFragment extends Fragment {
 		cbReverse.setOnCheckedChangeListener(checkListener);
 
 		// Spinner setup (set items/adapters/etc)
-		deckClasses = (List<Integer>) getDeck("deckclasses");
+		deckClasses = (List<Integer>) Utils.getDeck(getActivity(), "deckclasses");
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
@@ -406,12 +409,44 @@ public class CardListFragment extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://54.224.222.135/"
+			final String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			final DisplayImageOptions options = new DisplayImageOptions.Builder()
 					.showStubImage(R.drawable.cards).cacheInMemory(false)
 					.cacheOnDisc(true).build();
 			loader.displayImage(url, ivCardImage, options);
+
+			final ObjectAnimator animator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping);
+			final ObjectAnimator reverseAnimator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping_reverse);
+			final int pos = position;
+
+			animator.setTarget(ivCardImage);
+			animator.setDuration(500);
+			
+			reverseAnimator.setTarget(ivCardImage);
+			reverseAnimator.setDuration(500);
+
+			ivCardImage.setOnClickListener(new View.OnClickListener() {
+
+				boolean isGolden = false;
+				
+				@Override
+				public void onClick(View v) {
+					if (isGolden) {
+						reverseAnimator.start();
+						isGolden = false;
+					} else {
+						animator.start();
+						isGolden = true;
+					}
+
+					Handler handler = new Handler();
+					delayedLoad(handler, pos);
+				}
+			});
+			
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
 
@@ -583,46 +618,10 @@ public class CardListFragment extends Fragment {
 		tvType.setTypeface(font);
 	}
 
-	private List<?> getDeck(String deckName) {
-		InputStream instream = null;
-		List<?> list = null;
-		try {
-			instream = getActivity().openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			list = new ArrayList<Cards>();
-			e.printStackTrace();
-		}
-
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<?>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
-	}
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
-		if (getDeck(deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
+		if (Utils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
+			list = (List<Cards>) Utils.getDeck(getActivity(), deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
@@ -637,9 +636,8 @@ public class CardListFragment extends Fragment {
 		chartFrag.mCurrentSeries.add(cardList.get(position).getCost()
 				.intValue(), 1);
 		chartFrag.layout.invalidate();
-		saveDeck(deckList.get(menuItemIndex), list);
-		// doSomeStuff((List<Cards>)getDeck(deckList.get(menuItemIndex)),
-		// deckList.get(menuItemIndex));
+		Utils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
+		doSomeStuff((List<Cards>)Utils.getDeck(getActivity(), deckList.get(menuItemIndex)), deckList.get(menuItemIndex));
 
 		if (chartFrag.mChart == null) {
 
@@ -938,28 +936,6 @@ public class CardListFragment extends Fragment {
 		listCards.setAdapter(adapter2);
 	}
 
-	public void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-			fos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		doSomeStuff((List<Cards>) getDeck(deckName), deckName);
-	}
-
 	public void doSomeStuff(List<Cards> result, String deckName) {
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
 				10, getActivity().getResources().getDisplayMetrics());
@@ -969,7 +945,7 @@ public class CardListFragment extends Fragment {
 		int screenSize = getActivity().getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 		if (result == null) {
-			result = (List<Cards>) getDeck(deckName);
+			result = (List<Cards>) Utils.getDeck(getActivity(), deckName);
 		}
 		deckFrag.cardList = result;
 		if (result.size() == 0
@@ -996,7 +972,34 @@ public class CardListFragment extends Fragment {
 		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
 	}
 
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
+	private void delayedLoad(Handler handler, int position) {
+	
+		final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
+				.cacheOnDisc(true).cacheInMemory(false).build();
+		final String url = "http://54.224.222.135/"
+				+ cardList.get(position).getImage() + ".png";
+		final int cardListPos = position;
+	
+		handler.postDelayed(new Runnable() {
+	
+			@Override
+			public void run() {
+				if (ivCardImage.getTag() == null
+						|| ivCardImage.getTag() == "Standard") {
+					ivCardImage.setImageBitmap(ImageCache.get(
+							getActivity(), Utils.getResIdByName(
+									getActivity(),
+									cardList.get(cardListPos).getImage()
+											.toString()
+											+ "_premium")));
+					ivCardImage.setTag("Premium");
+				} else {
+					loader.cancelDisplayTask(ivCardImage);
+					loader.displayImage(url, ivCardImage, noStubOptions);
+					ivCardImage.setTag("Standard");
+				}
+	
+			}
+		}, 350);
 	}
 }

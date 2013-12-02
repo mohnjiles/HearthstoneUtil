@@ -58,7 +58,7 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setTitle("Decks");
 		lvDecks = findById(this, R.id.lvDecks);
 		registerForContextMenu(lvDecks);
-		deckClasses = (ArrayList<Integer>) getDeck("deckclasses");
+		deckClasses = (ArrayList<Integer>) Utils.getDeck(this, "deckclasses");
 		
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
@@ -168,9 +168,9 @@ public class DeckSelector extends ActionBarActivity {
 							dialog.dismiss();
 							listDecks.add(nameBox.getText().toString());
 							deckClasses.add(spinner.getSelectedItemPosition());
-							saveDeck("decklist", listDecks);
+							Utils.saveDeck(DeckSelector.this, "decklist", listDecks);
 							/*************** save corresponding class number **********/
-							saveDeck("deckclasses", deckClasses);
+							Utils.saveDeck(DeckSelector.this, "deckclasses", deckClasses);
 							adapter.notifyDataSetChanged();
 							lvDecks.setAdapter(adapter);
 						}
@@ -208,71 +208,13 @@ public class DeckSelector extends ActionBarActivity {
 		
 		this.deleteFile(listDecks.get(position));
 		deckClasses.remove(position);
-		saveDeck("deckclasses", deckClasses);
+		Utils.saveDeck(this, "deckclasses", deckClasses);
 
 		listDecks.remove(position);
-		saveDeck("decklist", listDecks);
+		Utils.saveDeck(this, "decklist", listDecks);
 		adapter.notifyDataSetChanged();
 		lvDecks.setAdapter(adapter);
 		return super.onContextItemSelected(item);
-	}
-
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
-
-	private List<?> getDeck(String deckName) {
-		InputStream instream = null;
-		List<?> list = new ArrayList<Cards>();
-		try {
-			instream = openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			list = new ArrayList<Cards>();
-			e.printStackTrace();
-		}
-
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<?>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				list = new ArrayList<Cards>();
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
 	}
 
 }

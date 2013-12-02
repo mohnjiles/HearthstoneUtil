@@ -18,6 +18,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -34,6 +35,8 @@ import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.nineoldandroids.animation.AnimatorInflater;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -65,7 +68,7 @@ public class SimulatorFragment extends Fragment {
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
 	private int numCards;
-	
+
 	private Typeface font;
 
 	@Override
@@ -80,7 +83,6 @@ public class SimulatorFragment extends Fragment {
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
 		tvStartingSize = findById(V, R.id.textView1);
-		
 
 		return V;
 	}
@@ -89,16 +91,18 @@ public class SimulatorFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		font = TypefaceCache.get(getActivity().getAssets(), "fonts/belwebd.ttf");
-		
+		font = TypefaceCache
+				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
+
 		btnRedraw.setTypeface(font);
 		btnDrawAnother.setTypeface(font);
 		tvStartingSize.setTypeface(font);
-		
+
 		Intent intent = getActivity().getIntent();
 		final int position = intent.getIntExtra("position", 0);
 
-		cardList = getDeck(listDecks.get(position));
+		cardList = (List<Cards>) Utils.getDeck(getActivity(),
+				listDecks.get(position));
 		if (spinnerNumCards.getSelectedItem() != null) {
 			numCards = Integer.parseInt(spinnerNumCards.getSelectedItem()
 					.toString());
@@ -133,7 +137,8 @@ public class SimulatorFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				cardList = getDeck(listDecks.get(position));
+				cardList = (List<Cards>) Utils.getDeck(getActivity(),
+						listDecks.get(position));
 				Collections.shuffle(cardList);
 
 				cardsToShow.clear();
@@ -165,7 +170,8 @@ public class SimulatorFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				// cardList = getDeck(listDecks.get(position));
+				// cardList = Utils.getDeck(getActivity(),
+				// listDecks.get(position));
 				if (cardsToShow.size() < cardList.size()) {
 					cardsToShow.add(cardList.get(cardsToShow.size()));
 					int index = gvCards.getLastVisiblePosition();
@@ -181,8 +187,8 @@ public class SimulatorFragment extends Fragment {
 
 		String[] cardsToDraw = getResources().getStringArray(
 				R.array.CardsToDraw);
-		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(
-				getActivity(), R.layout.spinner_row, R.id.name, cardsToDraw);
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
+				R.layout.spinner_row, R.id.name, cardsToDraw);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
 		spinnerNumCards.setAdapter(spinAdapter);
@@ -271,12 +277,43 @@ public class SimulatorFragment extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://54.224.222.135/"
+			final String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			final DisplayImageOptions options = new DisplayImageOptions.Builder()
 					.showStubImage(R.drawable.cards).cacheInMemory(false)
 					.cacheOnDisc(true).build();
 			loader.displayImage(url, ivCardImage, options);
+
+			final ObjectAnimator animator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping);
+			final ObjectAnimator reverseAnimator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping_reverse);
+			final int pos = position;
+
+			animator.setTarget(ivCardImage);
+			animator.setDuration(500);
+			
+			reverseAnimator.setTarget(ivCardImage);
+			reverseAnimator.setDuration(500);
+
+			ivCardImage.setOnClickListener(new View.OnClickListener() {
+
+				boolean isGolden = false;
+				
+				@Override
+				public void onClick(View v) {
+					if (isGolden) {
+						reverseAnimator.start();
+						isGolden = false;
+					} else {
+						animator.start();
+						isGolden = true;
+					}
+
+					Handler handler = new Handler();
+					delayedLoad(handler, pos);
+				}
+			});
 
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
@@ -440,7 +477,7 @@ public class SimulatorFragment extends Fragment {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
-		
+
 		tvCardName.setTypeface(font);
 		tvClass.setTypeface(font);
 		tvCrafted.setTypeface(font);
@@ -449,41 +486,34 @@ public class SimulatorFragment extends Fragment {
 		tvType.setTypeface(font);
 	}
 
-	private List<Cards> getDeck(String deckName) {
-		InputStream instream = null;
-		List<Cards> list = null;
-		try {
-			instream = getActivity().openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+	private void delayedLoad(Handler handler, int position) {
 
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<Cards>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
+		final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
+				.cacheOnDisc(true).cacheInMemory(false).build();
+		final String url = "http://54.224.222.135/"
+				+ cardList.get(position).getImage() + ".png";
+		final int cardListPos = position;
 
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (ivCardImage.getTag() == null
+						|| ivCardImage.getTag() == "Standard") {
+					ivCardImage.setImageBitmap(ImageCache.get(
+							getActivity(),
+							Utils.getResIdByName(getActivity(),
+									cardList.get(cardListPos).getImage()
+											.toString()
+											+ "_premium")));
+					ivCardImage.setTag("Premium");
+				} else {
+					loader.cancelDisplayTask(ivCardImage);
+					loader.displayImage(url, ivCardImage, noStubOptions);
+					ivCardImage.setTag("Standard");
 				}
-			} else {
-				list = new ArrayList<Cards>();
+
 			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
+		}, 350);
 	}
 }

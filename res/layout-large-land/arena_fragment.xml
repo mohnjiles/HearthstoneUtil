@@ -1,0 +1,49 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    tools:context=".ArenaFragment" >
+    
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/arena_text_margin"
+        android:layout_marginTop="4dp"
+        android:text="Choose your Hero"
+        android:textSize="@dimen/arena_text" />
+
+    <ImageView
+        android:id="@+id/ivItem1"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginRight="16dp"
+        android:layout_toLeftOf="@+id/ivItem2"
+        android:layout_centerVertical="true"
+        android:src="@drawable/uther_lightbringer" />
+
+    <ImageView
+        android:id="@+id/ivItem3"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/ivItem2"
+        android:layout_centerVertical="true"
+        android:src="@drawable/jaina_proudmoore" />
+
+    <ImageView
+        android:id="@+id/ivItem2"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/garrosh_hellscream" />
+
+</RelativeLayout>

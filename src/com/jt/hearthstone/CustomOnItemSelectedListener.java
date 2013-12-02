@@ -20,7 +20,7 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	public CustomOnItemSelectedListener(FragmentActivity activity) {
 
 		cardListFrag = (CardListFragment) activity.getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 	}
 
 	@Override
@@ -292,9 +292,5 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 		cardListFrag.adapter2.notifyDataSetChanged();
 		cardListFrag.grid.setAdapter(cardListFrag.adapter);
 		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
-	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
 	}
 }

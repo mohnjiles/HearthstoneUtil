@@ -90,8 +90,6 @@ public class CustomListAdapter extends BaseAdapter {
 		}
 
 		int quality = cardList.get(position).getQuality().intValue();
-
-//		new LoadDatImage(position, vh.ivBackground).execute();
 		
 		String mDrawablename = "files_"
 				+ cardList.get(position).getImage().toLowerCase() + "_rect";
@@ -210,35 +208,6 @@ public class CustomListAdapter extends BaseAdapter {
 
 		return convertView;
 
-	}
-	
-	private class LoadDatImage extends AsyncTask<Drawable, Void, Drawable> {
-		
-		ImageView iv;
-		int position;
-		
-		private LoadDatImage(int position, ImageView iv) {
-			this.position = position;
-			this.iv = iv;
-		}
-
-		@Override
-		protected Drawable doInBackground(Drawable... arg0) {
-			String mDrawablename = "files_"
-					+ cardList.get(position).getImage().toLowerCase() + "_rect";
-			int resID = mContext.getResources().getIdentifier(mDrawablename,
-					"drawable", mContext.getPackageName());
-			Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), resID);
-			Drawable drawable = new BitmapDrawable(mContext.getResources(), image);
-			return drawable;
-		}
-		
-		@Override
-		protected void onPostExecute(Drawable result) {
-
-			iv.setImageDrawable(result);
-		}
-		
 	}
 
 }

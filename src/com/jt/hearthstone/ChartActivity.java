@@ -38,19 +38,19 @@ public class ChartActivity extends Fragment {
 	private XYSeriesRenderer mCurrentRenderer;
 	private XYMultipleSeriesDataset mDataset = new XYMultipleSeriesDataset();
 	private XYMultipleSeriesRenderer mRenderer = new XYMultipleSeriesRenderer();
-	
+
 	private TextView tvType;
 	private TextView tvMana;
-	
-	private DeckActivity deckFrag;
 
+	private DeckActivity deckFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
-		Typeface font = Typeface.createFromAsset(getActivity().getAssets(), "fonts/belwebd.ttf");
-		
+
+		Typeface font = Typeface.createFromAsset(getActivity().getAssets(),
+				"fonts/belwebd.ttf");
+
 		// Inflate the layout for this fragment
 
 		View V = inflater.inflate(R.layout.activity_chart, container, false);
@@ -61,10 +61,11 @@ public class ChartActivity extends Fragment {
 
 		tvMana.setTypeface(font);
 		tvType.setTypeface(font);
-		
-		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager().findFragmentByTag(makeFragmentName(R.id.pager, 1));
+
+		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 		cardList = deckFrag.cardList;
-		
+
 		return V;
 	}
 
@@ -152,7 +153,7 @@ public class ChartActivity extends Fragment {
 				Color.rgb(60, 242, 0) };
 		final int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
 				Color.rgb(8, 196, 0) };
-		
+
 		mRenderer2.setStartAngle(180);
 		mRenderer2.setDisplayValues(true);
 		mRenderer2.setPanEnabled(false);
@@ -160,7 +161,7 @@ public class ChartActivity extends Fragment {
 		mRenderer2.setLabelsTextSize(14.0f);
 		mRenderer2.setLabelsColor(Color.BLACK);
 		mRenderer2.setShowLegend(false);
-		
+
 		cardList = deckFrag.cardList;
 
 		for (Cards card : cardList) {
@@ -172,7 +173,7 @@ public class ChartActivity extends Fragment {
 				weapons++;
 			}
 		}
-		
+
 		if (abilities != 0) {
 			mSeries.add("Spells", abilities);
 			series++;
@@ -195,10 +196,4 @@ public class ChartActivity extends Fragment {
 			mRenderer2.addSeriesRenderer(seriesRenderer);
 		}
 	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
-	}
-
-
 }

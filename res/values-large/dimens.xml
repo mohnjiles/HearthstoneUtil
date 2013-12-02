@@ -21,9 +21,12 @@
     <dimen name="class_name_top_padding_portrait">0dp</dimen>
     <dimen name="grid_image_width">150dp</dimen>
     <dimen name="grid_image_height">225dp</dimen>
+    <dimen name="arena_width">250dp</dimen>
+    <dimen name="arena_text_margin">8dp</dimen>
     
     <!-- Text Sizes -->
     <dimen name="card_list_textview">16sp</dimen>
     <dimen name="spinner_textview">16sp</dimen>
+    <dimen name="arena_text">18sp</dimen>
 
 </resources>

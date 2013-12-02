@@ -1,6 +1,8 @@
 package com.jt.hearthstone;
 
-public enum Classes {
+import java.io.Serializable;
+
+public enum Classes implements Serializable {
 	WARRIOR(1, "Garrosh Hellscream"),
 	PALADIN(2, "Uther Lightbringer"),
 	HUNTER(3, "Rexxar"),

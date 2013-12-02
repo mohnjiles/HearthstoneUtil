@@ -23,6 +23,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.util.TypedValue;
@@ -43,6 +44,8 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.nineoldandroids.animation.AnimatorInflater;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -81,38 +84,56 @@ public class DeckActivity extends Fragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
+		// Inflate view
 		View V = inflater.inflate(R.layout.activity_deck, container, false);
 
+		// Get font from Cache
 		font = TypefaceCache
 				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
 
+		// Get the position of item selected (determines class)
 		Intent intent = getActivity().getIntent();
 		position = intent.getIntExtra("position", 0);
 
-		cardList = getDeck(listDecks.get(position));
+		// Get corresponding deck
+		cardList = (List<Cards>) Utils.getDeck(getActivity(),
+				listDecks.get(position));
+
+		// Find views w/ ButterKnife
 		lvDeck = findById(V, R.id.lvDeck);
 		gvDeck = findById(V, R.id.gvDeck);
 		tvNumCards = findById(V, R.id.tvNumCards);
 		ivSwipe = findById(V, R.id.imageView1);
+
+		// Set ListView and GridView to listen to long-press on an item
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 
+		// Get reference to Chart Fragment
+		// (Will need this later to update charts)
 		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 2));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 2));
 
+		// ImageLoader init
 		if (!loader.isInited()) {
 			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		}
 
+		// If not on a tablet, use per-page menu/actionbar
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 		if (screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE
 				|| getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 			setHasOptionsMenu(true);
 		}
+
+		// Hide graphic to make room for List
 		if (cardList.size() != 0) {
 			ivSwipe.setVisibility(View.GONE);
 		}
+
+		// Set typeface
 		tvNumCards.setTypeface(font);
 
 		return V;
@@ -122,9 +143,12 @@ public class DeckActivity extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		doSomeStuff((List<Cards>) getDeck(listDecks.get(position)),
-				listDecks.get(position));
+		// Set up initial card list if available
+		doSomeStuff(
+				(List<Cards>) Utils.getDeck(getActivity(),
+						listDecks.get(position)), listDecks.get(position));
 
+		// Change GridView / ListView visibility
 		if (isGrid) {
 			lvDeck.setVisibility(View.INVISIBLE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -133,6 +157,7 @@ public class DeckActivity extends Fragment {
 			lvDeck.setVisibility(View.VISIBLE);
 		}
 
+		// Set GridView and ListView to show PopupWindow when clicked
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
@@ -171,15 +196,25 @@ public class DeckActivity extends Fragment {
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 
+		// Remove selected card from the deck
 		if (item.getGroupId() == Menu.FIRST) {
 			cardList.remove(pos);
 			Log.i("Card Removed", "Card removed, pos: " + pos);
-			saveDeck(listDecks.get(position), cardList);
-			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+
+			// Save the updated deck
+			Utils.saveDeck(getActivity(), listDecks.get(position), cardList);
+
+			// Tell adapters data has changed!
 			adapter.notifyDataSetChanged();
 			adapter2.notifyDataSetChanged();
-			lvDeck.setAdapter(adapter);
-			gvDeck.setAdapter(adapter2);
+
+			// Refresh Views with updated data
+			doSomeStuff(
+					(List<Cards>) Utils.getDeck(getActivity(),
+							listDecks.get(position)), listDecks.get(position));
+			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+
+			// Set current card count
 			tvNumCards.setText("" + cardList.size() + " / 30");
 
 			if (cardList.size() == 0
@@ -196,9 +231,8 @@ public class DeckActivity extends Fragment {
 				ivSwipe.setVisibility(View.VISIBLE);
 			}
 
-			if (chartFrag.mChart == null) {
-
-			} else {
+			// Refresh Mana Chart if possible
+			if (chartFrag.mChart != null) {
 				((ViewGroup) chartFrag.mChart.getParent())
 						.removeView(chartFrag.mChart);
 				chartFrag.mCurrentSeries.clear();
@@ -206,9 +240,8 @@ public class DeckActivity extends Fragment {
 				chartFrag.layout2.addView(chartFrag.mChart);
 			}
 
-			if (chartFrag.mPieChart == null) {
-
-			} else {
+			// Refresh pie chart if possible
+			if (chartFrag.mPieChart != null) {
 				((ViewGroup) chartFrag.mPieChart.getParent())
 						.removeView(chartFrag.mPieChart);
 				chartFrag.mSeries.clear();
@@ -241,6 +274,8 @@ public class DeckActivity extends Fragment {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
+		
+		// Switch between GridView and ListView
 		case R.id.action_switch:
 			if (isGrid) {
 				gvDeck.setVisibility(View.INVISIBLE);
@@ -256,6 +291,8 @@ public class DeckActivity extends Fragment {
 				item.setTitle("Switch to list view");
 			}
 			break;
+			
+		// Remove call cards from current deck	
 		case R.id.action_clear:
 			AlertDialog dialog;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -266,8 +303,13 @@ public class DeckActivity extends Fragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							cardList.clear();
-							saveDeck(listDecks.get(position), cardList);
-							tvNumCards.setText("0 / 30");
+							Utils.saveDeck(getActivity(),
+									listDecks.get(position), cardList);
+							doSomeStuff((List<Cards>) Utils.getDeck(
+									getActivity(), listDecks.get(position)),
+									listDecks.get(position));
+							tvNumCards
+									.setText("Looks like there's nothing here. Swipe right to get started!");
 						}
 					});
 			builder.setNegativeButton("Cancel",
@@ -284,34 +326,12 @@ public class DeckActivity extends Fragment {
 		return super.onOptionsItemSelected(item);
 	}
 
-	public void refresh() {
-		adapter.notifyDataSetChanged();
-		adapter2.notifyDataSetChanged();
-		gvDeck.setAdapter(adapter2);
-		lvDeck.setAdapter(adapter);
-	}
-
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = getActivity().openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-
-		doSomeStuff((List<Cards>) getDeck(deckName), deckName);
-	}
-
+	/*
+	 *  Set up the PopupWindow
+	 *  
+	 *  Takes int based on position in list, used to determine
+	 *  card to show
+	 */ 
 	private void initiatePopupWindow(int position) {
 		try {
 			// get screen size of device
@@ -395,12 +415,43 @@ public class DeckActivity extends Fragment {
 			}
 
 			// Get card image
-			String url = "http://54.224.222.135/"
+			final String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			DisplayImageOptions options = new DisplayImageOptions.Builder()
+			final DisplayImageOptions options = new DisplayImageOptions.Builder()
 					.showStubImage(R.drawable.cards).cacheInMemory(false)
 					.cacheOnDisc(true).build();
 			loader.displayImage(url, ivCardImage, options);
+
+			final ObjectAnimator animator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping);
+			final ObjectAnimator reverseAnimator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(getActivity(), R.animator.flipping_reverse);
+			final int pos = position;
+
+			animator.setTarget(ivCardImage);
+			animator.setDuration(500);
+
+			reverseAnimator.setTarget(ivCardImage);
+			reverseAnimator.setDuration(500);
+
+			ivCardImage.setOnClickListener(new View.OnClickListener() {
+
+				boolean isGolden = false;
+
+				@Override
+				public void onClick(View v) {
+					if (isGolden) {
+						reverseAnimator.start();
+						isGolden = false;
+					} else {
+						animator.start();
+						isGolden = true;
+					}
+
+					Handler handler = new Handler();
+					delayedLoad(handler, pos);
+				}
+			});
 
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
@@ -574,45 +625,6 @@ public class DeckActivity extends Fragment {
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private List<Cards> getDeck(String deckName) {
-		InputStream instream = null;
-		List<Cards> list = null;
-		try {
-			instream = getActivity().openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<Cards>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				list = new ArrayList<Cards>();
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
-	}
-
 	private void addSampleData() {
 		int[] costs = new int[50];
 		for (Cards card : cardList) {
@@ -672,7 +684,7 @@ public class DeckActivity extends Fragment {
 	}
 
 	public void doSomeStuff(List<Cards> result, String deckName) {
-		
+
 		// Get text sizes in sp
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
 				10, getActivity().getResources().getDisplayMetrics());
@@ -682,10 +694,10 @@ public class DeckActivity extends Fragment {
 		// Get screen size
 		int screenSize = getActivity().getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
-		
+
 		// If a null list was passed, try to manually lookup deck
 		if (result == null) {
-			result = (List<Cards>) getDeck(deckName);
+			result = (List<Cards>) Utils.getDeck(getActivity(), deckName);
 		}
 		cardList = result;
 		if (result.size() == 0
@@ -705,14 +717,45 @@ public class DeckActivity extends Fragment {
 			tvNumCards.setText("" + result.size() + " / 30");
 			ivSwipe.setVisibility(View.GONE);
 		}
-		adapter2 = new ImageAdapter(getActivity(), result);
+
+		if (adapter2 == null) {
+			adapter2 = new ImageAdapter(getActivity(), result);
+		}
+		if (adapter == null) {
+			adapter = new DeckListAdapter(getActivity(), position, result);
+		}
 		gvDeck.setAdapter(adapter2);
-		adapter = new DeckListAdapter(getActivity(), position,
-				result);
 		lvDeck.setAdapter(adapter);
 	}
 
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
+	private void delayedLoad(Handler handler, int position) {
+
+		final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
+				.cacheOnDisc(true).cacheInMemory(false).build();
+		final String url = "http://54.224.222.135/"
+				+ cardList.get(position).getImage() + ".png";
+		final int cardListPos = position;
+
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (ivCardImage.getTag() == null
+						|| ivCardImage.getTag() == "Standard") {
+					ivCardImage.setImageBitmap(ImageCache.get(
+							getActivity(),
+							Utils.getResIdByName(getActivity(),
+									cardList.get(cardListPos).getImage()
+											.toString()
+											+ "_premium")));
+					ivCardImage.setTag("Premium");
+				} else {
+					loader.cancelDisplayTask(ivCardImage);
+					loader.displayImage(url, ivCardImage, noStubOptions);
+					ivCardImage.setTag("Standard");
+				}
+
+			}
+		}, 350);
 	}
 }

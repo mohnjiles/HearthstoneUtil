@@ -10,20 +10,6 @@
     tools:context=".MainActivity" >
 
     <Button
-        android:id="@+id/btnCardList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/btn_selector"
-        android:gravity="center"
-        android:onClick="cardListPressed"
-        android:text="Card List"
-        android:textColor="#4c391d"
-        android:textStyle="bold" />
-
-    <Button
         android:id="@+id/btnClasses"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -48,6 +34,28 @@
         android:background="@drawable/btn_selector_2"
         android:onClick="deckSelectorPressed"
         android:text="Deck Builder"
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/app_logo" />
+
+    <Button
+        android:id="@+id/btnCardList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_below="@+id/imageView1"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/btn_selector"
+        android:gravity="center"
+        android:onClick="cardListPressed"
+        android:text="Card List"
         android:textColor="#4c391d"
         android:textStyle="bold" />
 

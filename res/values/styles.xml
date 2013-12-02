@@ -26,5 +26,10 @@
         <item name="android:windowEnterAnimation">@anim/appear</item>
         <item name="android:windowExitAnimation">@anim/disappear</item>
     </style>
+    
+    <style name="CardFlip">
+        <item name="android:windowEnterAnimation">@anim/flip_one</item>
+        <item name="android:windowExitAnimation">@anim/flip_one</item>
+    </style>
 
 </resources>

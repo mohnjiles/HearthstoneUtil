@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.security.auth.PrivateCredentialPermission;
+
+import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -28,14 +31,18 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.text.StaticLayout;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -56,6 +63,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.nineoldandroids.animation.AnimatorInflater;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -376,20 +385,31 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
+
+		String[] menuItems = new String[1];
+
 		if (v.getId() == R.id.cardsList) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
-			String[] menuItems = new String[deckList.size()];
+
+			if (deckList == null || deckList.size() == 0) {
+				menuItems = new String[1];
+			} else {
+				menuItems = new String[deckList.size()];
+			}
 			menu.add(Menu.NONE, 0, 0, "Add to new deck");
 			int j = 0;
-			while (j < deckList.size()) {
-				menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
-				j++;
-			}
 
-			for (int i = 0; i < menuItems.length; i++) {
-				menu.add(Menu.NONE, i, i, menuItems[i]);
+			if (deckList != null) {
+				while (j < deckList.size()) {
+					menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
+					j++;
+				}
+				
+				for (int i = 0; i < menuItems.length; i++) {
+					menu.add(Menu.NONE, i, i, menuItems[i]);
+				}
 			}
 		}
 	}
@@ -397,7 +417,8 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		menuItemIndex = item.getItemId();
-		final List<Integer> deckClasses = (List<Integer>) getDeck("deckclasses");
+		final List<Integer> deckClasses = (List<Integer>) Utils.getDeck(this,
+				"deckclasses");
 		switch (menuItemIndex) {
 		case 0:
 			if (item.getTitle().equals("Add to new deck")) {
@@ -427,6 +448,9 @@ public class CardListActivity extends ActionBarActivity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								dialog.dismiss();
+								if (deckList == null) {
+									deckList = new ArrayList<String>();
+								}
 								deckList.add(nameBox.getText().toString());
 								deckClasses.add(spinnerClass
 										.getSelectedItemPosition());
@@ -465,7 +489,8 @@ public class CardListActivity extends ActionBarActivity {
 									e1.printStackTrace();
 								}
 								ArrayList<Cards> newDeck = new ArrayList<Cards>();
-								saveDeck(nameBox.getText().toString(), newDeck);
+								Utils.saveDeck(CardListActivity.this, nameBox
+										.getText().toString(), newDeck);
 								addCards(newDeck, deckList.size() - 1);
 							}
 						});
@@ -611,27 +636,42 @@ public class CardListActivity extends ActionBarActivity {
 						dipsHeightPortrait_Small);
 				break;
 			}
-
 			// Get card image
-			String url = "http://54.224.222.135/"
+			final String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			final String goldenUrl = "http://54.224.222.135/Golden/"
-					+ cardList.get(position).getImage() + "_premium.png";
 			final DisplayImageOptions options = new DisplayImageOptions.Builder()
 					.showStubImage(R.drawable.cards).cacheInMemory(false)
 					.cacheOnDisc(true).build();
 			loader.displayImage(url, ivCardImage, options);
 
+			final ObjectAnimator animator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(this, R.animator.flipping);
+			final ObjectAnimator reverseAnimator = (ObjectAnimator) AnimatorInflater
+					.loadAnimator(this, R.animator.flipping_reverse);
+			final int pos = position;
+
+			animator.setTarget(ivCardImage);
+			animator.setDuration(500);
+
+			reverseAnimator.setTarget(ivCardImage);
+			reverseAnimator.setDuration(500);
+
 			ivCardImage.setOnClickListener(new View.OnClickListener() {
+
+				boolean isGolden = false;
 
 				@Override
 				public void onClick(View v) {
-					if (v.getTag() == null || v.getTag() == "Standard") {
-						loader.cancelDisplayTask((ImageView) v);
-						loader.displayImage(goldenUrl, (ImageView) v, options);
-						v.setTag("Premium");
+					if (isGolden) {
+						reverseAnimator.start();
+						isGolden = false;
+					} else {
+						animator.start();
+						isGolden = true;
 					}
 
+					Handler handler = new Handler();
+					delayedLoad(handler, pos);
 				}
 			});
 
@@ -806,66 +846,10 @@ public class CardListActivity extends ActionBarActivity {
 		tvType.setTypeface(font);
 	}
 
-	private List<?> getDeck(String deckName) {
-		InputStream instream = null;
-		List<?> list = null;
-		try {
-			instream = openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			list = new ArrayList<Cards>();
-			e.printStackTrace();
-		}
-
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<?>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-	}
-
 	private void addCards(List<Cards> list, int menuItemIndex) {
 
 		// Add check for full deck
-		if (getDeck(deckList.get(menuItemIndex)).size() == 30) {
+		if (Utils.getDeck(this, deckList.get(menuItemIndex)).size() == 30) {
 
 			Crouton.makeText(
 					this,
@@ -874,14 +858,15 @@ public class CardListActivity extends ActionBarActivity {
 			return;
 		}
 
-		if (getDeck(deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) getDeck(deckList.get(menuItemIndex));
+		if (Utils.getDeck(this, deckList.get(menuItemIndex)) != null) {
+			list = (List<Cards>) Utils.getDeck(this,
+					deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
 
 		list.add(cardList.get(position));
-		saveDeck(deckList.get(menuItemIndex), list);
+		Utils.saveDeck(this, deckList.get(menuItemIndex), list);
 	}
 
 	private void getDeckList() {
@@ -962,5 +947,36 @@ public class CardListActivity extends ActionBarActivity {
 				cardList.add(card);
 			}
 		}
+	}
+
+	private void delayedLoad(Handler handler, int position) {
+
+		final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
+				.cacheOnDisc(true).cacheInMemory(false).build();
+		final String url = "http://54.224.222.135/"
+				+ cardList.get(position).getImage() + ".png";
+		final int cardListPos = position;
+
+		handler.postDelayed(new Runnable() {
+
+			@Override
+			public void run() {
+				if (ivCardImage.getTag() == null
+						|| ivCardImage.getTag() == "Standard") {
+					ivCardImage.setImageBitmap(ImageCache.get(
+							CardListActivity.this, Utils.getResIdByName(
+									CardListActivity.this,
+									cardList.get(cardListPos).getImage()
+											.toString()
+											+ "_premium")));
+					ivCardImage.setTag("Premium");
+				} else {
+					loader.cancelDisplayTask(ivCardImage);
+					loader.displayImage(url, ivCardImage, noStubOptions);
+					ivCardImage.setTag("Standard");
+				}
+
+			}
+		}, 350);
 	}
 }

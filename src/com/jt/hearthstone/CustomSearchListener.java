@@ -1,18 +1,13 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
+import android.annotation.SuppressLint;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.GridView;
-import android.widget.ListView;
-import android.widget.Spinner;
 
+@SuppressLint("DefaultLocale")
 public class CustomSearchListener implements SearchView.OnQueryTextListener {
 
 	private CardListFragment cardListFrag;
@@ -20,7 +15,7 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 	public CustomSearchListener(FragmentActivity activity) {
 
 		cardListFrag = (CardListFragment) activity.getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 
 	}
 
@@ -139,9 +134,5 @@ public class CustomSearchListener implements SearchView.OnQueryTextListener {
 		cardListFrag.adapter2.notifyDataSetChanged();
 		cardListFrag.grid.setAdapter(cardListFrag.adapter);
 		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
-	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
 	}
 }

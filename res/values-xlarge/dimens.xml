@@ -16,9 +16,12 @@
     <dimen name="spinner_size">175dp</dimen>
     <dimen name="grid_image_width">200dp</dimen>
     <dimen name="grid_image_height">275dp</dimen>
+    <dimen name="arena_width">300dp</dimen>
+    <dimen name="arena_text_margin">16dp</dimen>
     
     <!-- Text Sizes -->
     <dimen name="card_list_textview">18sp</dimen>
     <dimen name="spinner_textview">18sp</dimen>
+    <dimen name="arena_text">22sp</dimen>
 
 </resources>

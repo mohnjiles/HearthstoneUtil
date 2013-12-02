@@ -1,24 +1,14 @@
 package com.jt.hearthstone;
 
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
-import java.util.ArrayList;
 import java.util.List;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 
@@ -55,20 +45,20 @@ public class SettingsActivity extends PreferenceActivity{
 		
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				List<String> deckList = (List<String>) getDeck("decklist");
-				List<Integer> classesDeck = (List<Integer>) getDeck("deckclasses");
+				List<String> deckList = (List<String>) Utils.getDeck(SettingsActivity.this, "decklist");
+				List<Integer> classesDeck = (List<Integer>) Utils.getDeck(SettingsActivity.this, "deckclasses");
 				if (deckList.size() > 0) {
 					deckList.clear();
 					Crouton.makeText(SettingsActivity.this, "Deck List cleared.", Style.INFO).show();
 					Log.i("deckList.clear()", "Deck list cleared");
-					saveDeck("decklist", deckList);
+					Utils.saveDeck(SettingsActivity.this, "decklist", deckList);
 					Log.i("Deck saved", "Deck List Saved");
 				}
 				if (classesDeck.size() > 0) {
 					classesDeck.clear();
 					Crouton.makeText(SettingsActivity.this, "Deck Classes cleared.", Style.INFO).show();
 					Log.i("deckClasses.clear()", "Deck Classes cleared.");
-					saveDeck("deckclasses", classesDeck);
+					Utils.saveDeck(SettingsActivity.this, "deckclasses", classesDeck);
 					Log.i("Deck saved", "Deck Classes Saved");
 				}
 				
@@ -76,63 +66,6 @@ public class SettingsActivity extends PreferenceActivity{
 				return true;
 			}
 		});
-	}
-	
-	private <T> List<?> getDeck(String deckName) {
-		InputStream instream = null;
-		List<?> list = null;
-		try {
-			instream = openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<?>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-					
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			} else {
-				list = new ArrayList<T>();
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
-	}
-	
-	private void saveDeck(String deckName, Object object) {
-		FileOutputStream fos = null;
-		try {
-			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	}
 	
 

@@ -453,8 +453,4 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		listCards.setAdapter(adapter2);
 	}
 
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
-	}
-
 }

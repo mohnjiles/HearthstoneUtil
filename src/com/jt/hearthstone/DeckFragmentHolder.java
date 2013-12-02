@@ -43,7 +43,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	private SearchView mSearchView;
 	int screenSize;
 	static int previousPage = 1;
-	
+
 	private CardListFragment cardListFrag;
 	private DeckActivity deckFrag;
 	private ChartActivity chartFrag;
@@ -137,7 +137,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 
 		CardListFragment cardListFrag = (CardListFragment) getSupportFragmentManager()
-				.findFragmentByTag(makeFragmentName(R.id.pager, 0));
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -185,8 +185,14 @@ public class DeckFragmentHolder extends ActionBarActivity {
 							public void onClick(DialogInterface dialog,
 									int which) {
 								deckFrag.cardList.clear();
-;
-								saveDeck(DeckSelector.listDecks.get(position), deckFrag.cardList);
+								;
+								Utils.saveDeck(DeckFragmentHolder.this,
+										DeckSelector.listDecks.get(position),
+										deckFrag.cardList);
+								doSomeStuff((List<Cards>) Utils.getDeck(
+										DeckFragmentHolder.this,
+										DeckSelector.listDecks.get(position)),
+										DeckSelector.listDecks.get(position));
 								deckFrag.tvNumCards.setText("0 / 30");
 							}
 						});
@@ -357,43 +363,17 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			break;
 		}
 	}
-	
-	
 
-	public void saveDeck(String deckName, Object object) { 
-		FileOutputStream fos = null;
-		try {
-			fos = openFileOutput(deckName, Context.MODE_PRIVATE);
-		} catch (FileNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		ObjectOutputStream oos;
-		try {
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
-			oos.close();
-			fos.close();
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
-		doSomeStuff((List<Cards>)getDeck(deckName), deckName);
-	}
+	public void doSomeStuff(List<Cards> result, String deckName) {
+		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				10, getResources().getDisplayMetrics());
+		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				14, getResources().getDisplayMetrics());
 
-	public void doSomeStuff(List<Cards> result, String deckName) { 
-		int sp = (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_SP, 10, getResources()
-						.getDisplayMetrics());
-		int bigSp = (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
-						.getDisplayMetrics());
-		
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 		if (result == null) {
-			result = (List<Cards>) getDeck(deckName);
+			result = (List<Cards>) Utils.getDeck(this, deckName);
 		}
 		deckFrag.cardList = result;
 		if (result.size() == 0
@@ -415,51 +395,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		}
 		deckFrag.adapter2 = new ImageAdapter(this, result);
 		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
-		deckFrag.adapter = new DeckListAdapter(this, position,
-				result);
+		deckFrag.adapter = new DeckListAdapter(this, position, result);
 		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
 	}
-
-	private List<?> getDeck(String deckName) {
-		InputStream instream = null;
-		List<?> list = null;
-		try {
-			instream = openFileInput(deckName);
-		} catch (FileNotFoundException e) {
-			list = new ArrayList<Cards>();
-			e.printStackTrace();
-		}
-	
-		try {
-			if (instream != null) {
-				ObjectInputStream objStream = new ObjectInputStream(instream);
-				try {
-					list = (List<?>) objStream.readObject();
-					if (instream != null) {
-						instream.close();
-					}
-					if (objStream != null) {
-						objStream.close();
-					}
-	
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
-		} catch (StreamCorruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return list;
-	}
-
-	private static String makeFragmentName(int viewId, int index) {
-		return "android:switcher:" + viewId + ":" + index;
-	}
-	
 
 }
