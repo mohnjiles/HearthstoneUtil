@@ -15,6 +15,7 @@ public class MainActivity extends ActionBarActivity {
 	private Button btnCardList;
 	private Button btnClasses;
 	private Button btnDeckBuilder;
+	private Button btnArena;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,13 +36,16 @@ public class MainActivity extends ActionBarActivity {
 		btnCardList = findById(this, R.id.btnCardList);
 		btnClasses = findById(this, R.id.btnClasses);
 		btnDeckBuilder = findById(this, R.id.btnDeckBuilder);
+		btnArena = findById(this, R.id.btnArena);
 
 		btnCardList.setTypeface(font);
 		btnClasses.setTypeface(font);
 		btnDeckBuilder.setTypeface(font);
+		btnArena.setTypeface(font);
 		btnCardList.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnClasses.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnDeckBuilder.setShadowLayer(1, 1, 1, Color.WHITE);
+		btnArena.setShadowLayer(1, 1, 1, Color.WHITE);
 
 	}
 
@@ -69,6 +73,10 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void classesPressed(View view) {
+		startActivity(new Intent(MainActivity.this, ClassesActivity.class));
+	}
+	
+	public void arenaPressed(View view) {
 		startActivity(new Intent(MainActivity.this, ArenaSimulator.class));
 	}
 

@@ -107,7 +107,7 @@
         android:textSize="12sp" />
 
     <TextView
-        android:id="@+id/TextView01"
+        android:id="@+id/tvCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/cbGenerics"
@@ -126,7 +126,7 @@
         android:layout_alignBottom="@+id/cbGenerics"
         android:layout_alignRight="@+id/spinClass"
         android:layout_marginBottom="16dp"
-        android:layout_toRightOf="@+id/TextView01"
+        android:layout_toRightOf="@+id/tvCost"
         android:entries="@array/Mechanic" />
 
 </RelativeLayout>

@@ -5,6 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_settings">Settings Activity</string>
+    <string name="app_crash">Oops, looks like there was an error. Sending report to developer...</string>
+    <string name="crash_dialog_comment_prompt">Please enter any comments you may have about the crash below:</string>
 
     <string-array name="Classes">
         <item>All</item>

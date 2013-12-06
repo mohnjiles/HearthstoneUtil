@@ -395,7 +395,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		}
 		deckFrag.adapter2 = new ImageAdapter(this, result);
 		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
-		deckFrag.adapter = new DeckListAdapter(this, position, result);
+		deckFrag.adapter = new DeckListAdapter(this, result);
 		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
 	}
 

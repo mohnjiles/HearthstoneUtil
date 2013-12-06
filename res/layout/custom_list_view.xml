@@ -7,6 +7,19 @@
 
     <!-- ListRow Left sied Thumbnail image -->
 
+    <TextView
+        android:id="@+id/tvNumOfCard"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="4dp"
+        android:gravity="center"
+        android:text="2"
+        android:textAlignment="center"
+        android:textColor="#FFE600"
+        android:textSize="@dimen/card_stats_text_size" />
+
     <ImageView
         android:id="@+id/ivBackground"
         android:layout_width="150dp"
@@ -42,7 +55,7 @@
         android:layout_height="@dimen/card_class_size"
         android:layout_centerVertical="true"
         android:layout_marginBottom="4dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginLeft="24dp"
         android:layout_marginTop="4dp"
         android:src="@drawable/ic_launcher" />
 

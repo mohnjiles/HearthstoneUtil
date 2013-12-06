@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,13 +30,15 @@ public class ArenaSimulator extends ActionBarActivity {
 
 	ViewPager myPager;
 	FragmentAdapter adapter;
+	ActionBar aBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_arena_simulator);
 
-		getSupportActionBar().setTitle("Arena Simulator");
+		aBar = getSupportActionBar();
+		aBar.setTitle("Arena Simulator");
 
 		// Show the Back arrow in the action bar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -49,7 +52,11 @@ public class ArenaSimulator extends ActionBarActivity {
 
 		ArenaDeckFragment fragOne = new ArenaDeckFragment();
 		fragments.add(fragOne);
+		
+		ChartActivity fragTwo = new ChartActivity();
+		fragments.add(fragTwo);
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
+		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
 
 	}
@@ -142,6 +149,8 @@ public class ArenaSimulator extends ActionBarActivity {
 				return "Arena";
 			case 1:
 				return "Deck";
+			case 2:
+				return "Breakdown";
 			}
 			return null;
 		}

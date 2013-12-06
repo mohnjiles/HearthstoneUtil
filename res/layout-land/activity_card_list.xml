@@ -47,7 +47,7 @@
         android:entries="@array/Sort" />
 
     <TextView
-        android:id="@+id/TextView01"
+        android:id="@+id/tvCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spinnerMechanic"
@@ -66,15 +66,15 @@
         android:layout_below="@+id/spinnerSort"
         android:layout_marginRight="8dp"
         android:layout_toLeftOf="@+id/gvDeck"
-        android:layout_toRightOf="@+id/TextView01"
+        android:layout_toRightOf="@+id/tvCost"
         android:entries="@array/Mechanic" />
 
     <CheckBox
         android:id="@+id/cbReverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/TextView01"
-        android:layout_below="@+id/TextView01"
+        android:layout_alignLeft="@+id/tvCost"
+        android:layout_below="@+id/tvCost"
         android:layout_marginTop="8dp"
         android:text="Reverse Sort"
         android:textColor="#000000"

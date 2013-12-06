@@ -26,6 +26,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -95,8 +96,16 @@ public class CardListActivity extends ActionBarActivity {
 	private TextView tvMechanic;
 	private TextView tvSort;
 	private TextView tvClassSort;
+	private TextView tvCost;
+	private TextView tvCostGold;
+	private TextView tvDisenchant;
+	private TextView tvDisenchantGold;
 	private ImageView ivCardImage;
-
+	private ImageView ivDust1;
+	private ImageView ivDust2;
+	private ImageView ivDust3;
+	private ImageView ivDust4;
+	
 	private MenuItem searchItem;
 	private List<Cards> deckOne;
 	private List<Cards> deckTwo;
@@ -142,7 +151,7 @@ public class CardListActivity extends ActionBarActivity {
 		spinnerMechanic = findById(this, R.id.spinnerMechanic);
 		tvClassSort = findById(this, R.id.tvInstructions);
 		tvSort = findById(this, R.id.textView2);
-		tvMechanic = findById(this, R.id.TextView01);
+		tvMechanic = findById(this, R.id.tvCost);
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
@@ -406,7 +415,7 @@ public class CardListActivity extends ActionBarActivity {
 					menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
 					j++;
 				}
-				
+
 				for (int i = 0; i < menuItems.length; i++) {
 					menu.add(Menu.NONE, i, i, menuItems[i]);
 				}
@@ -753,29 +762,75 @@ public class CardListActivity extends ActionBarActivity {
 			}
 
 			// Set rarity of the card
+			
+			tvCost.setTextColor(Color.rgb(17, 228, 241));
+			tvCostGold.setTextColor(Color.rgb(17, 228, 241));
+			tvDisenchant.setTextColor(Color.rgb(17, 228, 241));
+			tvDisenchantGold.setTextColor(Color.rgb(17, 228, 241));
 			switch (quality) {
 			case 0:
 				int free = getResources().getColor(R.color.free);
 				tvQuality.setTextColor(free);
 				tvQuality.setText("Free");
+				tvCost.setVisibility(View.INVISIBLE);
+				tvCostGold.setVisibility(View.INVISIBLE);
+				tvDisenchant.setVisibility(View.INVISIBLE);
+				tvDisenchantGold.setVisibility(View.INVISIBLE);
+				ivDust1.setVisibility(View.INVISIBLE);
+				ivDust2.setVisibility(View.INVISIBLE);
+				ivDust3.setVisibility(View.INVISIBLE);
+				ivDust4.setVisibility(View.INVISIBLE);
 				break;
 			case 1:
 				tvQuality.setText("Common");
+				if (set == 3) {
+					tvCost.setText("Crafted: 40");
+					tvCostGold.setText("Golden: 400");
+					tvDisenchant.setText("Disenchant: 5");
+					tvDisenchantGold.setText("Golden: 50");
+				} else {
+					tvCost.setVisibility(View.INVISIBLE);
+					tvCostGold.setVisibility(View.INVISIBLE);
+					tvDisenchant.setVisibility(View.INVISIBLE);
+					tvDisenchantGold.setVisibility(View.INVISIBLE);
+					ivDust1.setVisibility(View.INVISIBLE);
+					ivDust2.setVisibility(View.INVISIBLE);
+					ivDust3.setVisibility(View.INVISIBLE);
+					ivDust4.setVisibility(View.INVISIBLE);
+				}
 				break;
 			case 3:
 				int rare = getResources().getColor(R.color.rare);
 				tvQuality.setTextColor(rare);
 				tvQuality.setText("Rare");
+				if (set == 3) {
+					tvCost.setText("Crafted: 100");
+					tvCostGold.setText("Golden: 800");
+					tvDisenchant.setText("Disenchant: 20");
+					tvDisenchantGold.setText("Golden: 100");
+				}
 				break;
 			case 4:
 				int epic = getResources().getColor(R.color.epic);
 				tvQuality.setTextColor(epic);
 				tvQuality.setText("Epic");
+				if (set == 3) {
+					tvCost.setText("Crafted: 400");
+					tvCostGold.setText("Golden: 1600");
+					tvDisenchant.setText("Disenchant: 100");
+					tvDisenchantGold.setText("Golden: 400");
+				}
 				break;
 			case 5:
 				int legendary = getResources().getColor(R.color.legendary);
 				tvQuality.setTextColor(legendary);
 				tvQuality.setText("Legendary");
+				if (set == 3) {
+					tvCost.setText("Crafted: 1600");
+					tvCostGold.setText("Golden: 3200");
+					tvDisenchant.setText("Disenchant: 400");
+					tvDisenchantGold.setText("GoldeN: 1600");
+				}
 				break;
 			default: // No rarity? This should only happen for some abilities.
 				tvQuality.setVisibility(View.GONE); // Hides it.
@@ -784,16 +839,16 @@ public class CardListActivity extends ActionBarActivity {
 
 			switch (set) {
 			case 2:
-				tvSet.setText("Set: Basic");
+				tvSet.setText("Basic");
 				break;
 			case 3:
-				tvSet.setText("Set: Expert");
+				tvSet.setText("Expert");
 				break;
 			case 4:
-				tvSet.setText("Set: Reward");
+				tvSet.setText("Reward");
 				break;
 			case 5:
-				tvSet.setText("Set: Missions");
+				tvSet.setText("Missions");
 				break;
 			}
 
@@ -837,6 +892,15 @@ public class CardListActivity extends ActionBarActivity {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
+		tvCost = findById(pWindow.getContentView(), R.id.tvCost);
+		tvCostGold = findById(pWindow.getContentView(), R.id.tvCostGold);
+		tvDisenchant = findById(pWindow.getContentView(), R.id.tvDisenchant);
+		tvDisenchantGold = findById(pWindow.getContentView(),
+				R.id.tvDisenchantGold);
+		ivDust1 = findById(pWindow.getContentView(), R.id.imageView1);
+		ivDust2 = findById(pWindow.getContentView(), R.id.ImageView01);
+		ivDust3 = findById(pWindow.getContentView(), R.id.ImageView02);
+		ivDust4 = findById(pWindow.getContentView(), R.id.ImageView03);
 
 		tvCardName.setTypeface(font);
 		tvClass.setTypeface(font);
@@ -844,6 +908,10 @@ public class CardListActivity extends ActionBarActivity {
 		tvQuality.setTypeface(font);
 		tvSet.setTypeface(font);
 		tvType.setTypeface(font);
+		tvCost.setTypeface(font);
+		tvCostGold.setTypeface(font);
+		tvDisenchant.setTypeface(font);
+		tvDisenchantGold.setTypeface(font);
 	}
 
 	private void addCards(List<Cards> list, int menuItemIndex) {

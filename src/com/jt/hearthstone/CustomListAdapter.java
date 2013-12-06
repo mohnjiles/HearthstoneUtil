@@ -1,10 +1,16 @@
 package com.jt.hearthstone;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +19,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,14 +29,14 @@ import android.widget.TextView;
 
 public class CustomListAdapter extends BaseAdapter {
 	private Context mContext;
-	private ArrayList<Cards> cardList; // Get card list from Fragment
+	private ArrayList<Cards> cardList; // Get card list from Fragment 
 	private String cardName;
 	private ImageLoader loader = ImageLoader.getInstance();
-	
+
 	public CustomListAdapter(Context c, ArrayList<Cards> cardList) {
 		mContext = c;
 		this.cardList = cardList;
-		
+	
 		if (!loader.isInited()) {
 			loader.init(new ImageLoaderConfiguration.Builder(mContext).build());
 		}
@@ -55,6 +62,7 @@ public class CustomListAdapter extends BaseAdapter {
 		TextView tvManaCost = null;
 		TextView tvAttack = null;
 		TextView tvHealth = null;
+		TextView tvNum = null;
 
 	}
 
@@ -66,9 +74,8 @@ public class CustomListAdapter extends BaseAdapter {
 		String mana = null;
 		Typeface font = TypefaceCache.get(mContext.getAssets(),
 				"fonts/belwebd.ttf");
-		// If our view (in this case, one item from the gridview) is null, then
-		// inflate it.
-		// We do this because re-using views makes memory happy :)
+
+
 		if (convertView == null) {
 			convertView = View.inflate(mContext, R.layout.custom_list_view,
 					null);
@@ -83,6 +90,7 @@ public class CustomListAdapter extends BaseAdapter {
 			vh.tvManaCost = (TextView) convertView.findViewById(R.id.tvMana);
 			vh.ivBackground = (ImageView) convertView
 					.findViewById(R.id.ivBackground);
+			vh.tvNum = (TextView) convertView.findViewById(R.id.tvNumOfCard);
 			convertView.setTag(vh);
 
 		} else {
@@ -90,16 +98,16 @@ public class CustomListAdapter extends BaseAdapter {
 		}
 
 		int quality = cardList.get(position).getQuality().intValue();
-		
+
 		String mDrawablename = "files_"
 				+ cardList.get(position).getImage().toLowerCase() + "_rect";
 		int resID = mContext.getResources().getIdentifier(mDrawablename,
 				"drawable", mContext.getPackageName());
-		
+
 		vh.ivBackground.setImageBitmap(ImageCache.get(mContext, resID));
-		
+
 		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
-		
+
 		vh.tvCardName.setShadowLayer(0.01f, 1, 0, Color.BLACK);
 		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
@@ -108,6 +116,7 @@ public class CustomListAdapter extends BaseAdapter {
 		vh.tvAttack.setTypeface(font);
 		vh.tvHealth.setTypeface(font);
 		vh.tvManaCost.setTypeface(font);
+		vh.tvNum.setVisibility(View.INVISIBLE);
 
 		// Set the color of the text based on quality
 		switch (quality) {
@@ -148,6 +157,7 @@ public class CustomListAdapter extends BaseAdapter {
 
 		// Set the name of the card
 		vh.tvCardName.setText(cardName);
+
 		// Set the attack value
 		if (attack != null) {
 			vh.tvAttack.setText(attack);
@@ -206,10 +216,9 @@ public class CustomListAdapter extends BaseAdapter {
 			vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
 		}
 
+
 		return convertView;
 
 	}
 
 }
-
-

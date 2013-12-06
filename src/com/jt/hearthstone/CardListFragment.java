@@ -4,12 +4,10 @@ import static butterknife.Views.findById;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -25,6 +23,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -61,7 +60,7 @@ import com.nineoldandroids.animation.AnimatorInflater;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -93,7 +92,15 @@ public class CardListFragment extends Fragment {
 	private TextView tvClass;
 	private TextView tvMechanic;
 	private TextView tvSort;
+	private TextView tvCost;
+	private TextView tvCostGold;
+	private TextView tvDisenchant;
+	private TextView tvDisenchantGold;
 	private ImageView ivCardImage;
+	private ImageView ivDust1;
+	private ImageView ivDust2;
+	private ImageView ivDust3;
+	private ImageView ivDust4;
 	private RelativeLayout rlPopup;
 	private PopupWindow pWindow;
 
@@ -133,7 +140,7 @@ public class CardListFragment extends Fragment {
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
 		rlPopup = findById(V, R.id.rlPopup);
-		tvMechanic = findById(V, R.id.TextView01);
+		tvMechanic = findById(V, R.id.tvCost);
 		tvSort = findById(V, R.id.textView2);
 
 		tvMechanic.setTypeface(font);
@@ -196,13 +203,14 @@ public class CardListFragment extends Fragment {
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
 		// I don't know. Maybe to save memory(RAM).
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				getActivity()).denyCacheImageMultipleSizesInMemory().build();
+
 
 		// Initialize the ImageLoader
 		if (!loader.isInited()) {
-			loader.init(config);
+			ImageLoader.getInstance().init(Utils.config(getActivity()));
 		}
+
+		ImageLoader.getInstance().handleSlowNetwork(true);
 
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
@@ -233,7 +241,8 @@ public class CardListFragment extends Fragment {
 		cbReverse.setOnCheckedChangeListener(checkListener);
 
 		// Spinner setup (set items/adapters/etc)
-		deckClasses = (List<Integer>) Utils.getDeck(getActivity(), "deckclasses");
+		deckClasses = (List<Integer>) Utils.getDeck(getActivity(),
+				"deckclasses");
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
@@ -411,10 +420,7 @@ public class CardListFragment extends Fragment {
 			// Get card image
 			final String url = "http://54.224.222.135/"
 					+ cardList.get(position).getImage() + ".png";
-			final DisplayImageOptions options = new DisplayImageOptions.Builder()
-					.showStubImage(R.drawable.cards).cacheInMemory(false)
-					.cacheOnDisc(true).build();
-			loader.displayImage(url, ivCardImage, options);
+			loader.displayImage(url, ivCardImage, Utils.defaultOptions);
 
 			final ObjectAnimator animator = (ObjectAnimator) AnimatorInflater
 					.loadAnimator(getActivity(), R.animator.flipping);
@@ -424,14 +430,14 @@ public class CardListFragment extends Fragment {
 
 			animator.setTarget(ivCardImage);
 			animator.setDuration(500);
-			
+
 			reverseAnimator.setTarget(ivCardImage);
 			reverseAnimator.setDuration(500);
 
 			ivCardImage.setOnClickListener(new View.OnClickListener() {
 
 				boolean isGolden = false;
-				
+
 				@Override
 				public void onClick(View v) {
 					if (isGolden) {
@@ -446,7 +452,7 @@ public class CardListFragment extends Fragment {
 					delayedLoad(handler, pos);
 				}
 			});
-			
+
 			// Get card name
 			tvCardName.setText(cardList.get(position).getName());
 
@@ -525,29 +531,74 @@ public class CardListFragment extends Fragment {
 			}
 
 			// Set rarity of the card
+			tvCost.setTextColor(Color.rgb(17, 228, 241));
+			tvCostGold.setTextColor(Color.rgb(17, 228, 241));
+			tvDisenchant.setTextColor(Color.rgb(17, 228, 241));
+			tvDisenchantGold.setTextColor(Color.rgb(17, 228, 241));
 			switch (quality) {
 			case 0:
 				int free = getResources().getColor(R.color.free);
 				tvQuality.setTextColor(free);
 				tvQuality.setText("Free");
+				tvCost.setVisibility(View.INVISIBLE);
+				tvCostGold.setVisibility(View.INVISIBLE);
+				tvDisenchant.setVisibility(View.INVISIBLE);
+				tvDisenchantGold.setVisibility(View.INVISIBLE);
+				ivDust1.setVisibility(View.INVISIBLE);
+				ivDust2.setVisibility(View.INVISIBLE);
+				ivDust3.setVisibility(View.INVISIBLE);
+				ivDust4.setVisibility(View.INVISIBLE);
 				break;
 			case 1:
 				tvQuality.setText("Common");
+				if (set == 3) {
+					tvCost.setText("Crafted: 40");
+					tvCostGold.setText("Golden: 400");
+					tvDisenchant.setText("Disenchant: 5");
+					tvDisenchantGold.setText("Golden: 50");
+				} else {
+					tvCost.setVisibility(View.INVISIBLE);
+					tvCostGold.setVisibility(View.INVISIBLE);
+					tvDisenchant.setVisibility(View.INVISIBLE);
+					tvDisenchantGold.setVisibility(View.INVISIBLE);
+					ivDust1.setVisibility(View.INVISIBLE);
+					ivDust2.setVisibility(View.INVISIBLE);
+					ivDust3.setVisibility(View.INVISIBLE);
+					ivDust4.setVisibility(View.INVISIBLE);
+				}
 				break;
 			case 3:
 				int rare = getResources().getColor(R.color.rare);
 				tvQuality.setTextColor(rare);
 				tvQuality.setText("Rare");
+				if (set == 3) {
+					tvCost.setText("Crafted: 100");
+					tvCostGold.setText("Golden: 800");
+					tvDisenchant.setText("Disenchant: 20");
+					tvDisenchantGold.setText("Golden: 100");
+				}
 				break;
 			case 4:
 				int epic = getResources().getColor(R.color.epic);
 				tvQuality.setTextColor(epic);
 				tvQuality.setText("Epic");
+				if (set == 3) {
+					tvCost.setText("Crafted: 400");
+					tvCostGold.setText("Golden: 1600");
+					tvDisenchant.setText("Disenchant: 100");
+					tvDisenchantGold.setText("Golden: 400");
+				}
 				break;
 			case 5:
 				int legendary = getResources().getColor(R.color.legendary);
 				tvQuality.setTextColor(legendary);
 				tvQuality.setText("Legendary");
+				if (set == 3) {
+					tvCost.setText("Crafted: 1600");
+					tvCostGold.setText("Golden: 3200");
+					tvDisenchant.setText("Disenchant: 400");
+					tvDisenchantGold.setText("GoldeN: 1600");
+				}
 				break;
 			default: // No rarity? This should only happen for some abilities.
 				tvQuality.setVisibility(View.GONE); // Hides it.
@@ -609,6 +660,15 @@ public class CardListFragment extends Fragment {
 		tvQuality = findById(pWindow.getContentView(), R.id.tvQuality);
 		tvSet = findById(pWindow.getContentView(), R.id.tvSet);
 		tvType = findById(pWindow.getContentView(), R.id.tvType);
+		tvCost = findById(pWindow.getContentView(), R.id.tvCost);
+		tvCostGold = findById(pWindow.getContentView(), R.id.tvCostGold);
+		tvDisenchant = findById(pWindow.getContentView(), R.id.tvDisenchant);
+		tvDisenchantGold = findById(pWindow.getContentView(),
+				R.id.tvDisenchantGold);
+		ivDust1 = findById(pWindow.getContentView(), R.id.imageView1);
+		ivDust2 = findById(pWindow.getContentView(), R.id.ImageView01);
+		ivDust3 = findById(pWindow.getContentView(), R.id.ImageView02);
+		ivDust4 = findById(pWindow.getContentView(), R.id.ImageView03);
 
 		tvCardName.setTypeface(font);
 		tvClass.setTypeface(font);
@@ -616,12 +676,16 @@ public class CardListFragment extends Fragment {
 		tvQuality.setTypeface(font);
 		tvSet.setTypeface(font);
 		tvType.setTypeface(font);
+		tvCost.setTypeface(font);
+		tvCostGold.setTypeface(font);
+		tvDisenchant.setTypeface(font);
+		tvDisenchantGold.setTypeface(font);
 	}
-
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
 		if (Utils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) Utils.getDeck(getActivity(), deckList.get(menuItemIndex));
+			list = (List<Cards>) Utils.getDeck(getActivity(),
+					deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
@@ -629,15 +693,18 @@ public class CardListFragment extends Fragment {
 			list.add(cardList.get(position));
 		} else {
 			Crouton.makeText(getActivity(),
-					"Cannot have more than 30 cards in the deck",
-					Style.ALERT).show();
+					"Cannot have more than 30 cards in the deck", Style.ALERT)
+					.show();
 		}
 
 		chartFrag.mCurrentSeries.add(cardList.get(position).getCost()
 				.intValue(), 1);
 		chartFrag.layout.invalidate();
 		Utils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
-		doSomeStuff((List<Cards>)Utils.getDeck(getActivity(), deckList.get(menuItemIndex)), deckList.get(menuItemIndex));
+		doSomeStuff(
+				(List<Cards>) Utils.getDeck(getActivity(),
+						deckList.get(menuItemIndex)),
+				deckList.get(menuItemIndex));
 
 		if (chartFrag.mChart == null) {
 
@@ -659,6 +726,8 @@ public class CardListFragment extends Fragment {
 			addPieData(list);
 			chartFrag.layout.addView(chartFrag.mPieChart);
 		}
+
+		deckFrag.adapter = new DeckListAdapter(getActivity(), list);
 	}
 
 	private void addSampleData(List<Cards> cardList) {
@@ -967,38 +1036,35 @@ public class CardListFragment extends Fragment {
 		}
 		deckFrag.adapter2 = new ImageAdapter(getActivity(), result);
 		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
-		deckFrag.adapter = new DeckListAdapter(getActivity(), position,
-				result);
+		deckFrag.adapter = new DeckListAdapter(getActivity(), result);
 		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
 	}
 
 	private void delayedLoad(Handler handler, int position) {
-	
-		final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
-				.cacheOnDisc(true).cacheInMemory(false).build();
+		
 		final String url = "http://54.224.222.135/"
 				+ cardList.get(position).getImage() + ".png";
 		final int cardListPos = position;
-	
+
 		handler.postDelayed(new Runnable() {
-	
+
 			@Override
 			public void run() {
 				if (ivCardImage.getTag() == null
 						|| ivCardImage.getTag() == "Standard") {
 					ivCardImage.setImageBitmap(ImageCache.get(
-							getActivity(), Utils.getResIdByName(
-									getActivity(),
+							getActivity(),
+							Utils.getResIdByName(getActivity(),
 									cardList.get(cardListPos).getImage()
 											.toString()
 											+ "_premium")));
 					ivCardImage.setTag("Premium");
 				} else {
 					loader.cancelDisplayTask(ivCardImage);
-					loader.displayImage(url, ivCardImage, noStubOptions);
+					loader.displayImage(url, ivCardImage, Utils.noStubOptions);
 					ivCardImage.setTag("Standard");
 				}
-	
+
 			}
 		}, 350);
 	}

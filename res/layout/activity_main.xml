@@ -1,5 +1,10 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    tools:context=".MainActivity" >
+
+<RelativeLayout 
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/app_bg"
@@ -7,35 +12,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context=".MainActivity" >
-
-    <Button
-        android:id="@+id/btnClasses"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnCardList"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/btnCardList"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_selector_3"
-        android:onClick="classesPressed"
-        android:text="Classes"
-        android:textColor="#4c391d"
-        android:textStyle="bold" />
-
-    <Button
-        android:id="@+id/btnDeckBuilder"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/btnClasses"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/btn_selector_2"
-        android:onClick="deckSelectorPressed"
-        android:text="Deck Builder"
-        android:textColor="#4c391d"
-        android:textStyle="bold" />
+    >
 
     <ImageView
         android:id="@+id/imageView1"
@@ -46,11 +23,35 @@
         android:src="@drawable/app_logo" />
 
     <Button
+        android:id="@+id/btnArena"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnClasses"
+        android:layout_below="@+id/btnClasses"
+        android:background="@drawable/btn_selector_3"
+        android:onClick="arenaPressed"
+        android:text="Arena Simulator"
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
+
+    <Button
+        android:id="@+id/btnDeckBuilder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnArena"
+        android:layout_below="@+id/btnArena"
+        android:background="@drawable/btn_selector_2"
+        android:onClick="deckSelectorPressed"
+        android:text="Deck Builder"
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
+
+    <Button
         android:id="@+id/btnCardList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
         android:layout_below="@+id/imageView1"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:background="@drawable/btn_selector"
         android:gravity="center"
@@ -59,4 +60,17 @@
         android:textColor="#4c391d"
         android:textStyle="bold" />
 
+    <Button
+        android:id="@+id/btnClasses"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/btnCardList"
+        android:layout_below="@+id/btnCardList"
+        android:background="@drawable/btn_selector_3"
+        android:onClick="classesPressed"
+        android:text="Classes"
+        android:textColor="#4c391d"
+        android:textStyle="bold" />
+
 </RelativeLayout>
+</ScrollView>

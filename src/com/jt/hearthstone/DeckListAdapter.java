@@ -1,18 +1,15 @@
 package com.jt.hearthstone;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -23,15 +20,33 @@ public class DeckListAdapter extends BaseAdapter {
     private Context mContext;
 	private String cardName;
 	private List<Cards> cardList;
+	private ArrayList<Cards> cardListUnique = new ArrayList<Cards>();
+	private Map<Cards, Integer> cardCounts = new HashMap<Cards, Integer>();
 
-    public DeckListAdapter(Context c, int cardListPos, List<Cards> cardList) {
+    public DeckListAdapter(Context c, List<Cards> cardList) {
         mContext = c;
         this.cardList = cardList;
+		
+		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+		
+		for (Cards card : cardList) {
+			Integer current = cardCounts.get(card);
+			if (current == null) {
+				current = 1;
+			} else {
+				current++;
+			}
+			cardCounts.put(card, current);
+
+			//Log.w("Test", "" + card.getName() + " / " + cardCounts.get(card));
+			
+		}
+
+
     }
     
-    
     public int getCount() {
-    	return cardList.size();
+    	return cardListUnique.size();
     }
 
     public Object getItem(int position) {
@@ -50,6 +65,7 @@ public class DeckListAdapter extends BaseAdapter {
     	TextView tvManaCost = null;
     	TextView tvAttack = null;
     	TextView tvHealth = null;
+    	TextView tvNum = null;
     }
     
 
@@ -73,6 +89,7 @@ public class DeckListAdapter extends BaseAdapter {
     		vh.tvAttack = (TextView) convertView.findViewById(R.id.tvAttack);
     		vh.tvHealth = (TextView) convertView.findViewById(R.id.tvHealth);
     		vh.tvManaCost = (TextView) convertView.findViewById(R.id.tvMana);
+    		vh.tvNum = (TextView) convertView.findViewById(R.id.tvNumOfCard);
     		vh.ivBackground = (ImageView) convertView
 					.findViewById(R.id.ivBackground);
     		convertView.setTag(vh);	
@@ -82,7 +99,7 @@ public class DeckListAdapter extends BaseAdapter {
     		vh = (ViewHolderTwo)convertView.getTag();
     	}
     	
-		String mDrawablename = "files_" + cardList.get(position).getImage().toLowerCase() + "_rect";
+		String mDrawablename = "files_" + cardListUnique.get(position).getImage().toLowerCase() + "_rect";
 		int resID = mContext.getResources().getIdentifier(mDrawablename, "drawable", mContext.getPackageName());
 		
 		vh.ivBackground.setImageResource(resID);
@@ -90,12 +107,15 @@ public class DeckListAdapter extends BaseAdapter {
 		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		vh.tvCardName.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		vh.tvNum.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvCardName.setTypeface(font);
 		vh.tvAttack.setTypeface(font);
 		vh.tvHealth.setTypeface(font);
 		vh.tvManaCost.setTypeface(font);
+		vh.tvNum.setTypeface(font);
     	
-		int quality = cardList.get(position).getQuality().intValue();
+		int quality = cardListUnique.get(position).getQuality().intValue();
 		
 		// Set the color of the text based on quality
 		switch (quality) {
@@ -124,14 +144,14 @@ public class DeckListAdapter extends BaseAdapter {
 		}
 		
 		// Set card name
-    	cardName = cardList.get(position).getName();
-    	if (cardList.get(position).getAttack() != null) {
-    		attack = cardList.get(position).getAttack().toString();
+    	cardName = cardListUnique.get(position).getName();
+    	if (cardListUnique.get(position).getAttack() != null) {
+    		attack = cardListUnique.get(position).getAttack().toString();
     	}
     	// Set mana cost
-    	mana = cardList.get(position).getCost().toString();
-    	if (cardList.get(position).getHealth() != null) {
-    		health = cardList.get(position).getHealth().toString();
+    	mana = cardListUnique.get(position).getCost().toString();
+    	if (cardListUnique.get(position).getHealth() != null) {
+    		health = cardListUnique.get(position).getHealth().toString();
     	}
     	
     	
@@ -158,8 +178,8 @@ public class DeckListAdapter extends BaseAdapter {
     	}
     	
     	// Set the Class icon
-    	if (cardList.get(position).getClasss() != null) {
-    		switch (cardList.get(position).getClasss().intValue()) {
+    	if (cardListUnique.get(position).getClasss() != null) {
+    		switch (cardListUnique.get(position).getClasss().intValue()) {
     		case 1:
     			vh.ivClassIcon.setImageResource(R.drawable.warrior);
     			break;
@@ -193,6 +213,13 @@ public class DeckListAdapter extends BaseAdapter {
     		}
     	} else {
     		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
+    	}
+    	
+    	if (cardCounts.get(cardListUnique.get(position)) > 1) {
+    		vh.tvNum.setVisibility(View.VISIBLE);
+    		vh.tvNum.setText("" + cardCounts.get(cardListUnique.get(position)) + "x");
+    	} else {
+    		vh.tvNum.setVisibility(View.INVISIBLE);
     	}
     	
     	return convertView;

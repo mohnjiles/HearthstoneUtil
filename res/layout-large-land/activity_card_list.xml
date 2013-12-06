@@ -40,7 +40,7 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:id="@+id/TextView01"
+        android:id="@+id/tvCost"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spinnerMechanic"
@@ -62,7 +62,7 @@
         android:layout_alignParentTop="true"
         android:layout_alignRight="@+id/spinnerSort"
         android:layout_marginTop="6dp"
-        android:layout_toRightOf="@+id/TextView01"
+        android:layout_toRightOf="@+id/tvCost"
         android:entries="@array/Mechanic" />
 
     <Spinner
@@ -70,7 +70,7 @@
         style="android:spinnerStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/TextView01"
+        android:layout_below="@+id/tvCost"
         android:layout_marginLeft="8dp"
         android:layout_toLeftOf="@+id/cbReverse"
         android:layout_toRightOf="@+id/textView2"
@@ -81,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spinnerSort"
-        android:layout_below="@+id/TextView01"
+        android:layout_below="@+id/tvCost"
         android:layout_marginLeft="8dp"
         android:gravity="center_vertical"
         android:text="Sort:"
@@ -94,7 +94,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/spinnerMechanic"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/TextView01"
+        android:layout_alignTop="@+id/tvCost"
         android:layout_marginRight="8dp"
         android:text="Generic Cards"
         android:textColor="#000000"

@@ -53,20 +53,6 @@
         android:textColor="#FFFFFF"
         android:textSize="@dimen/card_list_textview" />
 
-    <TextView
-        android:id="@+id/tvCrafted"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvSet"
-        android:layout_centerHorizontal="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="32dp"
-        android:gravity="center"
-        android:text="Crafted"
-        android:textColor="@color/white"
-        android:textSize="@dimen/card_list_textview" />
-
     <ImageView
         android:id="@+id/ivCardImages"
         android:layout_width="@dimen/card_icon_width"
@@ -84,5 +70,94 @@
         android:text="QualityType"
         android:textColor="#FFFFFF"
         android:textSize="@dimen/card_list_textview" />
+
+    <TextView
+        android:id="@+id/tvCost"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvSet"
+        android:layout_below="@+id/tvSet"
+        android:text="Crafted"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
+
+    <TextView
+        android:id="@+id/tvCostGold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCost"
+        android:layout_below="@+id/tvCost"
+        android:text="CraftedGold"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
+
+    <TextView
+        android:id="@+id/tvCrafted"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@+id/tvCostGold"
+        android:layout_alignRight="@+id/ImageView02"
+        android:layout_below="@+id/tvDisenchantGold"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Description"
+        android:textColor="@color/white"
+        android:textSize="@dimen/card_list_textview" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvCost"
+        android:layout_alignTop="@+id/tvCost"
+        android:layout_toRightOf="@+id/tvCost"
+        android:src="@drawable/arcane_dust" />
+
+    <ImageView
+        android:id="@+id/ImageView01"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvCostGold"
+        android:layout_alignTop="@+id/tvCostGold"
+        android:layout_toRightOf="@+id/tvCostGold"
+        android:src="@drawable/arcane_dust" />
+
+    <TextView
+        android:id="@+id/tvDisenchantGold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ImageView01"
+        android:layout_toLeftOf="@+id/ImageView02"
+        android:text="DisenchantGold"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
+
+    <ImageView
+        android:id="@+id/ImageView03"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvDisenchant"
+        android:layout_alignRight="@+id/tvQuality"
+        android:layout_alignTop="@+id/tvDisenchant"
+        android:src="@drawable/arcane_dust" />
+
+    <TextView
+        android:id="@+id/tvDisenchant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/ImageView02"
+        android:layout_toLeftOf="@+id/ImageView03"
+        android:text="Disenchantable"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_list_textview" />
+
+    <ImageView
+        android:id="@+id/ImageView02"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/tvDisenchantGold"
+        android:layout_alignLeft="@+id/ImageView03"
+        android:layout_alignTop="@+id/tvDisenchantGold"
+        android:src="@drawable/arcane_dust" />
 
 </RelativeLayout>

@@ -13,13 +13,20 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import javax.security.auth.PrivateCredentialPermission;
 
+import org.achartengine.renderer.SimpleSeriesRenderer;
+
 import android.R.integer;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,9 +59,10 @@ public class ArenaFragment extends Fragment {
 	ImageLoader loader = ImageLoader.getInstance();
 	private DisplayImageOptions options;
 	private Classes selectedClass;
-	CustomListAdapter adapter;
+	DeckListAdapter adapter;
 	int doOnce = 0;
 	ArenaDeckFragment deckFrag;
+	ChartActivity chartFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,52 +88,50 @@ public class ArenaFragment extends Fragment {
 
 	}
 
-//	@Override
-//	public void onSaveInstanceState(Bundle outState) {
-//
-//		if (listDeck == null) {
-//			listDeck = new ArrayList<Cards>();
-//		}
-//
-//		if (selectedClass != null) {
-//			outState.putSerializable("selectedClass", selectedClass);
-//		}
-//
-//		if (listChoices.size() > 0) {
-//			outState.putSerializable("card_0", listChoices.get(0));
-//			outState.putSerializable("card_1", listChoices.get(1));
-//			outState.putSerializable("card_2", listChoices.get(2));
-//		}
-//
-//		if (listDeck.size() > 0) {
-//			outState.putSerializable("listDeck", listDeck);
-//		}
-//
-//		getActivity().getSupportFragmentManager().putFragment(outState,
-//				ArenaDeckFragment.class.getName(), deckFrag);
-//
-//		super.onSaveInstanceState(outState);
-//
-//	}
+	// @Override
+	// public void onSaveInstanceState(Bundle outState) {
+	//
+	// if (listDeck == null) {
+	// listDeck = new ArrayList<Cards>();
+	// }
+	//
+	// if (selectedClass != null) {
+	// outState.putSerializable("selectedClass", selectedClass);
+	// }
+	//
+	// if (listChoices.size() > 0) {
+	// outState.putSerializable("card_0", listChoices.get(0));
+	// outState.putSerializable("card_1", listChoices.get(1));
+	// outState.putSerializable("card_2", listChoices.get(2));
+	// }
+	//
+	// if (listDeck.size() > 0) {
+	// outState.putSerializable("listDeck", listDeck);
+	// }
+	//
+	// getActivity().getSupportFragmentManager().putFragment(outState,
+	// ArenaDeckFragment.class.getName(), deckFrag);
+	//
+	// super.onSaveInstanceState(outState);
+	//
+	// }
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 2));
 		deckFrag = (ArenaDeckFragment) getActivity()
 				.getSupportFragmentManager().findFragmentByTag(
 						Utils.makeFragmentName(R.id.pager, 1));
 
 		// Initiate ImageLoader if it's not already initiated.
 		if (loader.isInited() == false) {
-			ImageLoaderConfiguration config = ImageLoaderConfiguration
-					.createDefault(getActivity());
-			loader.init(config);
-		}
 
-		// Show a "Loading..." (stub) image
-		options = new DisplayImageOptions.Builder().cacheOnDisc(true)
-				.showStubImage(R.drawable.cards).build();
+			loader.init(Utils.config(getActivity()));
+		}
+		ImageLoader.getInstance().handleSlowNetwork(true);
 
 		/*
 		 * Set the ImageViews to listen to our custom OnClickListener (Handles
@@ -144,71 +150,71 @@ public class ArenaFragment extends Fragment {
 		// Populate cards array with GSON
 		getCards();
 
-//		if (savedInstanceState != null) {
-//			deckFrag = (ArenaDeckFragment) getActivity()
-//					.getSupportFragmentManager().getFragment(
-//							savedInstanceState,
-//							ArenaDeckFragment.class.getName());
-//			doOnce = 1;
-//			listChoices.clear();
-//			listChoices.add((Cards) savedInstanceState
-//					.getSerializable("card_0"));
-//			listChoices.add((Cards) savedInstanceState
-//					.getSerializable("card_1"));
-//			listChoices.add((Cards) savedInstanceState
-//					.getSerializable("card_2"));
-//
-//			ivItem1.setTag((Classes) savedInstanceState
-//					.getSerializable("selectedClass"));
-//			ivItem2.setTag((Classes) savedInstanceState
-//					.getSerializable("selectedClass"));
-//			ivItem3.setTag((Classes) savedInstanceState
-//					.getSerializable("selectedClass"));
-//
-//			selectedClass = (Classes) savedInstanceState
-//					.getSerializable("selectedClass");
-//
-//			listDeck = (ArrayList<Cards>) savedInstanceState
-//					.getSerializable("listDeck");
-//
-//			if (listDeck != null && listDeck.size() < 30) {
-//				textView.setText("Choose a card (" + listDeck.size() + " / 30)");
-//			} else {
-//				textView.setText("Swipe left to see your finished deck!");
-//				ivItem1.setVisibility(View.GONE);
-//				ivItem2.setVisibility(View.GONE);
-//				ivItem3.setVisibility(View.GONE);
-//			}
-//
-//			if (adapter == null) {
-//				adapter = new CustomListAdapter(getActivity(), listDeck);
-//				deckFrag.lvArena.setAdapter(adapter);
-//			} else {
-//				adapter.notifyDataSetChanged();
-//				deckFrag.lvArena.setAdapter(adapter);
-//			}
-//
-//			if (listDeck != null && listDeck.size() < 30) {
-//				loader.displayImage(
-//						"http://54.224.222.135/"
-//								+ listChoices.get(0).getImage() + ".png",
-//						ivItem1, options);
-//				loader.displayImage(
-//						"http://54.224.222.135/"
-//								+ listChoices.get(1).getImage() + ".png",
-//						ivItem2, options);
-//				loader.displayImage(
-//						"http://54.224.222.135/"
-//								+ listChoices.get(2).getImage() + ".png",
-//						ivItem3, options);
-//			}
-//		} else {
-			// Start the arena!
-			pickRandomHero();
-//		}
+		// if (savedInstanceState != null) {
+		// deckFrag = (ArenaDeckFragment) getActivity()
+		// .getSupportFragmentManager().getFragment(
+		// savedInstanceState,
+		// ArenaDeckFragment.class.getName());
+		// doOnce = 1;
+		// listChoices.clear();
+		// listChoices.add((Cards) savedInstanceState
+		// .getSerializable("card_0"));
+		// listChoices.add((Cards) savedInstanceState
+		// .getSerializable("card_1"));
+		// listChoices.add((Cards) savedInstanceState
+		// .getSerializable("card_2"));
+		//
+		// ivItem1.setTag((Classes) savedInstanceState
+		// .getSerializable("selectedClass"));
+		// ivItem2.setTag((Classes) savedInstanceState
+		// .getSerializable("selectedClass"));
+		// ivItem3.setTag((Classes) savedInstanceState
+		// .getSerializable("selectedClass"));
+		//
+		// selectedClass = (Classes) savedInstanceState
+		// .getSerializable("selectedClass");
+		//
+		// listDeck = (ArrayList<Cards>) savedInstanceState
+		// .getSerializable("listDeck");
+		//
+		// if (listDeck != null && listDeck.size() < 30) {
+		// textView.setText("Choose a card (" + listDeck.size() + " / 30)");
+		// } else {
+		// textView.setText("Swipe left to see your finished deck!");
+		// ivItem1.setVisibility(View.GONE);
+		// ivItem2.setVisibility(View.GONE);
+		// ivItem3.setVisibility(View.GONE);
+		// }
+		//
+		// if (adapter == null) {
+		// adapter = new CustomListAdapter(getActivity(), listDeck);
+		// deckFrag.lvArena.setAdapter(adapter);
+		// } else {
+		// adapter.notifyDataSetChanged();
+		// deckFrag.lvArena.setAdapter(adapter);
+		// }
+		//
+		// if (listDeck != null && listDeck.size() < 30) {
+		// loader.displayImage(
+		// "http://54.224.222.135/"
+		// + listChoices.get(0).getImage() + ".png",
+		// ivItem1, options);
+		// loader.displayImage(
+		// "http://54.224.222.135/"
+		// + listChoices.get(1).getImage() + ".png",
+		// ivItem2, options);
+		// loader.displayImage(
+		// "http://54.224.222.135/"
+		// + listChoices.get(2).getImage() + ".png",
+		// ivItem3, options);
+		// }
+		// } else {
+		// Start the arena!
+		pickRandomHero();
+		// }
 
 		//
-		adapter = new CustomListAdapter(getActivity(), listDeck);
+
 
 	}
 
@@ -231,7 +237,9 @@ public class ArenaFragment extends Fragment {
 
 			if (listDeck == null) {
 				listDeck = new ArrayList<Cards>();
+				
 			}
+			
 			// If the heroes never get shown? (for some reason?) try again.
 			if (v.getTag() == null) {
 				pickRandomHero();
@@ -243,6 +251,41 @@ public class ArenaFragment extends Fragment {
 				if (doOnce == 0) { // Do once
 					// Save the class the user has chosen
 					selectedClass = (Classes) v.getTag();
+					
+					// Set class icon and text
+					ActionBar aBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+					switch (selectedClass) {
+					case DRUID:
+						aBar.setIcon(R.drawable.druid);
+						break;
+					case HUNTER:
+						aBar.setIcon(R.drawable.hunter);
+						break;
+					case MAGE:
+						aBar.setIcon(R.drawable.mage);
+						break;
+					case PALADIN:
+						aBar.setIcon(R.drawable.paladin);
+						break;
+					case PRIEST:
+						aBar.setIcon(R.drawable.priest);
+						break;
+					case ROGUE:
+						aBar.setIcon(R.drawable.rogue);
+						break;
+					case SHAMAN:
+						aBar.setIcon(R.drawable.shaman);
+						break;
+					case WARLOCK:
+						aBar.setIcon(R.drawable.warlock);
+						break;
+					case WARRIOR:
+						aBar.setIcon(R.drawable.warrior);
+						break;
+					default:
+						break;
+					
+					}
 
 					// Update text with current deck size
 					textView.setText("Choose a card (" + listDeck.size()
@@ -252,6 +295,7 @@ public class ArenaFragment extends Fragment {
 					doOnce++;
 
 				} else {
+
 					// Pick the corresponding card based on ImageView selected
 					if (listChoices != null && v.getId() == R.id.ivItem1) {
 						listDeck.add(listChoices.get(0));
@@ -264,6 +308,7 @@ public class ArenaFragment extends Fragment {
 					// Update TextView with current deck size
 					deckFrag.tvDeckSize.setText(listDeck.size() + " / 30");
 					// Update ListView adapter with new info
+					adapter = new DeckListAdapter(getActivity(), listDeck);
 					lvArena.setAdapter(adapter);
 				}
 				// Up until we get to 30 cards, get the next 3 random cards
@@ -280,6 +325,25 @@ public class ArenaFragment extends Fragment {
 					// Inform them the deck is complete
 					textView.setText("Swipe left to see your finished deck!");
 				}
+				
+				if (chartFrag.mChart != null) {
+					((ViewGroup) chartFrag.mChart.getParent())
+							.removeView(chartFrag.mChart);
+					chartFrag.mCurrentSeries.clear();
+					addSampleData();
+					chartFrag.layout2.addView(chartFrag.mChart);
+				}
+
+				// Refresh pie chart if possible
+				if (chartFrag.mPieChart != null) {
+					((ViewGroup) chartFrag.mPieChart.getParent())
+							.removeView(chartFrag.mPieChart);
+					chartFrag.mSeries.clear();
+					chartFrag.mRenderer2.removeAllRenderers();
+					addPieData(listDeck);
+					chartFrag.layout.addView(chartFrag.mPieChart);
+				}
+				
 			}
 
 		}
@@ -365,10 +429,10 @@ public class ArenaFragment extends Fragment {
 	 * said cards. <br>
 	 * The chances based on rarity are as follows: <br>
 	 * <ul>
-	 * <li>Common: ~90%</li>
-	 * <li>Rare: 10%</li>
-	 * <li>Epic: 4%</li>
-	 * <li>Legendary: ~1%</li>
+	 * <li>Common: ~92%</li>
+	 * <li>Rare: 8%</li>
+	 * <li>Epic: 3.5%</li>
+	 * <li>Legendary: ~0.9%</li>
 	 * </ul>
 	 * 
 	 * @param className
@@ -384,7 +448,7 @@ public class ArenaFragment extends Fragment {
 		 * ************ LEGENDARY ************ ~5% chance if either first or
 		 * last choice of 3 Otherwise, ~1% chance
 		 */
-		if (random >= 0.99
+		if (random >= 0.991
 				|| ((listDeck.size() == 0 || listDeck.size() == 29) && random >= 0.95)) {
 			for (Cards card : cards) {
 				if (((card.getClasss() != null && card.getClasss().intValue() == className
@@ -399,11 +463,11 @@ public class ArenaFragment extends Fragment {
 
 			// Then pick the first 3 cards, and load their images.
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1, options);
+					+ listChoices.get(0).getImage() + ".png", ivItem1, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2, options);
+					+ listChoices.get(1).getImage() + ".png", ivItem2, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
+					+ listChoices.get(2).getImage() + ".png", ivItem3, Utils.defaultOptions);
 
 		}
 		/*
@@ -412,7 +476,7 @@ public class ArenaFragment extends Fragment {
 		 * 
 		 * Otherwise, ~4% chance
 		 */
-		else if (random >= 0.96
+		else if (random >= 0.965
 				|| ((listDeck.size() == 0 || listDeck.size() == 29) && random >= 0.90)) {
 			for (Cards card : cards) {
 				if (((card.getClasss() != null && card.getClasss().intValue() == className
@@ -423,11 +487,11 @@ public class ArenaFragment extends Fragment {
 			}
 			Collections.shuffle(listChoices);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1, options);
+					+ listChoices.get(0).getImage() + ".png", ivItem1, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2, options);
+					+ listChoices.get(1).getImage() + ".png", ivItem2, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
+					+ listChoices.get(2).getImage() + ".png", ivItem3, Utils.defaultOptions);
 		}
 		/*
 		 * ************ RARE ************ ~100% chance if either first or last
@@ -435,7 +499,7 @@ public class ArenaFragment extends Fragment {
 		 * 
 		 * Otherwise, ~10% chance
 		 */
-		else if (random >= 0.90
+		else if (random >= 0.92
 				|| ((listDeck.size() == 0 || listDeck.size() == 29) && random >= 0)) {
 			for (Cards card : cards) {
 				if (((card.getClasss() != null && card.getClasss().intValue() == className
@@ -446,11 +510,11 @@ public class ArenaFragment extends Fragment {
 			}
 			Collections.shuffle(listChoices);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1, options);
+					+ listChoices.get(0).getImage() + ".png", ivItem1, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2, options);
+					+ listChoices.get(1).getImage() + ".png", ivItem2, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
+					+ listChoices.get(2).getImage() + ".png", ivItem3, Utils.defaultOptions);
 		} else {
 			for (Cards card : cards) {
 				if (((card.getClasss() != null && card.getClasss().intValue() == className
@@ -462,11 +526,11 @@ public class ArenaFragment extends Fragment {
 			}
 			Collections.shuffle(listChoices);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1, options);
+					+ listChoices.get(0).getImage() + ".png", ivItem1, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2, options);
+					+ listChoices.get(1).getImage() + ".png", ivItem2, Utils.defaultOptions);
 			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3, options);
+					+ listChoices.get(2).getImage() + ".png", ivItem3, Utils.defaultOptions);
 		}
 
 	}
@@ -505,6 +569,64 @@ public class ArenaFragment extends Fragment {
 
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
+	}
+	
+	private void addSampleData() {
+		int[] costs = new int[50];
+		for (Cards card : listDeck) {
+			if (card.getCost() != null) {
+				costs[card.getCost().intValue()]++;
+				Log.i("cost", "" + costs[card.getCost().intValue()]);
+				chartFrag.mCurrentSeries.add(card.getCost().intValue(),
+						costs[card.getCost().intValue()]);
+			}
+		}
+	}
+
+	private void addPieData(List<Cards> cardList) {
+		int minions = 0;
+		int abilities = 0;
+		int weapons = 0;
+		final int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
+				Color.rgb(60, 242, 0) };
+		final int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
+				Color.rgb(8, 196, 0) };
+		for (Cards card : cardList) {
+			if (card.getType() != null && card.getType().intValue() == 4) {
+				minions++;
+			} else if (card.getType() != null && card.getType().intValue() == 5) {
+				abilities++;
+			} else if (card.getType() != null && card.getType().intValue() == 7) {
+				weapons++;
+			}
+		}
+		if (abilities != 0) {
+			chartFrag.mSeries.add("Spells", abilities);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[0]);
+			seriesRenderer.setGradientStop(20, colors2[0]);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
+		if (minions != 0) {
+			chartFrag.mSeries.add("Minions", minions);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[1]);
+			seriesRenderer.setGradientStop(20, colors2[1]);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
+		if (weapons != 0) {
+			chartFrag.mSeries.add("Weapons", weapons);
+			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
+			seriesRenderer.setDisplayChartValues(true);
+			seriesRenderer.setGradientEnabled(true);
+			seriesRenderer.setGradientStart(0, colors[2]);
+			seriesRenderer.setGradientStop(20, colors2[2]);
+			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
+		}
 	}
 
 }

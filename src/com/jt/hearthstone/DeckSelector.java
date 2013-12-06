@@ -144,7 +144,7 @@ public class DeckSelector extends ActionBarActivity {
 			final Spinner spinner = (Spinner) layout
 					.findViewById(R.id.spinClass);
 			final TextView tvOne = (TextView) layout
-					.findViewById(R.id.TextView01);
+					.findViewById(R.id.tvCost);
 			final TextView tvTwo = (TextView) layout
 					.findViewById(R.id.tvNumCards);
 			

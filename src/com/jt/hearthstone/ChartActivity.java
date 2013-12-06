@@ -43,6 +43,7 @@ public class ChartActivity extends Fragment {
 	private TextView tvMana;
 
 	private DeckActivity deckFrag;
+	private ArenaFragment arenaFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,9 +63,16 @@ public class ChartActivity extends Fragment {
 		tvMana.setTypeface(font);
 		tvType.setTypeface(font);
 
-		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
-		cardList = deckFrag.cardList;
+		try {
+			deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
+					.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
+			cardList = deckFrag.cardList;
+		} catch (ClassCastException e) {
+			arenaFrag = (ArenaFragment) getActivity()
+					.getSupportFragmentManager().findFragmentByTag(
+							Utils.makeFragmentName(R.id.pager, 0));
+			cardList = arenaFrag.listDeck;
+		}
 
 		return V;
 	}
@@ -103,7 +111,11 @@ public class ChartActivity extends Fragment {
 
 	private void addSampleData() {
 		int[] costs = new int[50];
-		cardList = deckFrag.cardList;
+		try {
+			cardList = deckFrag.cardList;
+		} catch (NullPointerException e) {
+			cardList = arenaFrag.listDeck;
+		}
 		for (Cards card : cardList) {
 			if (card.getCost() != null) {
 				costs[card.getCost().intValue()]++;
@@ -162,7 +174,11 @@ public class ChartActivity extends Fragment {
 		mRenderer2.setLabelsColor(Color.BLACK);
 		mRenderer2.setShowLegend(false);
 
-		cardList = deckFrag.cardList;
+		try {
+			cardList = deckFrag.cardList;
+		} catch (NullPointerException e) {
+			cardList = arenaFrag.listDeck;
+		}
 
 		for (Cards card : cardList) {
 			if (card.getType() != null && card.getType().intValue() == 4) {
