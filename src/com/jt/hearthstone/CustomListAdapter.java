@@ -38,7 +38,7 @@ public class CustomListAdapter extends BaseAdapter {
 		this.cardList = cardList;
 	
 		if (!loader.isInited()) {
-			loader.init(new ImageLoaderConfiguration.Builder(mContext).build());
+			loader.init(Utils.config(mContext));
 		}
 	}
 

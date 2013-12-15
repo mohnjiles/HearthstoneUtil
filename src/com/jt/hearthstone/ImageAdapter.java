@@ -58,14 +58,10 @@ public class ImageAdapter extends BaseAdapter {
     	// We may eventually need to disable this based on further testing
     	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
     	// only a few KB each.
-    	DisplayImageOptions options = new DisplayImageOptions.Builder()
-        .showStubImage(R.drawable.cards)
-        .cacheInMemory(true)
-        .cacheOnDisc(true)
-        .build();
+    	DisplayImageOptions options = Utils.defaultOptions;
     	
     	if (!imageLoader.isInited()) {
-    		imageLoader.init(ImageLoaderConfiguration.createDefault(mContext));
+    		imageLoader.init(Utils.config(mContext));
     	}
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
