@@ -1,7 +1,5 @@
 package com.jt.hearthstone;
 
-import static butterknife.Views.findById;
-
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,34 +8,21 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
-import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.os.Handler;
-import android.util.TypedValue;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager.BadTokenException;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
-import android.widget.TextView;
 
-import com.nineoldandroids.animation.AnimatorInflater;
-import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class Utils {
+	private static Context cxt = HearthstoneUtil.getAppContext();
+	
+	private static Locale curLocale = cxt.getResources().getConfiguration().locale;
 
 	static final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
 			.resetViewBeforeLoading(false).cacheOnDisc(true)
@@ -61,15 +46,14 @@ public class Utils {
 
 
 	static int getResIdByName(Context context, String drawableName) {
-
-		return context.getResources().getIdentifier(drawableName.toLowerCase(),
+		return context.getResources().getIdentifier(drawableName.toLowerCase(curLocale),
 				"drawable", context.getPackageName());
 	}
 
 	static List<? extends Object> getDeck(Context context, String deckName) {
 		InputStream instream = null;
 		List<? extends Object> list = null;
-		try {
+		try { 
 			instream = context.openFileInput(deckName);
 		} catch (FileNotFoundException e) {
 			list = new ArrayList<Cards>();

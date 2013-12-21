@@ -2,21 +2,12 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 
 import android.content.Context;
 import android.content.res.Configuration;
-import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,6 +20,10 @@ import android.view.WindowManager.BadTokenException;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+
+import com.nineoldandroids.animation.AnimatorInflater;
+import com.nineoldandroids.animation.ObjectAnimator;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class MyWindow {
 
@@ -167,7 +162,7 @@ public class MyWindow {
         static void initiatePopupWindow(List<Cards> cardListt, int position, View v) {
 
                 if (!loader.isInited()) {
-                        loader.init(config(cxt));
+                        loader.init(Utils.config(cxt));
                 }
                 
                 int classs = 0;
@@ -195,33 +190,33 @@ public class MyWindow {
 
                         // XLARGE = 10"+ Tablets usually
                         case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                                doSomeWindow(layout, Utils.dipsWidthLandscape_XLarge,
-                                                Utils.dipsHeightLandscape_XLarge,
-                                                Utils.dipsWidthPortrait_XLarge,
-                                                Utils.dipsHeightPortrait_XLarge);
+                                doSomeWindow(layout, dipsWidthLandscape_XLarge,
+                                                dipsHeightLandscape_XLarge,
+                                                dipsWidthPortrait_XLarge,
+                                                dipsHeightPortrait_XLarge);
                                 break;
 
                         // LARGE = 7"+ Tablets usually, maybe some giant phones
                         case Configuration.SCREENLAYOUT_SIZE_LARGE:
                                 doSomeWindow(layout, // View of the popupWindow
-                                                Utils.dipsWidthLandscape_Large, // Width for landscape
-                                                Utils.dipsHeightLandscape_Large, // Height for landscape
-                                                Utils.dipsWidthPortrait_Large, // Width for portrait
-                                                Utils.dipsHeightPortrait_Large); // Height for portrait
+                                                dipsWidthLandscape_Large, // Width for landscape
+                                                dipsHeightLandscape_Large, // Height for landscape
+                                                dipsWidthPortrait_Large, // Width for portrait
+                                                dipsHeightPortrait_Large); // Height for portrait
                                 break;
 
                         // NORMAL = 95% of all phones
                         case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                                doSomeWindow(layout, Utils.dipsWidthLandscape_Normal,
-                                                Utils.dipsHeightLandscape_Normal,
-                                                Utils.dipsWidthPortrait_Normal,
-                                                Utils.dipsHeightPortrait_Normal);
+                                doSomeWindow(layout, dipsWidthLandscape_Normal,
+                                                dipsHeightLandscape_Normal,
+                                                dipsWidthPortrait_Normal,
+                                                dipsHeightPortrait_Normal);
                                 break;
                         default:
-                                doSomeWindow(layout, Utils.dipsWidthLandscape_Small,
-                                                Utils.dipsHeightLandscape_Small,
-                                                Utils.dipsWidthPortrait_Small,
-                                                Utils.dipsHeightPortrait_Small);
+                                doSomeWindow(layout, dipsWidthLandscape_Small,
+                                                dipsHeightLandscape_Small,
+                                                dipsWidthPortrait_Small,
+                                                dipsHeightPortrait_Small);
                                 break;
                         }
 
@@ -498,7 +493,7 @@ public class MyWindow {
                                         ivCardImage.setTag("Premium");
                                 } else {
                                         loader.cancelDisplayTask(ivCardImage);
-                                        loader.displayImage(url, ivCardImage, noStubOptions);
+                                        loader.displayImage(url, ivCardImage, Utils.noStubOptions);
                                         ivCardImage.setTag("Standard");
                                 }
 

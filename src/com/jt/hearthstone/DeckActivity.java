@@ -140,19 +140,19 @@ public class DeckActivity extends Fragment {
 			lvDeck.setVisibility(View.VISIBLE);
 		}
 
-		Utils.setContext(getActivity());
+		MyWindow.setContext(getActivity());
 		
 		// Set GridView and ListView to show PopupWindow when clicked
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 		lvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 

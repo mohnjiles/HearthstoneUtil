@@ -54,12 +54,12 @@ public class ArenaDeckFragment extends Fragment {
 
 		cardList = arenaFrag.listDeck;
 		
-		Utils.setContext(getActivity());
+		MyWindow.setContext(getActivity());
 		
 		lvArena.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 

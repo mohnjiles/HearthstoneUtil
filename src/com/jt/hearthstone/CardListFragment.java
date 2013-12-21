@@ -189,18 +189,20 @@ public class CardListFragment extends Fragment {
 
 		// Get deck list from file
 		getDeckList();
+		
+		MyWindow.setContext(getActivity());
 
 		/************ Listeners for PopupWindow ***************/
 		grid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 		listCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 

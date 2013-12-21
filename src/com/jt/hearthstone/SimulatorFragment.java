@@ -2,27 +2,14 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,14 +17,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.nineoldandroids.animation.AnimatorInflater;
-import com.nineoldandroids.animation.ObjectAnimator;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
@@ -86,7 +68,7 @@ public class SimulatorFragment extends Fragment {
 		font = TypefaceCache
 				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
 		
-		Utils.setContext(getActivity());
+		MyWindow.setContext(getActivity());
 
 		btnRedraw.setTypeface(font);
 		btnDrawAnother.setTypeface(font);
@@ -123,7 +105,7 @@ public class SimulatorFragment extends Fragment {
 		gvCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 

@@ -69,25 +69,9 @@ public class CardListActivity extends ActionBarActivity {
 
 	private GridView grid;
 	private ListView listCards;
-	private PopupWindow pWindow;
-	private TextView tvCardName;
-	private TextView tvType;
-	private TextView tvQuality;
-	private TextView tvSet;
-	private TextView tvCrafted;
-	private TextView tvClass;
 	private TextView tvMechanic;
 	private TextView tvSort;
 	private TextView tvClassSort;
-	private TextView tvCost;
-	private TextView tvCostGold;
-	private TextView tvDisenchant;
-	private TextView tvDisenchantGold;
-	private ImageView ivCardImage;
-	private ImageView ivDust1;
-	private ImageView ivDust2;
-	private ImageView ivDust3;
-	private ImageView ivDust4;
 	
 	private MenuItem searchItem;
 	private List<Cards> deckOne;
@@ -167,18 +151,18 @@ public class CardListActivity extends ActionBarActivity {
 		// Get deck list from file
 		getDeckList();
 		
-		Utils.setContext(this);
+		MyWindow.setContext(this);
 
 		grid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 		listCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				Utils.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 
