@@ -52,7 +52,7 @@ public class ImageAdapter extends BaseAdapter {
     	ViewHolder vh;
     	Typeface font = TypefaceCache.get(mContext.getAssets(),
 				"fonts/belwebd.ttf");
-    	url = "http://54.224.222.135/" + cardList.get(position).getImage() + ".png";
+    	url = "http://54.224.222.135/Square/" + cardList.get(position).getImage() + ".png";
     	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
     	// We may eventually need to disable this based on further testing

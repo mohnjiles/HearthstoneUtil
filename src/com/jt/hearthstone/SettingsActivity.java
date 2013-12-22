@@ -35,6 +35,9 @@ public class SettingsActivity extends PreferenceActivity{
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
 				ImageLoader loader = ImageLoader.getInstance();
+				if (!loader.isInited()) {
+					loader.init(Utils.config(SettingsActivity.this));
+				}
 				loader.clearDiscCache();
 				loader.clearMemoryCache();
 				Crouton.makeText(SettingsActivity.this, "Caches cleared.", Style.INFO).show();

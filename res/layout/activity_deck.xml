@@ -25,7 +25,9 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvNumCards"
         android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
     </GridView>
 

@@ -17,7 +17,9 @@
         android:layout_alignTop="@+id/cardsList"
         android:columnWidth="@dimen/grid_column_width"
         android:gravity="center_horizontal"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
     </GridView>
 

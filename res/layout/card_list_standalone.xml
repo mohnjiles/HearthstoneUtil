@@ -13,9 +13,11 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cbGenerics"
+        android:columnWidth="@dimen/grid_image_height"
         android:gravity="center_horizontal"
-        android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
     </GridView>
 

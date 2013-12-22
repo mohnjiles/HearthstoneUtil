@@ -12,15 +12,15 @@
     <dimen name="card_stats_text_size">16sp</dimen>
     <dimen name="card_class_size">30dp</dimen>
     <dimen name="card_stats_image_size">30dp</dimen>
-    <dimen name="grid_column_width">175dp</dimen>
+    <dimen name="grid_column_width">138dp</dimen>
     <dimen name="spinner_size">150dp</dimen>
     <dimen name="card_name_top_padding">24dp</dimen>
     <dimen name="card_name_bottom_padding">-36dp</dimen>
     <dimen name="card_name_bottom_padding_portrait">-24dp</dimen>
     <dimen name="class_name_top_padding">48dp</dimen>
     <dimen name="class_name_top_padding_portrait">0dp</dimen>
-    <dimen name="grid_image_width">150dp</dimen>
-    <dimen name="grid_image_height">225dp</dimen>
+    <dimen name="grid_image_width">138dp</dimen>
+    <dimen name="grid_image_height">138dp</dimen>
     <dimen name="arena_width">250dp</dimen>
     <dimen name="arena_text_margin">8dp</dimen>
     

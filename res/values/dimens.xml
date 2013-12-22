@@ -12,7 +12,7 @@
     <dimen name="card_stats_text_size">14sp</dimen>
     <dimen name="card_class_size">26dp</dimen>
     <dimen name="card_stats_image_size">24dp</dimen>
-    <dimen name="grid_column_width">140dp</dimen>
+    <dimen name="grid_column_width">92dp</dimen>
     <dimen name="spinner_size">125dp</dimen>
     <dimen name="pie_segment_label_font_size">10dp</dimen>
     <dimen name="title_font_size">20dp</dimen>
@@ -26,8 +26,8 @@
     <dimen name="card_name_bottom_padding_portrait">-16dp</dimen>
     <dimen name="class_name_top_padding">36dp</dimen>
     <dimen name="class_name_top_padding_portrait">0dp</dimen>
-    <dimen name="grid_image_width">150dp</dimen>
-    <dimen name="grid_image_height">225dp</dimen>
+    <dimen name="grid_image_width">92dp</dimen>
+    <dimen name="grid_image_height">92dp</dimen>
     <dimen name="arena_width">150dp</dimen>
     <dimen name="arena_text_margin">4dp</dimen>
     
