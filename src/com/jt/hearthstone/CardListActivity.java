@@ -122,8 +122,6 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
-		registerForContextMenu(listCards);
-		registerForContextMenu(grid);
 
 		// Set ActionBar Title
 		getSupportActionBar().setTitle("Hearthstone Companion");
@@ -179,6 +177,9 @@ public class CardListActivity extends ActionBarActivity {
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
 		listCards.setAdapter(adapter2);
+		
+		registerForContextMenu(listCards);
+		registerForContextMenu(grid);
 
 		// This works now! Listener for when CheckBox is checked
 		includeNeutralCards
@@ -366,7 +367,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		String[] menuItems = new String[1];
 
-		if (v.getId() == R.id.cardsList) {
+		if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;

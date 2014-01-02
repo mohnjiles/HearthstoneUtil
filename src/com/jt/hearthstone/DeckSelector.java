@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -42,9 +43,9 @@ public class DeckSelector extends ActionBarActivity {
 	static ArrayList<Integer> deckClasses;
 	static ProgressDialog dialog;
 	
-	private ListView lvDecks;
+	private GridView gvDecks;
 	
-	private CustomDeckAdapter adapter;
+	private DecksAdapter adapter;
 	private int position;
 	
 	private Typeface font;
@@ -56,8 +57,8 @@ public class DeckSelector extends ActionBarActivity {
 		// Show the Up button in the action bar.
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Decks");
-		lvDecks = findById(this, R.id.lvDecks);
-		registerForContextMenu(lvDecks);
+		gvDecks = findById(this, R.id.gvDecks);
+		registerForContextMenu(gvDecks);
 		deckClasses = (ArrayList<Integer>) Utils.getDeck(this, "deckclasses");
 		
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
@@ -94,9 +95,9 @@ public class DeckSelector extends ActionBarActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		adapter = new CustomDeckAdapter(this, listDecks, deckClasses);
-		lvDecks.setAdapter(adapter);
-		lvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		adapter = new DecksAdapter(this, listDecks, deckClasses);
+		gvDecks.setAdapter(adapter);
+		gvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -172,7 +173,7 @@ public class DeckSelector extends ActionBarActivity {
 							/*************** save corresponding class number **********/
 							Utils.saveDeck(DeckSelector.this, "deckclasses", deckClasses);
 							adapter.notifyDataSetChanged();
-							lvDecks.setAdapter(adapter);
+							gvDecks.setAdapter(adapter);
 						}
 					});
 			builder.setNegativeButton("Cancel",
@@ -193,7 +194,7 @@ public class DeckSelector extends ActionBarActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 
-		if (v.getId() == R.id.lvDecks) {
+		if (v.getId() == R.id.gvDecks) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(listDecks.get(info.position));
 			position = info.position;
@@ -213,7 +214,7 @@ public class DeckSelector extends ActionBarActivity {
 		listDecks.remove(position);
 		Utils.saveDeck(this, "decklist", listDecks);
 		adapter.notifyDataSetChanged();
-		lvDecks.setAdapter(adapter);
+		gvDecks.setAdapter(adapter);
 		return super.onContextItemSelected(item);
 	}
 

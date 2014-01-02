@@ -16,9 +16,7 @@
 		<attr name="foreground" format="reference|color"/>
 		<attr name="backgroundTwo" format="reference|color"/>
 		
-		<attr name="strokeWidth" format="float" />
 		<attr name="strokeMiter" format="float" />
-		<attr name="strokeColor" format="color" />
 		<attr name="strokeJoinStyle">
 		    <enum name="miter" value="0" />
 		    <enum name="bevel" value="1" />

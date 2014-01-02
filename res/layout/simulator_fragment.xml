@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
     tools:context=".SimulatorFragment" >
 
     <GridView
@@ -12,7 +11,9 @@
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/spinnerNumCards"
         android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
     </GridView>
 

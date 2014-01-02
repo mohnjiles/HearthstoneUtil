@@ -23,6 +23,7 @@
     <dimen name="grid_image_height">138dp</dimen>
     <dimen name="arena_width">250dp</dimen>
     <dimen name="arena_text_margin">8dp</dimen>
+    <dimen name="deck_grid_size">207dp</dimen>
     
     <!-- Text Sizes -->
     <dimen name="card_list_textview">16sp</dimen>

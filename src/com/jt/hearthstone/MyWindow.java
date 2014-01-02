@@ -251,7 +251,7 @@ public class MyWindow {
                                 }
                         });
                         
-                        if (v.getId() == R.id.lvArena || v.getId() == R.id.lvDeck) {
+                        if (v.getId() == R.id.lvDeck || v.getId() == R.id.lvArena) {
                                 url = "http://54.224.222.135/"
                                                 + cardListUnique.get(position).getImage() + ".png";
                                 loader.displayImage(url, ivCardImage, Utils.defaultOptions);

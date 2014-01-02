@@ -2,20 +2,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
     tools:context=".MainActivity" >
 
     <GridView
         android:id="@+id/gvDeck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/cardsList"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/sideLayout"
         android:columnWidth="@dimen/grid_column_width"
         android:gravity="center_horizontal"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
+
     </GridView>
 
     <ImageView
@@ -31,9 +33,18 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/spinnerSort"
+        android:layout_toRightOf="@+id/sideLayout"
         android:numColumns="auto_fit" >
+
     </ListView>
+    
+<RelativeLayout
+    android:id="@+id/sideLayout"
+    android:layout_width="200dp"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentTop="true"
+    android:background="@drawable/sidebg" >
 
     <Spinner
         android:id="@+id/spinnerSort"
@@ -65,7 +76,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/spinnerSort"
         android:layout_marginRight="8dp"
-        android:layout_toLeftOf="@+id/gvDeck"
         android:layout_toRightOf="@+id/tvCost"
         android:entries="@array/Mechanic" />
 
@@ -103,6 +113,7 @@
         android:text="Sort:"
         android:textColor="#000000"
         android:textSize="@dimen/card_name_text_size" />
+    </RelativeLayout>
 
     <RelativeLayout
         android:id="@+id/rlPopup"

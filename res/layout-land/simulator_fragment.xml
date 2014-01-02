@@ -2,7 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
     tools:context=".SimulatorFragment" >
 
     <GridView
@@ -10,54 +9,65 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
-        android:layout_toRightOf="@+id/btnDrawAnother"
+        android:layout_toRightOf="@+id/sideLayout"
         android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
-
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
     </GridView>
 
-    <Button
-        android:id="@+id/btnRedraw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
-        android:text="Draw new hand"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+    <RelativeLayout
+        android:id="@+id/sideLayout"
+        android:layout_width="200dp"
+        android:layout_height="match_parent"
+        android:background="@drawable/sidebg"
+        android:padding="4dp" >
 
-    <Spinner
-        android:id="@+id/spinnerNumCards"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@+id/gvCard" />
+        <Button
+            android:id="@+id/btnRedraw"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/btn_selector_3"
+            android:text="Draw new hand"
+            android:textColor="#000000"
+            android:textSize="14sp" />
 
-    <Button
-        android:id="@+id/btnDrawAnother"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/btnRedraw"
-        android:layout_alignRight="@+id/btnRedraw"
-        android:layout_below="@+id/btnRedraw"
-        android:text="Draw another card"
-        android:textColor="#FFFFFF"
-        android:textSize="14sp" />
+        <Spinner
+            android:id="@+id/spinnerNumCards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/textView1"
+            android:layout_marginLeft="8dp" />
 
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/spinnerNumCards"
-        android:layout_below="@+id/btnDrawAnother"
-        android:layout_marginTop="26dp"
-        android:layout_toLeftOf="@+id/gvCard"
-        android:gravity="center"
-        android:text="Starting hand size:"
-        android:textColor="#FFFFFF" />
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/spinnerNumCards"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/btnDrawAnother"
+            android:layout_marginTop="26dp"
+            android:gravity="center"
+            android:text="Starting hand size:"
+            android:textColor="#000000" />
+
+        <Button
+            android:id="@+id/btnDrawAnother"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/btnRedraw"
+            android:layout_alignRight="@+id/btnRedraw"
+            android:layout_below="@+id/btnRedraw"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/btn_selector_3"
+            android:text="Draw another card"
+            android:textColor="#000000"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
 
 </RelativeLayout>

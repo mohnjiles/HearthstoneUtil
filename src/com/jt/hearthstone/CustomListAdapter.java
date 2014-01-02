@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,13 +30,13 @@ import android.widget.TextView;
 
 public class CustomListAdapter extends BaseAdapter {
 	private Context mContext;
-	private ArrayList<Cards> cardList; // Get card list from Fragment 
+	private List<Cards> cardList; // Get card list from Fragment 
 	private String cardName;
 	private ImageLoader loader = ImageLoader.getInstance();
 
-	public CustomListAdapter(Context c, ArrayList<Cards> cardList) {
+	public CustomListAdapter(Context c, List<Cards> cardList2) {
 		mContext = c;
-		this.cardList = cardList;
+		this.cardList = cardList2;
 	
 		if (!loader.isInited()) {
 			loader.init(Utils.config(mContext));

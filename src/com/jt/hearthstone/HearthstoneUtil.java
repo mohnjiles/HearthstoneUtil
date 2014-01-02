@@ -18,7 +18,7 @@ public class HearthstoneUtil extends Application {
 	@Override
 	public final void onCreate() {
 		super.onCreate();
-		ACRA.init(this);
+		//ACRA.init(this);
 		Log.w("ACRA INIT", "ACRA INIT");
 		HearthstoneUtil.context = getApplicationContext();
 

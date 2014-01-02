@@ -29,6 +29,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/cbGenerics"
+        android:background="@drawable/deckbg"
         android:numColumns="auto_fit" >
 
     </ListView>

@@ -53,7 +53,8 @@ public class ClassAdapter extends BaseAdapter {
     		vh = (ViewHolder)convertView.getTag();
     	}
     	vh.tv.setText(classes[position]);
-    	vh.iv.setImageResource(thumbIds[position]);
+    	vh.tv.setTypeface(TypefaceCache.get(mContext.getAssets(), "fonts/belwebd.ttf"));
+    	vh.iv.setImageBitmap(ImageCache.get(mContext, thumbIds[position]));
 
     	return convertView;
     	

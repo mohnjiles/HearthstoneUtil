@@ -1,0 +1,88 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/deckLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".DeckActivity" >
+
+    <ListView
+        android:id="@+id/lvDeck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_toRightOf="@+id/mrScrolls" >
+    </ListView>
+
+    <ScrollView
+        android:id="@+id/mrScrolls"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true" >
+
+        <RelativeLayout
+            android:id="@+id/sideLayout"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            android:background="@drawable/sidebg" >
+
+            <TextView
+                android:id="@+id/tvNumCards"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:gravity="center"
+                android:text="30 / 30"
+                android:textColor="#000000" />
+
+            <com.echo.holographlibrary.BarGraph
+                android:id="@+id/manaChart"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_below="@+id/tvNumCards" />
+
+            <ImageView
+                android:id="@+id/chartGuide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pieGraph"
+                android:layout_centerHorizontal="true"
+                android:paddingTop="8dp"
+                android:src="@drawable/chartguide" />
+
+            <com.echo.holographlibrary.PieGraph
+                android:id="@+id/pieGraph"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_below="@+id/manaChart"
+                android:paddingTop="8dp" />
+        </RelativeLayout>
+    </ScrollView>
+
+    <GridView
+        android:id="@+id/gvDeck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/mrScrolls"
+        android:columnWidth="@dimen/grid_column_width"
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
+
+    </GridView>
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="@dimen/card_icon_width"
+        android:layout_height="@dimen/card_icon"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:padding="16dp"
+        android:src="@drawable/one_finger_swipe_right" />
+
+</RelativeLayout>

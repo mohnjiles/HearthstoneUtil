@@ -2,71 +2,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/app_bg"
     tools:context=".SimulatorFragment" >
 
     <GridView
         android:id="@+id/gvCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/spinnerNumCards"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/sideLayout"
         android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
     </GridView>
 
-    <Button
-        android:id="@+id/btnRedraw"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_toLeftOf="@+id/imageView1"
-        android:background="@drawable/btn_selector_3"
-        android:text="Draw new hand"
-        android:textColor="#000000"
-        android:textSize="14sp" />
+	<RelativeLayout
+	    android:id="@+id/sideLayout"
+	    android:layout_width="200dp"
+	    android:layout_height="match_parent"
+	    android:background="@drawable/sidebg" >
 
-    <Button
-        android:id="@+id/btnDrawAnother"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_toRightOf="@+id/imageView1"
-        android:background="@drawable/btn_selector_3"
-        android:text="Draw another card"
-        android:textColor="#000000"
-        android:textSize="14sp" />
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerNumCards"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/btnRedraw"
-        android:layout_marginLeft="16dp"
-        android:gravity="center"
-        android:text="Starting hand size:"
-        android:textColor="#000000" />
-
-    <Spinner
-        android:id="@+id/spinnerNumCards"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/btnRedraw"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="16dp"
-        android:layout_toRightOf="@+id/textView1" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="8dp"
-        android:layout_height="8dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+	    <Button
+	        android:id="@+id/btnRedraw"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignParentTop="true"
+	        android:layout_marginTop="8dp"
+	        android:background="@drawable/btn_selector_3"
+	        android:text="Draw new hand"
+	        android:textColor="#000000"
+	        android:textSize="14sp" />
+	
+	    <Spinner
+	        android:id="@+id/spinnerNumCards"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_below="@+id/textView1"
+	        android:layout_marginLeft="8dp" />
+	
+	    <Button
+	        android:id="@+id/btnDrawAnother"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignParentLeft="true"
+	        android:layout_alignRight="@+id/btnRedraw"
+	        android:layout_below="@+id/btnRedraw"
+	        android:background="@drawable/btn_selector_3"
+	        android:text="Draw another card"
+	        android:textColor="#000000"
+	        android:textSize="14sp" />
+	
+	    <TextView
+	        android:id="@+id/textView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:layout_alignLeft="@+id/spinnerNumCards"
+	        android:layout_below="@+id/btnDrawAnother"
+	        android:layout_marginTop="26dp"
+	        android:gravity="center"
+	        android:text="Starting hand size:"
+	        android:textColor="#000000" />
+	    </RelativeLayout>
 
 </RelativeLayout>

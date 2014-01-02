@@ -2,9 +2,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
     tools:context=".MainActivity" >
 
     <GridView
@@ -19,6 +16,7 @@
         android:gravity="center_horizontal"
         android:horizontalSpacing="2dp"
         android:numColumns="auto_fit"
+        android:background="@drawable/deckbg"
         android:verticalSpacing="2dp" >
 
     </GridView>
@@ -32,6 +30,7 @@
         android:layout_alignParentRight="true"
         android:layout_below="@+id/spinnerSort"
         android:layout_marginTop="6dp"
+        android:background="@drawable/deckbg"
         android:numColumns="auto_fit" >
 
     </ListView>

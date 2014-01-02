@@ -5,8 +5,6 @@ import java.io.Serializable;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import android.R.integer;
-
 public class Cards implements Serializable {
 	private Number attack;
 	private Number classs;
@@ -27,7 +25,7 @@ public class Cards implements Serializable {
 
 	@Override
 	public int hashCode() {
-		return new HashCodeBuilder(17, 31).append(attack).append(classs)
+		return new HashCodeBuilder(17, 37).append(attack).append(classs)
 				.append(collectible).append(cost).append(description)
 				.append(faction).append(health).append(icon).append(id)
 				.append(image).append(name).append(quality).append(set)
@@ -45,7 +43,6 @@ public class Cards implements Serializable {
 
 		Cards cards = (Cards) obj;
 		return new EqualsBuilder()
-				// if deriving: appendSuper(super.equals(obj)).
 				.append(attack, cards.attack).append(classs, cards.classs)
 				.append(collectible, cards.collectible)
 				.append(cost, cards.cost)

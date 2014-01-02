@@ -5,13 +5,17 @@
     android:background="@drawable/app_bg"
     tools:context=".DeckSelector" >
 
-    <ListView
-        android:id="@+id/lvDecks"
+    <GridView
+        android:id="@+id/gvDecks"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" >
+        android:layout_alignParentRight="true"
+        android:columnWidth="@dimen/deck_grid_size"
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
 
-    </ListView>
+    </GridView>
 
 </RelativeLayout>

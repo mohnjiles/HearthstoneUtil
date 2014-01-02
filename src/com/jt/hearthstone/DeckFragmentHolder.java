@@ -10,11 +10,15 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.viewpagerindicator.TitlePageIndicator;
+
+import android.R.integer;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -34,7 +38,7 @@ import android.view.View;
 public class DeckFragmentHolder extends ActionBarActivity {
 
 	static ActionBar aBar;
-	static ViewPager myPager;
+	private ViewPager myPager;
 	private int position;
 	static List<Integer> deckClasses;
 	static FragmentAdapter adapter;
@@ -46,8 +50,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 	private CardListFragment cardListFrag;
 	private DeckActivity deckFrag;
-	private ChartActivity chartFrag;
 	private SimulatorFragment simFrag;
+	private TitlePageIndicator titles;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		aBar = getSupportActionBar();
 		aBar.setDisplayHomeAsUpEnabled(true);
 		myPager = (ViewPager) findViewById(R.id.pager);
+		titles = (TitlePageIndicator) findViewById(R.id.titles);
 
 		position = getIntent().getIntExtra("position", 0);
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
@@ -65,9 +70,6 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		deckFrag = new DeckActivity();
 		fragments.add(deckFrag);
-
-		chartFrag = new ChartActivity();
-		fragments.add(chartFrag);
 
 		simFrag = new SimulatorFragment();
 		fragments.add(simFrag);
@@ -78,11 +80,16 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		// getDeck.execute();
 
 		setStuff(getCards());
+		
+		titles.setViewPager(myPager);
+		titles.setTextColor(Color.BLACK);
+		titles.setSelectedColor(Color.BLACK);
+		titles.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
 
 		screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 
-		myPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+		titles.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
 
 			@Override
 			public void onPageSelected(int arg0) {
@@ -238,12 +245,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		@Override
 		public float getPageWidth(int position) {
-			if (screenSize >= Configuration.SCREENLAYOUT_SIZE_LARGE
-					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				return (0.5f);
-			} else {
-				return (1.0f);
-			}
+			return 1.0f;
 		}
 
 		@Override
@@ -263,27 +265,13 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			if (screenSize >= Configuration.SCREENLAYOUT_SIZE_LARGE
-					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				switch (position) {
-				case 0:
-					return "Search / Deck";
-				case 1:
-					return "Deck / Breakdown";
-				case 2:
-					return "Breakdown / Draw Simulator";
-				}
-			} else {
-				switch (position) {
-				case 0:
-					return "Search";
-				case 1:
-					return "Deck";
-				case 2:
-					return "Breakdown";
-				case 3:
-					return "Draw Simulator";
-				}
+			switch (position) {
+			case 0:
+				return "Search";
+			case 1:
+				return "Deck";
+			case 2:
+				return "Draw Simulator";
 			}
 			return null;
 		}
@@ -328,7 +316,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	}
 
 	private void setStuff(List<Integer> result) {
-		myPager.setOffscreenPageLimit(3);
+//		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
 		myPager.setCurrentItem(previousPage);
 

@@ -9,6 +9,7 @@
 	<item
         android:id="@+id/action_restart"
         android:title="Start over"
+        android:icon="@drawable/ic_menu_revert"
         hearthstone:showAsAction="ifRoom" />
 
 </menu>

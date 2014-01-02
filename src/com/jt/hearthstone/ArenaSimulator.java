@@ -2,8 +2,18 @@ package com.jt.hearthstone;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
+import com.viewpagerindicator.CirclePageIndicator;
+import com.viewpagerindicator.IconPageIndicator;
+import com.viewpagerindicator.LinePageIndicator;
+import com.viewpagerindicator.TabPageIndicator;
+import com.viewpagerindicator.TitlePageIndicator;
+
+import android.app.ActionBar.Tab;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.Fragment;
@@ -18,6 +28,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Adapter;
+import android.widget.ListView;
 
 /**
  * Parent class for Arena-related Fragments. Sets up and loads ViewPager and
@@ -29,8 +40,10 @@ import android.widget.Adapter;
 public class ArenaSimulator extends ActionBarActivity {
 
 	ViewPager myPager;
+	TitlePageIndicator titleIndicator;
 	FragmentAdapter adapter;
 	ActionBar aBar;
+	ArenaDeckFragment deckFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +57,7 @@ public class ArenaSimulator extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		myPager = (ViewPager) findViewById(R.id.pager);
+		titleIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 
@@ -52,15 +66,15 @@ public class ArenaSimulator extends ActionBarActivity {
 
 		ArenaDeckFragment fragOne = new ArenaDeckFragment();
 		fragments.add(fragOne);
-		
-		ChartActivity fragTwo = new ChartActivity();
-		fragments.add(fragTwo);
+
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
 		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
+		titleIndicator.setSelectedColor(Color.BLACK);
+		titleIndicator.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
+		titleIndicator.setViewPager(myPager);
 
 	}
-
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -149,8 +163,6 @@ public class ArenaSimulator extends ActionBarActivity {
 				return "Arena";
 			case 1:
 				return "Deck";
-			case 2:
-				return "Breakdown";
 			}
 			return null;
 		}
@@ -162,12 +174,20 @@ public class ArenaSimulator extends ActionBarActivity {
 		ArenaDeckFragment frag2 = (ArenaDeckFragment) getSupportFragmentManager()
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 		frag.doOnce = 0;
-		frag.listDeck.clear();
+		if (frag.listDeck != null) {
+			frag.listDeck.clear();
+		}
+		
+		if (frag.listChoices != null) {
+			frag.listChoices.clear();
+		}
+		
 		frag.textView.setText("Choose a Hero");
 		frag.pickRandomHero();
 
 		frag2.lvArena.setAdapter(frag.adapter);
 		frag2.tvDeckSize.setText("0 / 30");
+		frag2.update(frag.listDeck);
 	}
 
 }

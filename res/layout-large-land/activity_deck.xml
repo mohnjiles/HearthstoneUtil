@@ -3,7 +3,6 @@
     android:id="@+id/deckLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingLeft="8dp"
     android:paddingRight="8dp"
     tools:context=".DeckActivity" >
 
@@ -11,36 +10,67 @@
         android:id="@+id/lvDeck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/tvNumCards" >
-
+        android:layout_toRightOf="@+id/sideLayout" >
     </ListView>
+
+    <RelativeLayout
+        android:id="@+id/sideLayout"
+        android:layout_width="250dp"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:background="@drawable/sidebg" >
+
+        <TextView
+            android:id="@+id/tvNumCards"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:text="30 / 30"
+            android:textColor="#000000" />
+
+        <com.echo.holographlibrary.BarGraph
+            android:id="@+id/manaChart"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:layout_below="@+id/tvNumCards" />
+        
+        <ImageView 
+            android:id="@+id/chartGuide"
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:paddingTop="8dp"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/chartguide"
+			android:layout_below="@+id/pieGraph"
+            />
+
+        <com.echo.holographlibrary.PieGraph
+            android:id="@+id/pieGraph"
+            android:layout_width="match_parent"
+            android:layout_height="175dp"
+            android:paddingTop="8dp"
+            android:layout_below="@+id/manaChart"
+
+             />
+    </RelativeLayout>
 
     <GridView
         android:id="@+id/gvDeck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_below="@+id/tvNumCards"
+        android:layout_alignLeft="@+id/lvDeck"
         android:columnWidth="@dimen/grid_column_width"
-        android:numColumns="auto_fit" >
-
+        android:horizontalSpacing="2dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="2dp" >
     </GridView>
-
-    <TextView
-        android:id="@+id/tvNumCards"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center"
-        android:text="30 / 30"
-        android:textColor="#000000" />
 
     <ImageView
         android:id="@+id/imageView1"

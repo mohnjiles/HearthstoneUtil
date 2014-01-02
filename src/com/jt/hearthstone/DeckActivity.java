@@ -3,10 +3,9 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
-
-import org.achartengine.renderer.SimpleSeriesRenderer;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -33,6 +32,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.echo.holographlibrary.Bar;
+import com.echo.holographlibrary.BarGraph;
+import com.echo.holographlibrary.PieGraph;
+import com.echo.holographlibrary.PieSlice;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class DeckActivity extends Fragment {
@@ -50,13 +53,13 @@ public class DeckActivity extends Fragment {
 	private ArrayList<Cards> cardListUnique;
 	private ArrayList<String> listDecks = DeckSelector.listDecks;
 	private ImageLoader loader = ImageLoader.getInstance();
+	private static BarGraph manaChart;
+	private static PieGraph pieGraph;
 
 	private int position;
 	private int pos;
 	private boolean isGrid = false;
 	private Typeface font;
-
-	private ChartActivity chartFrag;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,6 +67,9 @@ public class DeckActivity extends Fragment {
 
 		// Inflate view
 		View V = inflater.inflate(R.layout.activity_deck, container, false);
+
+		manaChart = findById(V, R.id.manaChart);
+		pieGraph = findById(V, R.id.pieGraph);
 
 		ImageLoader.getInstance().init(Utils.config(getActivity()));
 
@@ -92,11 +98,6 @@ public class DeckActivity extends Fragment {
 		// Set ListView and GridView to listen to long-press on an item
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
-
-		// Get reference to Chart Fragment
-		// (Will need this later to update charts)
-		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 2));
 
 		// ImageLoader init
 		if (!loader.isInited()) {
@@ -132,6 +133,11 @@ public class DeckActivity extends Fragment {
 						listDecks.get(position)), listDecks.get(position));
 
 		// Change GridView / ListView visibility
+		
+		if (savedInstanceState != null) {
+			this.isGrid = savedInstanceState.getBoolean("isGrid");
+		}
+		
 		if (isGrid) {
 			lvDeck.setVisibility(View.INVISIBLE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -141,7 +147,7 @@ public class DeckActivity extends Fragment {
 		}
 
 		MyWindow.setContext(getActivity());
-		
+
 		// Set GridView and ListView to show PopupWindow when clicked
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
@@ -155,19 +161,33 @@ public class DeckActivity extends Fragment {
 				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
-
+		setManaChart(cardList);
+		setPieGraph(cardList);
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("isGrid", isGrid);
 	}
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		if (v.getId() == R.id.lvDeck || v.getId() == R.id.gvDeck) {
+		if (v.getId() == R.id.lvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardListUnique.get(info.position).getName());
 			pos = info.position;
 			String menuItems = "Remove card \""
 					+ cardListUnique.get(info.position).getName() + "\"";
+			menu.add(Menu.FIRST, 0, 0, menuItems);
+		} else {
+			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+			menu.setHeaderTitle(cardList.get(info.position).getName());
+			pos = info.position;
+			String menuItems = "Remove card \""
+					+ cardList.get(info.position).getName() + "\"";
 			menu.add(Menu.FIRST, 0, 0, menuItems);
 		}
 	}
@@ -184,7 +204,8 @@ public class DeckActivity extends Fragment {
 		// Remove selected card from the deck
 		if (item.getGroupId() == Menu.FIRST) {
 			cardList.remove(pos);
-			cardListUnique.remove(pos);
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
 			Log.i("Card Removed", "Card removed, pos: " + pos);
 
 			// Save the updated deck
@@ -217,24 +238,8 @@ public class DeckActivity extends Fragment {
 				ivSwipe.setVisibility(View.VISIBLE);
 			}
 
-			// Refresh Mana Chart if possible
-			if (chartFrag.mChart != null) {
-				((ViewGroup) chartFrag.mChart.getParent())
-						.removeView(chartFrag.mChart);
-				chartFrag.mCurrentSeries.clear();
-				addSampleData();
-				chartFrag.layout2.addView(chartFrag.mChart);
-			}
-
-			// Refresh pie chart if possible
-			if (chartFrag.mPieChart != null) {
-				((ViewGroup) chartFrag.mPieChart.getParent())
-						.removeView(chartFrag.mPieChart);
-				chartFrag.mSeries.clear();
-				chartFrag.mRenderer2.removeAllRenderers();
-				addPieData(cardList);
-				chartFrag.layout.addView(chartFrag.mPieChart);
-			}
+			setManaChart(cardList);
+			setPieGraph(cardList);
 
 		}
 
@@ -264,14 +269,14 @@ public class DeckActivity extends Fragment {
 		// Switch between GridView and ListView
 		case R.id.action_switch:
 			if (isGrid) {
-				gvDeck.setVisibility(View.INVISIBLE);
+				gvDeck.setVisibility(View.GONE);
 				lvDeck.setVisibility(View.VISIBLE);
 				isGrid = false;
 				item.setIcon(R.drawable.collections_view_as_grid);
 				item.setTitle("Switch to grid view");
 			} else {
 				gvDeck.setVisibility(View.VISIBLE);
-				lvDeck.setVisibility(View.INVISIBLE);
+				lvDeck.setVisibility(View.GONE);
 				isGrid = true;
 				item.setIcon(R.drawable.collections_view_as_list);
 				item.setTitle("Switch to list view");
@@ -311,71 +316,7 @@ public class DeckActivity extends Fragment {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-
-	/*
-	 * Set up the PopupWindow
-	 * 
-	 * Takes int based on position in list, used to determine card to show
-	 */
-
-	private void addSampleData() {
-		int[] costs = new int[50];
-		for (Cards card : cardList) {
-			if (card.getCost() != null) {
-				costs[card.getCost().intValue()]++;
-				Log.i("cost", "" + costs[card.getCost().intValue()]);
-				chartFrag.mCurrentSeries.add(card.getCost().intValue(),
-						costs[card.getCost().intValue()]);
-			}
-		}
-	}
-
-	private void addPieData(List<Cards> cardList) {
-		int minions = 0;
-		int abilities = 0;
-		int weapons = 0;
-		final int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
-				Color.rgb(60, 242, 0) };
-		final int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
-				Color.rgb(8, 196, 0) };
-		for (Cards card : cardList) {
-			if (card.getType() != null && card.getType().intValue() == 4) {
-				minions++;
-			} else if (card.getType() != null && card.getType().intValue() == 5) {
-				abilities++;
-			} else if (card.getType() != null && card.getType().intValue() == 7) {
-				weapons++;
-			}
-		}
-		if (abilities != 0) {
-			chartFrag.mSeries.add("Spells", abilities);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[0]);
-			seriesRenderer.setGradientStop(20, colors2[0]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-		if (minions != 0) {
-			chartFrag.mSeries.add("Minions", minions);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[1]);
-			seriesRenderer.setGradientStop(20, colors2[1]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-		if (weapons != 0) {
-			chartFrag.mSeries.add("Weapons", weapons);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[2]);
-			seriesRenderer.setGradientStop(20, colors2[2]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-	}
-
+	
 	public void doSomeStuff(List<Cards> result, String deckName) {
 
 		ArrayList<Cards> unique = new ArrayList<Cards>(
@@ -416,11 +357,85 @@ public class DeckActivity extends Fragment {
 			ivSwipe.setVisibility(View.GONE);
 		}
 
+		Collections.sort(cardList, new CardComparator(2, false));
+		Collections.sort(cardListUnique, new CardComparator(2, false));
+		
 		if (adapter2 == null) {
 			adapter2 = new ImageAdapter(getActivity(), result);
 		}
 		adapter = new DeckListAdapter(getActivity(), result);
 		gvDeck.setAdapter(adapter2);
 		lvDeck.setAdapter(adapter);
+	}
+
+	public static void setManaChart(List<Cards> cardList) {
+		ArrayList<Bar> points = new ArrayList<Bar>();
+
+		int costs[] = new int[20];
+
+		for (Cards card : cardList) {
+			if (card.getCost() != null) {
+				if (card.getCost().intValue() > 7) {
+					costs[7]++;
+				} else {
+					costs[card.getCost().intValue()]++;
+				}
+			}
+		}
+
+		for (int i = 0; i < 8; i++) {
+			Bar dBar = new Bar();
+
+			if (i != 7) {
+				dBar.setName("" + i);
+			} else {
+				dBar.setName("7+");
+			}
+			dBar.setColor(Color.rgb(255, 68, 68));
+			dBar.setValue(costs[i]);
+			dBar.setShowAsFloat(false);
+			points.add(dBar);
+		}
+		manaChart.setShowBarText(false);
+		manaChart.setTextSize(15);
+		manaChart.setBars(points);
+	}
+
+	public static void setPieGraph(List<Cards> cardList) {
+
+		int minions = 0;
+		int abilities = 0;
+		int weapons = 0;
+
+		pieGraph.removeSlices();
+
+		for (Cards card : cardList) {
+			if (card.getType() != null && card.getType().intValue() == 4) {
+				minions++;
+			} else if (card.getType() != null && card.getType().intValue() == 5) {
+				abilities++;
+			} else if (card.getType() != null && card.getType().intValue() == 7) {
+				weapons++;
+			}
+		}
+
+		if (abilities != 0) {
+			PieSlice slice = new PieSlice();
+			slice.setColor(Color.parseColor("#AA66CC"));
+			slice.setValue(abilities);
+			pieGraph.addSlice(slice);
+		}
+		if (minions != 0) {
+			PieSlice slice = new PieSlice();
+			slice.setColor(Color.rgb(0, 171, 249));
+			slice.setValue(minions);
+			pieGraph.addSlice(slice);
+		}
+		if (weapons != 0) {
+			PieSlice slice = new PieSlice();
+			slice.setColor(Color.parseColor("#99CC00"));
+			slice.setValue(weapons);
+			pieGraph.addSlice(slice);
+		}
 	}
 }

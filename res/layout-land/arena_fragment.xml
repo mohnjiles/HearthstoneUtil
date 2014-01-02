@@ -13,33 +13,34 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="Choose your Hero"
         android:textSize="@dimen/arena_text" />
 
     <ImageView
         android:id="@+id/ivItem1"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
-        android:layout_alignParentLeft="true"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/textView1"
+        android:layout_marginRight="16dp"
+        android:layout_toLeftOf="@+id/ivItem2"
         android:src="@drawable/uther_lightbringer" />
 
     <ImageView
-        android:id="@+id/ivItem2"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/ivItem1"
-        android:src="@drawable/garrosh_hellscream" />
+        android:id="@+id/ivItem3"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
+        android:layout_marginLeft="16dp"
+        android:layout_toRightOf="@+id/ivItem2"
+        android:src="@drawable/jaina_proudmoore" />
 
     <ImageView
-        android:id="@+id/ivItem3"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
-        android:layout_below="@+id/ivItem1"
+        android:id="@+id/ivItem2"
+        android:layout_width="@dimen/arena_width"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView1"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/jaina_proudmoore" />
+        android:src="@drawable/garrosh_hellscream" />
 
 </RelativeLayout>

@@ -17,19 +17,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.achartengine.renderer.SimpleSeriesRenderer;
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -67,7 +63,6 @@ public class CardListFragment extends Fragment {
 	SearchView mSearchView;
 	ImageAdapter adapter;
 	CustomListAdapter adapter2;
-	ChartActivity chartFrag;
 	DeckActivity deckFrag;
 	int pos = CustomOnItemSelectedListener.position;
 	int deckListPos;
@@ -83,7 +78,7 @@ public class CardListFragment extends Fragment {
 	private List<Cards> deckOne;
 
 	private ImageLoader loader = ImageLoader.getInstance();
-	ArrayList<Cards> cardList;
+	List<Cards> cardList;
 	private ArrayList<String> deckList;
 	Cards[] cards;
 
@@ -91,6 +86,8 @@ public class CardListFragment extends Fragment {
 	private int position;
 
 	private Typeface font;
+	private MenuItem item;
+	private Menu menu;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -123,8 +120,6 @@ public class CardListFragment extends Fragment {
 		registerForContextMenu(listCards);
 		registerForContextMenu(grid);
 
-		chartFrag = (ChartActivity) getActivity().getSupportFragmentManager()
-				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 2));
 		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 
@@ -160,7 +155,10 @@ public class CardListFragment extends Fragment {
 		} else {
 			rlPopup.setVisibility(View.GONE);
 		}
-
+		
+		if (savedInstanceState != null) {
+			this.isGrid = savedInstanceState.getBoolean("isGrid");
+		}
 		if (isGrid) {
 			listCards.setVisibility(View.INVISIBLE);
 			grid.setVisibility(View.VISIBLE);
@@ -189,7 +187,7 @@ public class CardListFragment extends Fragment {
 
 		// Get deck list from file
 		getDeckList();
-		
+
 		MyWindow.setContext(getActivity());
 
 		/************ Listeners for PopupWindow ***************/
@@ -233,6 +231,13 @@ public class CardListFragment extends Fragment {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putBoolean("isGrid", isGrid);
+	}
+
+
+	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		inflater.inflate(R.menu.card_list, menu);
@@ -248,6 +253,7 @@ public class CardListFragment extends Fragment {
 
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
+		
 
 		if (isGrid) {
 			listSwitcher.setTitle("Switch to list view");
@@ -260,7 +266,8 @@ public class CardListFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
+		this.item = item;
+		
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
@@ -301,6 +308,7 @@ public class CardListFragment extends Fragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+
 		if (item.getGroupId() == 1337) {
 			addCards(deckOne, deckListPos);
 			return super.onContextItemSelected(item);
@@ -309,12 +317,14 @@ public class CardListFragment extends Fragment {
 	}
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
+
 		if (Utils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
 			list = (List<Cards>) Utils.getDeck(getActivity(),
 					deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
+
 		if (list.size() < 30) {
 			list.add(cardList.get(position));
 		} else {
@@ -323,96 +333,15 @@ public class CardListFragment extends Fragment {
 					.show();
 		}
 
-		chartFrag.mCurrentSeries.add(cardList.get(position).getCost()
-				.intValue(), 1);
-		chartFrag.layout.invalidate();
+		DeckActivity.setManaChart(list);
+		DeckActivity.setPieGraph(list);
+
 		Utils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
 		doSomeStuff(
 				(List<Cards>) Utils.getDeck(getActivity(),
 						deckList.get(menuItemIndex)),
 				deckList.get(menuItemIndex));
-
-		if (chartFrag.mChart == null) {
-
-		} else {
-			((ViewGroup) chartFrag.mChart.getParent())
-					.removeView(chartFrag.mChart);
-			chartFrag.mCurrentSeries.clear();
-			addSampleData(list);
-			chartFrag.layout2.addView(chartFrag.mChart);
-		}
-
-		if (chartFrag.mPieChart == null) {
-
-		} else {
-			((ViewGroup) chartFrag.mPieChart.getParent())
-					.removeView(chartFrag.mPieChart);
-			chartFrag.mSeries.clear();
-			chartFrag.mRenderer2.removeAllRenderers();
-			addPieData(list);
-			chartFrag.layout.addView(chartFrag.mPieChart);
-		}
-
 		deckFrag.adapter = new DeckListAdapter(getActivity(), list);
-	}
-
-	private void addSampleData(List<Cards> cardList) {
-		int[] costs = new int[50];
-		for (Cards card : cardList) {
-			if (card.getCost() != null) {
-				costs[card.getCost().intValue()]++;
-				Log.i("cost", "" + costs[card.getCost().intValue()]);
-				chartFrag.mCurrentSeries.add(card.getCost().intValue(),
-						costs[card.getCost().intValue()]);
-			}
-		}
-	}
-
-	private void addPieData(List<Cards> cardList) {
-		int minions = 0;
-		int abilities = 0;
-		int weapons = 0;
-		int[] colors = { Color.rgb(0, 171, 249), Color.rgb(245, 84, 0),
-				Color.rgb(60, 242, 0) };
-		int[] colors2 = { Color.rgb(0, 108, 229), Color.rgb(225, 23, 3),
-				Color.rgb(8, 196, 0) };
-		for (Cards card : cardList) {
-			if (card.getType() != null && card.getType().intValue() == 4) {
-				minions++;
-			} else if (card.getType() != null && card.getType().intValue() == 5) {
-				abilities++;
-			} else if (card.getType() != null && card.getType().intValue() == 7) {
-				weapons++;
-			}
-		}
-		if (abilities != 0) {
-			chartFrag.mSeries.add("Spells", abilities);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[0]);
-			seriesRenderer.setGradientStop(20, colors2[0]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-		if (minions != 0) {
-			chartFrag.mSeries.add("Minions", minions);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[1]);
-			seriesRenderer.setGradientStop(20, colors2[1]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-		if (weapons != 0) {
-			chartFrag.mSeries.add("Weapons", weapons);
-			SimpleSeriesRenderer seriesRenderer = new SimpleSeriesRenderer();
-			seriesRenderer.setDisplayChartValues(true);
-			seriesRenderer.setGradientEnabled(true);
-			seriesRenderer.setGradientStart(0, colors[2]);
-			seriesRenderer.setGradientStop(20, colors2[2]);
-			chartFrag.mRenderer2.addSeriesRenderer(seriesRenderer);
-		}
-
 	}
 
 	private void getDeckList() {
@@ -660,6 +589,7 @@ public class CardListFragment extends Fragment {
 			deckFrag.tvNumCards.setText("" + result.size() + " / 30");
 			deckFrag.ivSwipe.setVisibility(View.GONE);
 		}
+		Collections.sort(result, new CardComparator(2, false));
 		deckFrag.adapter2 = new ImageAdapter(getActivity(), result);
 		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
 		deckFrag.adapter = new DeckListAdapter(getActivity(), result);
