@@ -58,7 +58,6 @@ public class ImageAdapter extends BaseAdapter {
     	// We may eventually need to disable this based on further testing
     	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
     	// only a few KB each.
-    	DisplayImageOptions options = Utils.defaultOptions;
     	
     	if (!imageLoader.isInited()) {
     		imageLoader.init(Utils.config(mContext));
@@ -81,8 +80,9 @@ public class ImageAdapter extends BaseAdapter {
 		// Set the Text of the TextView
     	vh.tv.setTypeface(font);
     	vh.tv.setText(cardList.get(position).getName());
+    	vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
     	// Load the image for the ImageView
-    	imageLoader.displayImage(url, vh.iv, options);
+    	imageLoader.displayImage(url, vh.iv, Utils.defaultOptions);
     	return convertView;
     	
     }

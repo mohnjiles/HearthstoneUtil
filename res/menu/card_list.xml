@@ -17,5 +17,10 @@
         android:icon="@drawable/collections_view_as_grid"
         android:title="Switch to grid view"
         hearthstone:showAsAction="ifRoom"/>
+    
+        <item
+        android:id="@+id/action_rename"
+        android:title="Rename deck"
+        hearthstone:showAsAction="never"/>
 
 </menu>

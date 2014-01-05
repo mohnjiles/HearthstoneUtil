@@ -6,11 +6,16 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.R.integer;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -37,11 +42,12 @@ public class SimulatorFragment extends Fragment {
 	private ImageLoader loader = ImageLoader.getInstance();
 	private ImageAdapter adapter;
 
-	private List<String> listDecks = DeckSelector.listDecks;
+	private ArrayList<String> listDecks = DeckSelector.listDecks;
 	private List<Cards> cardList;
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
 	private int numCards;
+	private int position;
 
 	private Typeface font;
 
@@ -57,10 +63,30 @@ public class SimulatorFragment extends Fragment {
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
 		tvStartingSize = findById(V, R.id.textView1);
+		
+		position = getActivity().getIntent().getIntExtra("position", 0);
+		
+		setHasOptionsMenu(true);
 
 		return V;
 	}
+	
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		inflater.inflate(R.menu.simulator, menu);
+		super.onCreateOptionsMenu(menu, inflater);
+	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.action_rename:
+			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);

@@ -12,6 +12,9 @@ import java.util.List;
 
 import com.viewpagerindicator.TitlePageIndicator;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import android.R.integer;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -31,9 +34,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.Spinner;
 
 public class DeckFragmentHolder extends ActionBarActivity {
 
@@ -80,6 +86,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		// getDeck.execute();
 
 		setStuff(getCards());
+		
 		
 		titles.setViewPager(myPager);
 		titles.setTextColor(Color.BLACK);
@@ -179,6 +186,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 					return super.onOptionsItemSelected(item);
 				}
 			}
+		
 		case R.id.action_clear:
 			if (screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL
 					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

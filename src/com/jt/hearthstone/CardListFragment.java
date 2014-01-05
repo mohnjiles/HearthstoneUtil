@@ -82,12 +82,10 @@ public class CardListFragment extends Fragment {
 	private ArrayList<String> deckList;
 	Cards[] cards;
 
-	private boolean isGrid = false;
+	private boolean isGrid = true;
 	private int position;
 
 	private Typeface font;
-	private MenuItem item;
-	private Menu menu;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -266,13 +264,15 @@ public class CardListFragment extends Fragment {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		this.item = item;
-		
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
 			startActivity(new Intent(getActivity(), SettingsActivity.class));
-			return true;
+			break;
+			
+		case R.id.action_rename:
+			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			break;
 		case R.id.action_switch:
 			if (isGrid) {
 				grid.setVisibility(View.INVISIBLE);
@@ -280,18 +280,17 @@ public class CardListFragment extends Fragment {
 				item.setTitle("Switch to grid view");
 				item.setIcon(R.drawable.collections_view_as_grid);
 				isGrid = false;
-				return true;
+				break;
 			} else {
 				grid.setVisibility(View.VISIBLE);
 				listCards.setVisibility(View.INVISIBLE);
 				item.setTitle("Switch to list view");
 				item.setIcon(R.drawable.collections_view_as_list);
 				isGrid = true;
-				return true;
+				break;
 			}
-		default:
-			return super.onOptionsItemSelected(item);
 		}
+		return super.onOptionsItemSelected(item);
 	}
 
 	@Override

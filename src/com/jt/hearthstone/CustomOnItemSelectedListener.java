@@ -16,9 +16,12 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 	private CardListFragment cardListFrag;
 	static int position = 0;
 	private String query;
+	private FragmentActivity activity;
 
 	public CustomOnItemSelectedListener(FragmentActivity activity) {
-
+		
+		this.activity = activity;
+		
 		cardListFrag = (CardListFragment) activity.getSupportFragmentManager()
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 	}
@@ -72,12 +75,15 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 
 		} else if (spinner.getId() == R.id.spinnerSort) {
 			position = pos;
+			cardListFrag = (CardListFragment) activity.getSupportFragmentManager()
+					.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
+			
 			Collections.sort(cardListFrag.cardList, new CardComparator(pos,
 					cardListFrag.cbReverse.isChecked()));
 			cardListFrag.adapter.notifyDataSetChanged();
 			cardListFrag.adapter2.notifyDataSetChanged();
-			cardListFrag.grid.setAdapter(cardListFrag.adapter);
-			cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
+//			cardListFrag.grid.setAdapter(cardListFrag.adapter);
+//			cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 
 		} else if (spinner.getId() == R.id.spinnerMechanic) {
 			switch (cardListFrag.deckClasses.get(cardListFrag.deckListPos)) {
@@ -205,8 +211,8 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 
 		cardListFrag.adapter.notifyDataSetChanged();
 		cardListFrag.adapter2.notifyDataSetChanged();
-		cardListFrag.grid.setAdapter(cardListFrag.adapter);
-		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
+//		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+//		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 	}
 
 	private void setCardList(Classes classes) {
@@ -239,8 +245,8 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 				cardListFrag.cbReverse.isChecked()));
 		cardListFrag.adapter.notifyDataSetChanged();
 		cardListFrag.adapter2.notifyDataSetChanged();
-		cardListFrag.grid.setAdapter(cardListFrag.adapter);
-		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
+//		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+//		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 	}
 
 	/*
@@ -290,7 +296,7 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 				cardListFrag.spinnerSort.getSelectedItemPosition(), cardListFrag.reverse));
 		cardListFrag.adapter.notifyDataSetChanged();
 		cardListFrag.adapter2.notifyDataSetChanged();
-		cardListFrag.grid.setAdapter(cardListFrag.adapter);
-		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
+//		cardListFrag.grid.setAdapter(cardListFrag.adapter);
+//		cardListFrag.listCards.setAdapter(cardListFrag.adapter2);
 	}
 }

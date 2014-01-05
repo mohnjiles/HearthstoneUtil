@@ -96,7 +96,7 @@ public class CardListActivity extends ActionBarActivity {
 	private int pos = OnItemSelectedListenerStandalone.position;
 	private int position;
 	private int menuItemIndex;
-	private boolean isGrid = false;
+	private boolean isGrid = true;
 	private Typeface font;
 
 	@Override

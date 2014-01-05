@@ -44,7 +44,7 @@ public class ArenaDeckFragment extends Fragment {
 	BarGraph manaChart;
 	GridView gvDeck;
 	
-	private boolean isGrid = false;
+	private boolean isGrid = true;
 
 	private List<Cards> cardList;
 

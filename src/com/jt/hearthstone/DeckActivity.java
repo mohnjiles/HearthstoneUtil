@@ -8,6 +8,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -15,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -37,6 +40,9 @@ import com.echo.holographlibrary.BarGraph;
 import com.echo.holographlibrary.PieGraph;
 import com.echo.holographlibrary.PieSlice;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckActivity extends Fragment {
 
@@ -49,6 +55,7 @@ public class DeckActivity extends Fragment {
 	ImageAdapter adapter2;
 
 	List<Cards> cardList;
+	List<Integer> deckClasses;
 
 	private ArrayList<Cards> cardListUnique;
 	private ArrayList<String> listDecks = DeckSelector.listDecks;
@@ -58,7 +65,7 @@ public class DeckActivity extends Fragment {
 
 	private int position;
 	private int pos;
-	private boolean isGrid = false;
+	private boolean isGrid = true;
 	private Typeface font;
 
 	@Override
@@ -120,6 +127,9 @@ public class DeckActivity extends Fragment {
 		// Set typeface
 		tvNumCards.setTypeface(font);
 
+		deckClasses = (List<Integer>) Utils.getDeck(getActivity(),
+				"deckclasses");
+
 		return V;
 	}
 
@@ -133,11 +143,11 @@ public class DeckActivity extends Fragment {
 						listDecks.get(position)), listDecks.get(position));
 
 		// Change GridView / ListView visibility
-		
+
 		if (savedInstanceState != null) {
 			this.isGrid = savedInstanceState.getBoolean("isGrid");
 		}
-		
+
 		if (isGrid) {
 			lvDeck.setVisibility(View.INVISIBLE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -158,13 +168,13 @@ public class DeckActivity extends Fragment {
 		lvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardListUnique, position, parent);
 			}
 		});
 		setManaChart(cardList);
 		setPieGraph(cardList);
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -242,7 +252,6 @@ public class DeckActivity extends Fragment {
 			setPieGraph(cardList);
 
 		}
-
 		return super.onContextItemSelected(item);
 	}
 
@@ -283,6 +292,10 @@ public class DeckActivity extends Fragment {
 			}
 			break;
 
+		case R.id.action_rename:
+			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			break;
+
 		// Remove call cards from current deck
 		case R.id.action_clear:
 			AlertDialog dialog;
@@ -316,7 +329,7 @@ public class DeckActivity extends Fragment {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	public void doSomeStuff(List<Cards> result, String deckName) {
 
 		ArrayList<Cards> unique = new ArrayList<Cards>(
@@ -359,7 +372,7 @@ public class DeckActivity extends Fragment {
 
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
-		
+
 		if (adapter2 == null) {
 			adapter2 = new ImageAdapter(getActivity(), result);
 		}
