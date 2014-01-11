@@ -47,7 +47,7 @@ public class DeckGuides extends Activity {
 
 		// Load initial deck list
 		new FetchDecks()
-				.execute("http://www.hearthpwn.com/decks/307-miracle-rogue");
+				.execute("http://www.hearthpwn.com/decks?filter-class=0");
 
 		spinClass
 				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -126,13 +126,13 @@ public class DeckGuides extends Activity {
 		return true;
 	}
 
-	private class FetchDecks extends AsyncTask<String, Void, Integer> {
+	private class FetchDecks extends AsyncTask<String, Void, Document> {
 
 		Document doc = null;
 		Elements elements = null;
 
 		@Override
-		protected Integer doInBackground(String... params) {
+		protected Document doInBackground(String... params) {
 			try {
 				doc = Jsoup
 						.connect(params[0])
@@ -144,7 +144,13 @@ public class DeckGuides extends Activity {
 				e.printStackTrace();
 			}
 
-			elements = doc.select("a[class]");
+			return doc;
+		}
+
+		@Override
+		protected void onPostExecute(Document result) {
+			
+			elements = result.select("a[class]");
 			Log.w("elements", "wat  " + elements.text());
 
 			for (Element e : elements) {
@@ -190,18 +196,51 @@ public class DeckGuides extends Activity {
 				}
 			}
 
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Integer result) {
-
 			lvDecks.setAdapter(new GuideListAdapter(DeckGuides.this, deckNames
 					.size(), deckNames, classes));
 			Log.w("Fetch Guides", "Done fetching guides");
 			super.onPostExecute(result);
 		}
 
+	}
+	
+	private class FetchDeckCards extends AsyncTask<String, Void, Document> {
+		
+		Document doc = null;
+		Elements elementz = null;
+		
+		@Override
+		protected Document doInBackground(String... params) {
+			
+			try {
+				doc = Jsoup
+						.connect(params[0])
+						.userAgent(
+								"Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1667.0 Safari/537.36")
+						.get();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return doc;
+		}
+		
+		@Override
+		protected void onPostExecute(Document result) {
+			
+			elementz = result.select("a[class]");
+			
+			for (Element e : elementz) {
+				if (!e.hasAttr("rel")) {
+					deckCards.add(e.text());
+				}
+			}
+			
+			lvDecks.setAdapter(new DeckGuideAdapter(DeckGuides.this, deckCards
+					.size(), deckCards));
+			
+			super.onPostExecute(result);
+		}
 	}
 
 }
