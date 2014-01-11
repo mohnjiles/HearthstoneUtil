@@ -32,7 +32,7 @@ public class CustomArrayAdapter extends ArrayAdapter<String> {
 	public View getDropDownView(int position, View convertView, ViewGroup parent) {
 		View view = super.getView(position, convertView, parent);
 		view.setBackgroundColor(Color.rgb(184, 157, 117));
-		view.setPadding(0, 8, 0, 8);
+		view.setPadding(0, 16, 0, 16);
 		TextView v = (TextView) view.findViewById(R.id.name);
 		if (font == null) {
 			font = TypefaceCache.get(mContext.getAssets(), "fonts/belwebd.ttf");

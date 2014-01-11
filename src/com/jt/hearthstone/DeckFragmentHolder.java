@@ -1,58 +1,50 @@
 package com.jt.hearthstone;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.viewpagerindicator.TitlePageIndicator;
-
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
-import android.R.integer;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.SearchView;
 import android.util.TypedValue;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.view.ViewGroup;
+
+import com.jfeinstein.jazzyviewpager.JazzyViewPager;
+import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
+import com.viewpagerindicator.TitlePageIndicator;
 
 public class DeckFragmentHolder extends ActionBarActivity {
 
 	static ActionBar aBar;
-	private ViewPager myPager;
+	private JazzyViewPager myPager;
 	private int position;
 	static List<Integer> deckClasses;
 	static FragmentAdapter adapter;
 	static ProgressDialog dialog;
-	private MenuItem searchItem;
-	private SearchView mSearchView;
 	int screenSize;
 	static int previousPage = 1;
+	TransitionEffect tf;
+	private SharedPreferences prefs;
 
 	private CardListFragment cardListFrag;
 	private DeckActivity deckFrag;
@@ -66,7 +58,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		// Show the Up button in the action bar.
 		aBar = getSupportActionBar();
 		aBar.setDisplayHomeAsUpEnabled(true);
-		myPager = (ViewPager) findViewById(R.id.pager);
+		myPager = (JazzyViewPager) findViewById(R.id.pager);
 		titles = (TitlePageIndicator) findViewById(R.id.titles);
 
 		position = getIntent().getIntExtra("position", 0);
@@ -84,9 +76,38 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		// AsyncTasks async = new AsyncTasks();
 		// GetClassesDeck getDeck = async.new GetClassesDeck(this, position);
 		// getDeck.execute();
+		
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		  
+		if (prefs.getString("transition_effect", "Stack").equals("Accordion")) {
+			tf = TransitionEffect.Accordion;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Cube Out")) {
+			tf = TransitionEffect.CubeOut;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Cube In")) {
+			tf = TransitionEffect.CubeIn;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Flip Horizontal")) {
+			tf = TransitionEffect.FlipHorizontal;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Flip Vertical")) {
+			tf = TransitionEffect.FlipVertical;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Rotate Down")) {
+			tf = TransitionEffect.RotateDown;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Rotate Up")) {
+			tf = TransitionEffect.RotateUp;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Stack")) {
+			tf = TransitionEffect.Stack;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Standard")) {
+			tf = TransitionEffect.Standard;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Tablet")) {
+			tf = TransitionEffect.Tablet;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Zoom In")) {
+			tf = TransitionEffect.ZoomIn;
+		} else if (prefs.getString("transition_effect", "Stack").equals("Zoom Out")) {
+			tf = TransitionEffect.ZoomOut;
+		} else {
+			tf = TransitionEffect.Standard;
+		}
 
 		setStuff(getCards());
-		
 		
 		titles.setViewPager(myPager);
 		titles.setTextColor(Color.BLACK);
@@ -122,36 +143,12 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 
-		switch (screenSize) {
-		case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-			getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
-			break;
-		case Configuration.SCREENLAYOUT_SIZE_LARGE:
-		case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-			if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				getMenuInflater().inflate(R.menu.cards_tablet, menu);
-				searchItem = menu.findItem(R.id.action_search);
-				mSearchView = (SearchView) MenuItemCompat
-						.getActionView(searchItem);
-				mSearchView.setOnQueryTextListener(new CustomSearchListener(
-						this));
-			} else {
-				getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
-			}
-			break;
-		default:
-			getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
-			break;
-		}
-
+		getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
 		return true;
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
-		CardListFragment cardListFrag = (CardListFragment) getSupportFragmentManager()
-				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
@@ -164,65 +161,11 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			//
 			NavUtils.navigateUpFromSameTask(this);
 			return super.onOptionsItemSelected(item);
-		case R.id.action_switch:
-			if (screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL
-					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				boolean isGrid = cardListFrag.grid.getVisibility() == View.VISIBLE;
-				if (isGrid) {
-					cardListFrag.grid.setVisibility(View.INVISIBLE);
-					cardListFrag.listCards.setVisibility(View.VISIBLE);
-					deckFrag.gvDeck.setVisibility(View.INVISIBLE);
-					deckFrag.lvDeck.setVisibility(View.VISIBLE);
-					item.setTitle("Switch to grid view");
-					item.setIcon(R.drawable.collections_view_as_grid);
-					return super.onOptionsItemSelected(item);
-				} else {
-					cardListFrag.grid.setVisibility(View.VISIBLE);
-					cardListFrag.listCards.setVisibility(View.INVISIBLE);
-					deckFrag.gvDeck.setVisibility(View.VISIBLE);
-					deckFrag.lvDeck.setVisibility(View.INVISIBLE);
-					item.setTitle("Switch to list view");
-					item.setIcon(R.drawable.collections_view_as_list);
-					return super.onOptionsItemSelected(item);
-				}
-			}
-		
-		case R.id.action_clear:
-			if (screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL
-					&& getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-				AlertDialog dialog;
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setTitle("Remove all cards from this deck?");
-				builder.setPositiveButton("Remove All",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								deckFrag.cardList.clear();
-								;
-								Utils.saveDeck(DeckFragmentHolder.this,
-										DeckSelector.listDecks.get(position),
-										deckFrag.cardList);
-								doSomeStuff((List<Cards>) Utils.getDeck(
-										DeckFragmentHolder.this,
-										DeckSelector.listDecks.get(position)),
-										DeckSelector.listDecks.get(position));
-								deckFrag.tvNumCards.setText("0 / 30");
-							}
-						});
-				builder.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								dialog.cancel();
-							}
-						});
-				dialog = builder.create();
-				dialog.show();
-			}
+			
+		case R.id.action_settings:
+			startActivity(new Intent(DeckFragmentHolder.this,
+					SettingsActivity.class));
+			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -239,6 +182,13 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			super(fm);
 			localFragmentArray = loadFragment;
 			mManager = fm;
+		}
+		
+		@Override
+		public Object instantiateItem(ViewGroup container, final int position) {
+		    Object obj = super.instantiateItem(container, position);
+		    myPager.setObjectForPosition(obj, position);
+		    return obj;
 		}
 
 		@Override
@@ -324,9 +274,11 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	}
 
 	private void setStuff(List<Integer> result) {
-//		myPager.setOffscreenPageLimit(3);
+		// myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
 		myPager.setCurrentItem(previousPage);
+		myPager.setOffscreenPageLimit(2);
+		myPager.setTransitionEffect(tf);
 
 		aBar.setTitle(getIntent().getStringExtra("name"));
 		switch (result.get(position)) {
@@ -369,7 +321,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		int screenSize = getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 		if (result == null) {
-			result = (List<Cards>) Utils.getDeck(this, deckName);
+			result = (List<Cards>) DeckUtils.getDeck(this, deckName);
 		}
 		deckFrag.cardList = result;
 		if (result.size() == 0

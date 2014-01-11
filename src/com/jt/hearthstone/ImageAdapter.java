@@ -3,9 +3,7 @@ package com.jt.hearthstone;
 import java.util.List;
 
 import android.content.Context;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
@@ -60,7 +56,7 @@ public class ImageAdapter extends BaseAdapter {
     	// only a few KB each.
     	
     	if (!imageLoader.isInited()) {
-    		imageLoader.init(Utils.config(mContext));
+    		imageLoader.init(Utils.squareConfig(mContext));
     	}
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.

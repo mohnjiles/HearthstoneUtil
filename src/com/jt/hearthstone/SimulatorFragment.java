@@ -81,7 +81,7 @@ public class SimulatorFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_rename:
-			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			DeckUtils.renameDeck(getActivity(), position, getActivity(), cardList);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
@@ -103,7 +103,7 @@ public class SimulatorFragment extends Fragment {
 		Intent intent = getActivity().getIntent();
 		final int position = intent.getIntExtra("position", 0);
 
-		cardList = (List<Cards>) Utils.getDeck(getActivity(),
+		cardList = (List<Cards>) DeckUtils.getDeck(getActivity(),
 				listDecks.get(position));
 		if (spinnerNumCards.getSelectedItem() != null) {
 			numCards = Integer.parseInt(spinnerNumCards.getSelectedItem()
@@ -139,7 +139,7 @@ public class SimulatorFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				cardList = (List<Cards>) Utils.getDeck(getActivity(),
+				cardList = (List<Cards>) DeckUtils.getDeck(getActivity(),
 						listDecks.get(position));
 				Collections.shuffle(cardList);
 

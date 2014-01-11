@@ -3,6 +3,7 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -10,6 +11,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -19,16 +22,26 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -43,9 +56,7 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.PopupWindow;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -72,7 +83,7 @@ public class CardListActivity extends ActionBarActivity {
 	private TextView tvMechanic;
 	private TextView tvSort;
 	private TextView tvClassSort;
-	
+
 	private MenuItem searchItem;
 	private List<Cards> deckOne;
 	private List<Cards> deckTwo;
@@ -130,7 +141,7 @@ public class CardListActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		// Set grid invisible, list is default.
-		grid.setVisibility(View.INVISIBLE);
+		listCards.setVisibility(View.INVISIBLE);
 
 		// ImageLoader config for the ImageLoader that gets our card images
 		// denyCacheImage blah blah does what it says. We use this because
@@ -146,9 +157,32 @@ public class CardListActivity extends ActionBarActivity {
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
+		if (cardList == null) {
+			cardList = new ArrayList<Cards>();
+			for (Cards card : cards) {
+				cardList.add(card);
+			}
+		} else {
+			cardList.clear();
+			for (Cards card : cards) {
+				cardList.add(card);
+			}
+		}
+
+		Collections.sort(cardList, new CardComparator(pos, reverse));
+
+		// Create a new instance of our ImageAdapter class
+		adapter = new ImageAdapter(CardListActivity.this, cardList);
+		adapter2 = new CustomListAdapter(CardListActivity.this, cardList);
+
+		// Set the gridview's adapter to our custom adapter
+		grid.setAdapter(adapter);
+		listCards.setAdapter(adapter2);
+		
+
 		// Get deck list from file
 		getDeckList();
-		
+
 		MyWindow.setContext(this);
 
 		grid.setOnItemClickListener(new OnItemClickListener() {
@@ -168,16 +202,8 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Sort the card list with our own custom Comparator
 		// -- this sorts by Mana Cost
-		Collections.sort(cardList, new CardComparator(pos, reverse));
 
-		// Create a new instance of our ImageAdapter class
-		adapter = new ImageAdapter(this, cardList);
-		adapter2 = new CustomListAdapter(this, cardList);
 
-		// Set the gridview's adapter to our custom adapter
-		grid.setAdapter(adapter);
-		listCards.setAdapter(adapter2);
-		
 		registerForContextMenu(listCards);
 		registerForContextMenu(grid);
 
@@ -311,17 +337,20 @@ public class CardListActivity extends ActionBarActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.card_list, menu);
+		inflater.inflate(R.menu.card_list_standalone, menu);
 		searchItem = menu.findItem(R.id.action_search);
+		menu.findItem(R.id.action_switch).setIcon(
+				R.drawable.collections_view_as_list);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new SearchListener2(this, cardList,
+		mSearchView.setOnQueryTextListener(new SearchListener2(CardListActivity.this, cardList,
 				cards, grid, listCards, adapter, adapter2, searchItem));
-
+		
 		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
-				this, mSearchView, cardList, cards, adapter, adapter2);
+				CardListActivity.this, mSearchView, cardList, cards, adapter, adapter2);
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
+		
 		return true;
 	}
 
@@ -396,8 +425,8 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		menuItemIndex = item.getItemId();
-		final List<Integer> deckClasses = (List<Integer>) Utils.getDeck(this,
-				"deckclasses");
+		final List<Integer> deckClasses = (List<Integer>) DeckUtils.getDeck(
+				this, "deckclasses");
 		switch (menuItemIndex) {
 		case 0:
 			if (item.getTitle().equals("Add to new deck")) {
@@ -468,8 +497,8 @@ public class CardListActivity extends ActionBarActivity {
 									e1.printStackTrace();
 								}
 								ArrayList<Cards> newDeck = new ArrayList<Cards>();
-								Utils.saveDeck(CardListActivity.this, nameBox
-										.getText().toString(), newDeck);
+								DeckUtils.saveDeck(CardListActivity.this,
+										nameBox.getText().toString(), newDeck);
 								addCards(newDeck, deckList.size() - 1);
 							}
 						});
@@ -524,7 +553,7 @@ public class CardListActivity extends ActionBarActivity {
 	private void addCards(List<Cards> list, int menuItemIndex) {
 
 		// Add check for full deck
-		if (Utils.getDeck(this, deckList.get(menuItemIndex)).size() == 30) {
+		if (DeckUtils.getDeck(this, deckList.get(menuItemIndex)).size() == 30) {
 
 			Crouton.makeText(
 					this,
@@ -533,15 +562,15 @@ public class CardListActivity extends ActionBarActivity {
 			return;
 		}
 
-		if (Utils.getDeck(this, deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) Utils.getDeck(this,
+		if (DeckUtils.getDeck(this, deckList.get(menuItemIndex)) != null) {
+			list = (List<Cards>) DeckUtils.getDeck(this,
 					deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
 		}
 
 		list.add(cardList.get(position));
-		Utils.saveDeck(this, deckList.get(menuItemIndex), list);
+		DeckUtils.saveDeck(this, deckList.get(menuItemIndex), list);
 	}
 
 	private void getDeckList() {
@@ -579,13 +608,95 @@ public class CardListActivity extends ActionBarActivity {
 		}
 	}
 
+	private class UpdateJson extends AsyncTask<Void, Void, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			// Create a new HTTP Client
+			DefaultHttpClient defaultClient = new DefaultHttpClient();
+			// Setup the get request
+			HttpGet httpGetRequest = new HttpGet("http://54.224.222.135/cards.json");
+
+			// Execute the request in the client
+			HttpResponse httpResponse = null;
+			BufferedReader reader = null;
+
+			try {
+				httpResponse = defaultClient.execute(httpGetRequest);
+				reader = new BufferedReader(new InputStreamReader(httpResponse
+						.getEntity().getContent(), "UTF-8"));
+				String json = reader.readLine();
+				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
+						openFileOutput("cards.json", Context.MODE_PRIVATE));
+				outputStreamWriter.write(json);
+				outputStreamWriter.close();
+			} catch (ClientProtocolException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			
+		}
+
+	}
+
+	private void copyFile(String filename) {
+		AssetManager assetManager = this.getAssets();
+
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = assetManager.open(filename);
+			String newFileName = this.getFilesDir().getPath() + "/" + filename;
+			out = new FileOutputStream(newFileName);
+
+			byte[] buffer = new byte[1024];
+			int read;
+			while ((read = in.read(buffer)) != -1) {
+				out.write(buffer, 0, read);
+			}
+			in.close();
+			in = null;
+			out.flush();
+			out.close();
+			out = null;
+		} catch (Exception e) {
+			Log.e("tag", e.getMessage());
+		}
+
+	}
+
 	private void setupCardList() {
 		Gson gson = new Gson();
-		InputStream is = getResources().openRawResource(R.raw.cards);
+
+		FileInputStream fis = null;
+		try {
+			fis = openFileInput("cards.json");
+		} catch (FileNotFoundException e1) {
+			copyFile("cards.json");
+			try {
+				fis = openFileInput("cards.json");
+			} catch (FileNotFoundException e) {
+				Log.wtf("How is this possible?", "cards.json broke");
+				e.printStackTrace();
+			}
+			e1.printStackTrace();
+		}
 		Writer writer = new StringWriter();
 		char[] buffer = new char[1024];
 		try {
-			Reader reader = new BufferedReader(new InputStreamReader(is,
+			Reader reader = new BufferedReader(new InputStreamReader(fis,
 					"UTF-8"));
 			int n;
 			while ((n = reader.read(buffer)) != -1) {
@@ -599,7 +710,7 @@ public class CardListActivity extends ActionBarActivity {
 			e.printStackTrace();
 		} finally {
 			try {
-				is.close();
+				fis.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

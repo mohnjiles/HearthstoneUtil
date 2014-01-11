@@ -1,9 +1,11 @@
 package com.jt.hearthstone;
 
 
+import java.io.File;
 import java.util.List;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -30,6 +32,27 @@ public class SettingsActivity extends PreferenceActivity{
 		
 		Preference button = (Preference) findPreference("button");
 		Preference button2 = (Preference) findPreference("delete");
+		Preference refresh = (Preference) findPreference("refresh");
+		
+		refresh.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+			
+			@Override
+			public boolean onPreferenceClick(Preference preference) {
+				File cards = new File(getFilesDir() + "/cards.json");
+				File version = new File(getFilesDir() + "/version.txt");
+				if (cards.exists()) {
+					cards.delete();
+					Log.w("cards.json", "cards.json deleted");
+				} 
+				if (version.exists()) {
+					version.delete();
+					Log.w("version.txt", "version.txt deleted");
+				}
+				
+				return true;
+			}
+		});
+		
 		button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 			
 			@Override
@@ -48,20 +71,20 @@ public class SettingsActivity extends PreferenceActivity{
 		
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				List<String> deckList = (List<String>) Utils.getDeck(SettingsActivity.this, "decklist");
-				List<Integer> classesDeck = (List<Integer>) Utils.getDeck(SettingsActivity.this, "deckclasses");
+				List<String> deckList = (List<String>) DeckUtils.getDeck(SettingsActivity.this, "decklist");
+				List<Integer> classesDeck = (List<Integer>) DeckUtils.getDeck(SettingsActivity.this, "deckclasses");
 				if (deckList.size() > 0) {
 					deckList.clear();
 					Crouton.makeText(SettingsActivity.this, "Deck List cleared.", Style.INFO).show();
 					Log.i("deckList.clear()", "Deck list cleared");
-					Utils.saveDeck(SettingsActivity.this, "decklist", deckList);
+					DeckUtils.saveDeck(SettingsActivity.this, "decklist", deckList);
 					Log.i("Deck saved", "Deck List Saved");
 				}
 				if (classesDeck.size() > 0) {
 					classesDeck.clear();
 					Crouton.makeText(SettingsActivity.this, "Deck Classes cleared.", Style.INFO).show();
 					Log.i("deckClasses.clear()", "Deck Classes cleared.");
-					Utils.saveDeck(SettingsActivity.this, "deckclasses", classesDeck);
+					DeckUtils.saveDeck(SettingsActivity.this, "deckclasses", classesDeck);
 					Log.i("Deck saved", "Deck Classes Saved");
 				}
 				

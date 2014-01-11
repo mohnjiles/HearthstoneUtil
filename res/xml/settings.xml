@@ -3,18 +3,33 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent" >
 
-    <PreferenceCategory 
-        android:title="Debugging"
-        android:key="search_category">
-     	<Preference android:title="Clear Caches"
-                android:key="button"
-                android:summary="Clears both disc and memory cache"/>
-     	<Preference android:title="Delete all decks"
-                android:key="delete"
-                android:summary="Deletes all decks from app and disk"/>
-     	<CheckBoxPreference
-		    android:key="first_time"
-		    android:defaultValue="true" />
+    <PreferenceCategory
+        android:key="search_category"
+        android:title="Debugging" >
+        <Preference
+            android:key="button"
+            android:summary="Clears both disc and memory cache"
+            android:title="Clear caches" />
+        <Preference
+            android:key="delete"
+            android:summary="Deletes all decks from app and disk"
+            android:title="Delete all decks" />
+        <Preference
+            android:key="refresh"
+            android:summary="Grabs updated card list from server"
+            android:title="Refresh card list" />
+
+        <ListPreference
+            android:defaultValue="Stack"
+            android:entries="@array/Transitions"
+            android:entryValues="@array/Transitions"
+            android:key="transition_effect"
+            android:summary="Select default transition effect"
+            android:title="Transition Effect" />
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="first_time" />
     </PreferenceCategory>
-    
+
 </PreferenceScreen>

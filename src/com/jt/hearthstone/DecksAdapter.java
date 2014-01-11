@@ -3,11 +3,7 @@ package com.jt.hearthstone;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,16 +11,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 public class DecksAdapter extends BaseAdapter {
     private Context mContext;
     private ArrayList<String> cardList;
     private List<Integer> classList;
-	private String url;
-	private ImageLoader imageLoader = ImageLoader.getInstance();
 
     public DecksAdapter(Context c, ArrayList<String> list, List<Integer> classes) {
         mContext = c;
@@ -56,10 +46,7 @@ public class DecksAdapter extends BaseAdapter {
     	ViewHolder vh;
     	Typeface font = TypefaceCache.get(mContext.getAssets(),
 				"fonts/belwebd.ttf");
-    	
-    	if (!imageLoader.isInited()) {
-    		imageLoader.init(Utils.config(mContext));
-    	}
+
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
     	// We do this because re-using views makes memory happy :)

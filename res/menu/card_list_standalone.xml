@@ -1,5 +1,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:hearthstone="http://schemas.android.com/apk/res-auto" >
+    
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        hearthstone:showAsAction="never" />
 
     <item
         android:id="@+id/action_search"
@@ -12,10 +17,5 @@
         android:icon="@drawable/collections_view_as_grid"
         android:title="Switch to grid view"
         hearthstone:showAsAction="ifRoom"/>
-    
-        <item
-        android:id="@+id/action_rename"
-        android:title="Rename deck"
-        hearthstone:showAsAction="never"/>
 
 </menu>

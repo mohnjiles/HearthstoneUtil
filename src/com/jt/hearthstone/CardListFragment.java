@@ -3,11 +3,15 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -17,15 +21,24 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -121,12 +134,7 @@ public class CardListFragment extends Fragment {
 		deckFrag = (DeckActivity) getActivity().getSupportFragmentManager()
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 
-		int screenSize = getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-		if (screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE
-				|| getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			setHasOptionsMenu(true);
-		}
+		setHasOptionsMenu(true);
 
 		return V;
 
@@ -153,7 +161,7 @@ public class CardListFragment extends Fragment {
 		} else {
 			rlPopup.setVisibility(View.GONE);
 		}
-		
+
 		if (savedInstanceState != null) {
 			this.isGrid = savedInstanceState.getBoolean("isGrid");
 		}
@@ -182,7 +190,7 @@ public class CardListFragment extends Fragment {
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
-
+		
 		// Get deck list from file
 		getDeckList();
 
@@ -201,7 +209,7 @@ public class CardListFragment extends Fragment {
 				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
-
+		
 		// Custom listener for CheckBoxes
 		CustomOnCheckedChangeListener checkListener = new CustomOnCheckedChangeListener(
 				getActivity());
@@ -210,7 +218,7 @@ public class CardListFragment extends Fragment {
 		cbReverse.setOnCheckedChangeListener(checkListener);
 
 		// Spinner setup (set items/adapters/etc)
-		deckClasses = (List<Integer>) Utils.getDeck(getActivity(),
+		deckClasses = (List<Integer>) DeckUtils.getDeck(getActivity(),
 				"deckclasses");
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
@@ -225,6 +233,14 @@ public class CardListFragment extends Fragment {
 
 		spinnerSort.setAdapter(spinAdapter);
 		spinnerMechanic.setAdapter(spinSortAdapter);
+		
+		
+
+		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
+				getActivity());
+
+		spinnerSort.setOnItemSelectedListener(listener);
+		spinnerMechanic.setOnItemSelectedListener(listener);
 
 	}
 
@@ -233,7 +249,6 @@ public class CardListFragment extends Fragment {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean("isGrid", isGrid);
 	}
-
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -244,14 +259,6 @@ public class CardListFragment extends Fragment {
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		mSearchView.setOnQueryTextListener(new CustomSearchListener(
 				getActivity()));
-
-		// Need to do the listener here (afaik) to get SearchView data
-		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
-				getActivity());
-
-		spinnerSort.setOnItemSelectedListener(listener);
-		spinnerMechanic.setOnItemSelectedListener(listener);
-		
 
 		if (isGrid) {
 			listSwitcher.setTitle("Switch to list view");
@@ -269,9 +276,13 @@ public class CardListFragment extends Fragment {
 			// When Settings button is clicked, start Settings Activity
 			startActivity(new Intent(getActivity(), SettingsActivity.class));
 			break;
-			
+
 		case R.id.action_rename:
-			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			if (deckOne == null) {
+				deckOne = (List<Cards>) DeckUtils.getDeck(getActivity(), deckList.get(deckListPos));
+			}
+			DeckUtils.renameDeck(getActivity(), deckListPos, getActivity(),
+					deckOne);
 			break;
 		case R.id.action_switch:
 			if (isGrid) {
@@ -317,8 +328,8 @@ public class CardListFragment extends Fragment {
 
 	private void addCards(List<Cards> list, int menuItemIndex) {
 
-		if (Utils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) Utils.getDeck(getActivity(),
+		if (DeckUtils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
+			list = (List<Cards>) DeckUtils.getDeck(getActivity(),
 					deckList.get(menuItemIndex));
 		} else {
 			list = new ArrayList<Cards>();
@@ -335,9 +346,9 @@ public class CardListFragment extends Fragment {
 		DeckActivity.setManaChart(list);
 		DeckActivity.setPieGraph(list);
 
-		Utils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
+		DeckUtils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
 		doSomeStuff(
-				(List<Cards>) Utils.getDeck(getActivity(),
+				(List<Cards>) DeckUtils.getDeck(getActivity(),
 						deckList.get(menuItemIndex)),
 				deckList.get(menuItemIndex));
 		deckFrag.adapter = new DeckListAdapter(getActivity(), list);
@@ -381,11 +392,24 @@ public class CardListFragment extends Fragment {
 
 	private void setupCardList() {
 		Gson gson = new Gson();
-		InputStream is = getResources().openRawResource(R.raw.cards);
+
+		FileInputStream fis = null;
+		try {
+			fis = getActivity().openFileInput("cards.json");
+		} catch (FileNotFoundException e1) {
+			copyFile("cards.json");
+			try {
+				fis = getActivity().openFileInput("cards.json");
+			} catch (FileNotFoundException e) {
+				Log.wtf("How is this possible?", "cards.json broke");
+				e.printStackTrace();
+			}
+			e1.printStackTrace();
+		}
 		Writer writer = new StringWriter();
 		char[] buffer = new char[1024];
 		try {
-			Reader reader = new BufferedReader(new InputStreamReader(is,
+			Reader reader = new BufferedReader(new InputStreamReader(fis,
 					"UTF-8"));
 			int n;
 			while ((n = reader.read(buffer)) != -1) {
@@ -399,7 +423,7 @@ public class CardListFragment extends Fragment {
 			e.printStackTrace();
 		} finally {
 			try {
-				is.close();
+				fis.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -559,6 +583,33 @@ public class CardListFragment extends Fragment {
 		listCards.setAdapter(adapter2);
 	}
 
+	private void copyFile(String filename) {
+		AssetManager assetManager = getActivity().getAssets();
+
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = assetManager.open(filename);
+			String newFileName = getActivity().getFilesDir().getPath() + "/"
+					+ filename;
+			out = new FileOutputStream(newFileName);
+
+			byte[] buffer = new byte[1024];
+			int read;
+			while ((read = in.read(buffer)) != -1) {
+				out.write(buffer, 0, read);
+			}
+			in.close();
+			in = null;
+			out.flush();
+			out.close();
+			out = null;
+		} catch (Exception e) {
+			Log.e("tag", e.getMessage());
+		}
+
+	}
+
 	public void doSomeStuff(List<Cards> result, String deckName) {
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
 				10, getActivity().getResources().getDisplayMetrics());
@@ -568,7 +619,7 @@ public class CardListFragment extends Fragment {
 		int screenSize = getActivity().getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
 		if (result == null) {
-			result = (List<Cards>) Utils.getDeck(getActivity(), deckName);
+			result = (List<Cards>) DeckUtils.getDeck(getActivity(), deckName);
 		}
 		deckFrag.cardList = result;
 		if (result.size() == 0
@@ -594,5 +645,4 @@ public class CardListFragment extends Fragment {
 		deckFrag.adapter = new DeckListAdapter(getActivity(), result);
 		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
 	}
-
 }

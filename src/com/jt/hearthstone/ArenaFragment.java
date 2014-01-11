@@ -1,17 +1,21 @@
 package com.jt.hearthstone;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
+import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -144,7 +148,7 @@ public class ArenaFragment extends Fragment {
 		getCards();
 
 		if (savedInstanceState != null) {
-
+			
 			Classes tag0 = (Classes) savedInstanceState
 					.getSerializable("tag_0");
 			Classes tag1 = (Classes) savedInstanceState
@@ -161,6 +165,15 @@ public class ArenaFragment extends Fragment {
 
 			listDeck = (ArrayList<Cards>) savedInstanceState
 					.getSerializable("listDeck");
+			
+			if (listDeck != null && listDeck.size() >= 30) {
+				ivItem1.setVisibility(View.GONE);
+				ivItem2.setVisibility(View.GONE);
+				ivItem3.setVisibility(View.GONE);
+				textView.setText("Swipe left to see your finished deck!");
+				return;
+			}
+
 			
 			if (tag0 == null) {
 				tag0 = selectedClass;
@@ -567,11 +580,24 @@ public class ArenaFragment extends Fragment {
 	 */
 	private void getCards() {
 		Gson gson = new Gson();
-		InputStream is = getResources().openRawResource(R.raw.cards);
+
+		FileInputStream fis = null;
+		try {
+			fis = getActivity().openFileInput("cards.json");
+		} catch (FileNotFoundException e1) {
+			copyFile("cards.json");
+			try {
+				fis = getActivity().openFileInput("cards.json");
+			} catch (FileNotFoundException e) {
+				Log.wtf("How is this possible?", "cards.json broke");
+				e.printStackTrace();
+			}
+			e1.printStackTrace();
+		}
 		Writer writer = new StringWriter();
 		char[] buffer = new char[1024];
 		try {
-			Reader reader = new BufferedReader(new InputStreamReader(is,
+			Reader reader = new BufferedReader(new InputStreamReader(fis,
 					"UTF-8"));
 			int n;
 			while ((n = reader.read(buffer)) != -1) {
@@ -585,7 +611,7 @@ public class ArenaFragment extends Fragment {
 			e.printStackTrace();
 		} finally {
 			try {
-				is.close();
+				fis.close();
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -596,6 +622,33 @@ public class ArenaFragment extends Fragment {
 
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
+	}
+	
+	private void copyFile(String filename) {
+		AssetManager assetManager = getActivity().getAssets();
+
+		InputStream in = null;
+		OutputStream out = null;
+		try {
+			in = assetManager.open(filename);
+			String newFileName = getActivity().getFilesDir().getPath() + "/"
+					+ filename;
+			out = new FileOutputStream(newFileName);
+
+			byte[] buffer = new byte[1024];
+			int read;
+			while ((read = in.read(buffer)) != -1) {
+				out.write(buffer, 0, read);
+			}
+			in.close();
+			in = null;
+			out.flush();
+			out.close();
+			out = null;
+		} catch (IOException e) {
+			Log.e("copyFile", e.getMessage());
+		}
+
 	}
 
 	private void restoreHeroState(ImageView iv, Classes tag) {

@@ -12,6 +12,9 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -59,7 +62,7 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setTitle("Decks");
 		gvDecks = findById(this, R.id.gvDecks);
 		registerForContextMenu(gvDecks);
-		deckClasses = (ArrayList<Integer>) Utils.getDeck(this, "deckclasses");
+		deckClasses = (ArrayList<Integer>) DeckUtils.getDeck(this, "deckclasses");
 		
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
@@ -166,12 +169,22 @@ public class DeckSelector extends ActionBarActivity {
 					new DialogInterface.OnClickListener() {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							
+							for (String deckName : listDecks) {
+								if (deckName.equals(nameBox.getText().toString())) {
+									Crouton.makeText(DeckSelector.this,
+											"Deck with that name already exists",
+											Style.ALERT).show();
+									return;
+								}
+							}
+							
 							dialog.dismiss();
 							listDecks.add(nameBox.getText().toString());
 							deckClasses.add(spinner.getSelectedItemPosition());
-							Utils.saveDeck(DeckSelector.this, "decklist", listDecks);
+							DeckUtils.saveDeck(DeckSelector.this, "decklist", listDecks);
 							/*************** save corresponding class number **********/
-							Utils.saveDeck(DeckSelector.this, "deckclasses", deckClasses);
+							DeckUtils.saveDeck(DeckSelector.this, "deckclasses", deckClasses);
 							adapter.notifyDataSetChanged();
 							gvDecks.setAdapter(adapter);
 						}
@@ -209,10 +222,10 @@ public class DeckSelector extends ActionBarActivity {
 		
 		this.deleteFile(listDecks.get(position));
 		deckClasses.remove(position);
-		Utils.saveDeck(this, "deckclasses", deckClasses);
+		DeckUtils.saveDeck(this, "deckclasses", deckClasses);
 
 		listDecks.remove(position);
-		Utils.saveDeck(this, "decklist", listDecks);
+		DeckUtils.saveDeck(this, "decklist", listDecks);
 		adapter.notifyDataSetChanged();
 		gvDecks.setAdapter(adapter);
 		return super.onContextItemSelected(item);

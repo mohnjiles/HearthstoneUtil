@@ -4,18 +4,23 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.jfeinstein.jazzyviewpager.JazzyViewPager;
+import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
 import com.viewpagerindicator.CirclePageIndicator;
 import com.viewpagerindicator.IconPageIndicator;
 import com.viewpagerindicator.LinePageIndicator;
 import com.viewpagerindicator.TabPageIndicator;
 import com.viewpagerindicator.TitlePageIndicator;
 
+import android.R.integer;
 import android.app.ActionBar.Tab;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Parcelable;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -27,6 +32,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Adapter;
 import android.widget.ListView;
 
@@ -39,11 +45,13 @@ import android.widget.ListView;
  */
 public class ArenaSimulator extends ActionBarActivity {
 
-	ViewPager myPager;
+	JazzyViewPager myPager;
 	TitlePageIndicator titleIndicator;
 	FragmentAdapter adapter;
 	ActionBar aBar;
 	ArenaDeckFragment deckFragment;
+	TransitionEffect tf;
+	SharedPreferences prefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +64,7 @@ public class ArenaSimulator extends ActionBarActivity {
 		// Show the Back arrow in the action bar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-		myPager = (ViewPager) findViewById(R.id.pager);
+		myPager = (JazzyViewPager) findViewById(R.id.pager);
 		titleIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
@@ -67,12 +75,55 @@ public class ArenaSimulator extends ActionBarActivity {
 		ArenaDeckFragment fragOne = new ArenaDeckFragment();
 		fragments.add(fragOne);
 
+		prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		if (prefs.getString("transition_effect", "Stack").equals("Accordion")) {
+			tf = TransitionEffect.Accordion;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Cube Out")) {
+			tf = TransitionEffect.CubeOut;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Cube In")) {
+			tf = TransitionEffect.CubeIn;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Flip Horizontal")) {
+			tf = TransitionEffect.FlipHorizontal;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Flip Vertical")) {
+			tf = TransitionEffect.FlipVertical;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Rotate Down")) {
+			tf = TransitionEffect.RotateDown;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Rotate Up")) {
+			tf = TransitionEffect.RotateUp;
+		} else if (prefs.getString("transition_effect", "Stack")
+				.equals("Stack")) {
+			tf = TransitionEffect.Stack;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Standard")) {
+			tf = TransitionEffect.Standard;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Tablet")) {
+			tf = TransitionEffect.Tablet;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Zoom In")) {
+			tf = TransitionEffect.ZoomIn;
+		} else if (prefs.getString("transition_effect", "Stack").equals(
+				"Zoom Out")) {
+			tf = TransitionEffect.ZoomOut;
+		} else {
+			tf = TransitionEffect.Standard;
+		}
+
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
 		myPager.setOffscreenPageLimit(3);
 		myPager.setAdapter(adapter);
 		titleIndicator.setSelectedColor(Color.BLACK);
-		titleIndicator.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
+		titleIndicator.setTypeface(TypefaceCache.get(getAssets(),
+				"fonts/belwebd.ttf"));
 		titleIndicator.setViewPager(myPager);
+		myPager.setTransitionEffect(tf);
 
 	}
 
@@ -127,6 +178,13 @@ public class ArenaSimulator extends ActionBarActivity {
 		}
 
 		@Override
+		public Object instantiateItem(ViewGroup container, final int position) {
+			Object obj = super.instantiateItem(container, position);
+			myPager.setObjectForPosition(obj, position);
+			return obj;
+		}
+
+		@Override
 		public Fragment getItem(int arg0) {
 			return localFragmentArray.get(arg0);
 		}
@@ -177,11 +235,11 @@ public class ArenaSimulator extends ActionBarActivity {
 		if (frag.listDeck != null) {
 			frag.listDeck.clear();
 		}
-		
+
 		if (frag.listChoices != null) {
 			frag.listChoices.clear();
 		}
-		
+
 		frag.textView.setText("Choose a Hero");
 		frag.pickRandomHero();
 

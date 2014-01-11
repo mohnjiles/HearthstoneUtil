@@ -3,20 +3,13 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 
-import com.echo.holographlibrary.Bar;
-import com.echo.holographlibrary.BarGraph;
-import com.echo.holographlibrary.PieGraph;
-import com.echo.holographlibrary.PieSlice;
-
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,6 +22,11 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.echo.holographlibrary.Bar;
+import com.echo.holographlibrary.BarGraph;
+import com.echo.holographlibrary.PieGraph;
+import com.echo.holographlibrary.PieSlice;
+
 /**
  * Fragment that holds a ListView that contains the chosen cards for the current
  * arena run.
@@ -38,15 +36,16 @@ import android.widget.TextView;
  */
 public class ArenaDeckFragment extends Fragment {
 
-	public ListView lvArena;
-	public TextView tvDeckSize;
+	ListView lvArena;
+	TextView tvDeckSize;
 	PieGraph pieGraph;
 	BarGraph manaChart;
 	GridView gvDeck;
-	
+
 	private boolean isGrid = true;
 
 	private List<Cards> cardList;
+	private ArrayList<Cards> cardListUnique;
 
 	/**
 	 * Overriding onCreateView to inflate our XML layout and to find the views.
@@ -63,7 +62,7 @@ public class ArenaDeckFragment extends Fragment {
 		pieGraph = findById(v, R.id.pieGraph);
 		manaChart = findById(v, R.id.manaChart);
 		gvDeck = findById(v, R.id.gvDeck);
-		
+
 		setHasOptionsMenu(true);
 
 		return v;
@@ -73,11 +72,19 @@ public class ArenaDeckFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		// Get reference to main Arena Fragment
 		ArenaFragment arenaFrag = (ArenaFragment) getActivity()
 				.getSupportFragmentManager().findFragmentByTag(
 						Utils.makeFragmentName(R.id.pager, 0));
 
+		// Set our local cardlist to the one from other fragment
 		cardList = arenaFrag.listDeck;
+		if (cardList != null) {
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
+		} else {
+			cardListUnique = new ArrayList<Cards>();
+		}
 		tvDeckSize.setTypeface(TypefaceCache.get(getActivity().getAssets(),
 				"fonts/belwebd.ttf"));
 
@@ -86,10 +93,16 @@ public class ArenaDeckFragment extends Fragment {
 		lvArena.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
+				MyWindow.initiatePopupWindow(cardListUnique, position, parent);
+			}
+		});
+		gvDeck.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
 				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
-		
+
 		if (savedInstanceState != null) {
 			this.isGrid = savedInstanceState.getBoolean("isGrid");
 		}
@@ -110,13 +123,12 @@ public class ArenaDeckFragment extends Fragment {
 			update(cardList);
 		}
 	}
-	
+
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean("isGrid", isGrid);
 	}
-
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -131,12 +143,12 @@ public class ArenaDeckFragment extends Fragment {
 			listSwitcher.setTitle("Switch to grid view");
 			listSwitcher.setIcon(R.drawable.collections_view_as_grid);
 		}
-		
+
 	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		
+
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
@@ -169,9 +181,9 @@ public class ArenaDeckFragment extends Fragment {
 		tvDeckSize.setText(cardList.size() + " / 30");
 		setManaChart(cardList);
 		setPieGraph(cardList);
-		
+
 	}
-	
+
 	public void setManaChart(List<Cards> cardList) {
 		ArrayList<Bar> points = new ArrayList<Bar>();
 

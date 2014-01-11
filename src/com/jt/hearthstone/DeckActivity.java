@@ -91,10 +91,14 @@ public class DeckActivity extends Fragment {
 		position = intent.getIntExtra("position", 0);
 
 		// Get corresponding deck
-		cardList = (List<Cards>) Utils.getDeck(getActivity(),
+		cardList = (List<Cards>) DeckUtils.getDeck(getActivity(),
 				listDecks.get(position));
-		cardListUnique = new ArrayList<Cards>(
-				new LinkedHashSet<Cards>(cardList));
+		if (cardList != null) {
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
+		} else {
+			cardListUnique = new ArrayList<Cards>();
+		}
 
 		// Find views w/ ButterKnife
 		lvDeck = findById(V, R.id.lvDeck);
@@ -110,24 +114,17 @@ public class DeckActivity extends Fragment {
 		if (!loader.isInited()) {
 			loader.init(Utils.config(getActivity()));
 		}
-
-		// If not on a tablet, use per-page menu/actionbar
-		int screenSize = getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-		if (screenSize < Configuration.SCREENLAYOUT_SIZE_LARGE
-				|| getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-			setHasOptionsMenu(true);
-		}
+		setHasOptionsMenu(true);
 
 		// Hide graphic to make room for List
-		if (cardListUnique.size() != 0) {
+		if (cardListUnique != null && cardListUnique.size() != 0) {
 			ivSwipe.setVisibility(View.GONE);
 		}
 
 		// Set typeface
 		tvNumCards.setTypeface(font);
 
-		deckClasses = (List<Integer>) Utils.getDeck(getActivity(),
+		deckClasses = (List<Integer>) DeckUtils.getDeck(getActivity(),
 				"deckclasses");
 
 		return V;
@@ -139,7 +136,7 @@ public class DeckActivity extends Fragment {
 
 		// Set up initial card list if available
 		doSomeStuff(
-				(List<Cards>) Utils.getDeck(getActivity(),
+				(List<Cards>) DeckUtils.getDeck(getActivity(),
 						listDecks.get(position)), listDecks.get(position));
 
 		// Change GridView / ListView visibility
@@ -219,7 +216,7 @@ public class DeckActivity extends Fragment {
 			Log.i("Card Removed", "Card removed, pos: " + pos);
 
 			// Save the updated deck
-			Utils.saveDeck(getActivity(), listDecks.get(position), cardList);
+			DeckUtils.saveDeck(getActivity(), listDecks.get(position), cardList);
 
 			// Tell adapters data has changed!
 			adapter.notifyDataSetChanged();
@@ -227,7 +224,7 @@ public class DeckActivity extends Fragment {
 
 			// Refresh Views with updated data
 			doSomeStuff(
-					(List<Cards>) Utils.getDeck(getActivity(),
+					(List<Cards>) DeckUtils.getDeck(getActivity(),
 							listDecks.get(position)), listDecks.get(position));
 			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
 
@@ -293,7 +290,7 @@ public class DeckActivity extends Fragment {
 			break;
 
 		case R.id.action_rename:
-			Utils.renameDeck(getActivity(), position, getActivity(), cardList);
+			DeckUtils.renameDeck(getActivity(), position, getActivity(), cardList);
 			break;
 
 		// Remove call cards from current deck
@@ -307,9 +304,10 @@ public class DeckActivity extends Fragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							cardListUnique.clear();
-							Utils.saveDeck(getActivity(),
+							cardList.clear();
+							DeckUtils.saveDeck(getActivity(),
 									listDecks.get(position), cardList);
-							doSomeStuff((List<Cards>) Utils.getDeck(
+							doSomeStuff((List<Cards>) DeckUtils.getDeck(
 									getActivity(), listDecks.get(position)),
 									listDecks.get(position));
 							tvNumCards
@@ -332,8 +330,13 @@ public class DeckActivity extends Fragment {
 
 	public void doSomeStuff(List<Cards> result, String deckName) {
 
-		ArrayList<Cards> unique = new ArrayList<Cards>(
-				new LinkedHashSet<Cards>(result));
+		ArrayList<Cards> unique;
+
+		if (result != null) {
+			unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
+		} else {
+			unique = new ArrayList<Cards>();
+		}
 
 		// Get text sizes in sp
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
@@ -347,36 +350,46 @@ public class DeckActivity extends Fragment {
 
 		// If a null list was passed, try to manually lookup deck
 		if (result == null) {
-			result = (List<Cards>) Utils.getDeck(getActivity(), deckName);
-			unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
+			result = (List<Cards>) DeckUtils.getDeck(getActivity(), deckName);
+			if (result == null) {
+				unique = new ArrayList<Cards>();
+			} else {
+				unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
+			}
 		}
 		cardListUnique = unique;
 		cardList = result;
-		if (result.size() == 0
-				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			tvNumCards.setTextSize(bigSp);
-			tvNumCards
-					.setText("Looks like there's nothing here. Swipe right to get started!");
-			ivSwipe.setVisibility(View.VISIBLE);
-		} else if (result.size() == 0
-				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			tvNumCards.setTextSize(bigSp);
-			tvNumCards
-					.setText("Looks like there's nothing here. Add cards from the left to get started!");
-			ivSwipe.setVisibility(View.VISIBLE);
-		} else {
-			tvNumCards.setTextSize(sp);
-			tvNumCards.setText("" + result.size() + " / 30");
-			ivSwipe.setVisibility(View.GONE);
+		if (result != null) {
+			if (result.size() == 0
+					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				tvNumCards.setTextSize(bigSp);
+				tvNumCards
+						.setText("Looks like there's nothing here. Swipe right to get started!");
+				ivSwipe.setVisibility(View.VISIBLE);
+			} else if (result.size() == 0
+					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				tvNumCards.setTextSize(bigSp);
+				tvNumCards
+						.setText("Looks like there's nothing here. Add cards from the left to get started!");
+				ivSwipe.setVisibility(View.VISIBLE);
+			} else {
+				tvNumCards.setTextSize(sp);
+				tvNumCards.setText("" + result.size() + " / 30");
+				ivSwipe.setVisibility(View.GONE);
+			}
 		}
 
-		Collections.sort(cardList, new CardComparator(2, false));
-		Collections.sort(cardListUnique, new CardComparator(2, false));
+		if (cardList != null) {
+			Collections.sort(cardList, new CardComparator(2, false));
+			Collections.sort(cardListUnique, new CardComparator(2, false));
+		}
 
-		if (adapter2 == null) {
+		if (adapter2 == null && result != null) {
 			adapter2 = new ImageAdapter(getActivity(), result);
 		}
-		adapter = new DeckListAdapter(getActivity(), result);
+		if (result != null) {
+			adapter = new DeckListAdapter(getActivity(), result);
+		}
 		gvDeck.setAdapter(adapter2);
 		lvDeck.setAdapter(adapter);
 	}
