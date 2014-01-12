@@ -159,7 +159,9 @@ public class DeckGuideDetail extends ActionBarActivity {
 		@Override
 		protected void onPostExecute(Document result) {
 			SparseArray<String> soSparse = new SparseArray<String>();
-			dialog.cancel();
+			if (dialog != null) {
+				dialog.cancel();
+			}
 			if (result != null) {
 				deckCards.clear();
 				elementz = result.select("a[class]");
