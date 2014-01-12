@@ -8,12 +8,35 @@
 
     <!-- ListRow Left sied Thumbnail image -->
 
+    <TextView
+        android:id="@+id/tvDeckName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:gravity="left"
+        android:text="Al&apos;Akir the Windlord"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvNumCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="8dp"
+        android:text="x 2" />
+
     <LinearLayout
         android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="28dp"
         android:background="#00000000"
         android:orientation="horizontal"
         android:padding="2dip" >
@@ -22,32 +45,6 @@
             android:id="@+id/ivClassImage"
             android:layout_width="@dimen/card_class_size"
             android:layout_height="@dimen/card_class_size" />
-
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/tvDeckName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@+id/tvRating"
-        android:layout_toRightOf="@+id/thumbnail"
-        android:gravity="left"
-        android:text="Al&apos;Akir the Windlord"
-        android:textColor="#000000"
-        android:textSize="16sp" />
-
-    <TextView
-        android:id="@+id/tvRating"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
-        android:gravity="center"
-        android:text="+9001"
-        android:textColor="#000000"
-        android:textSize="16sp" />
 
 </RelativeLayout>

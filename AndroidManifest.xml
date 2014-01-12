@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jt.hearthstone"
-    android:versionCode="17"
-    android:versionName="0.17" >
+    android:versionCode="18"
+    android:versionName="0.18" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -115,6 +115,16 @@
         <activity
             android:name="com.jt.hearthstone.DeckGuides"
             android:label="@string/title_activity_deck_guides" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.MainActivity" />
+        </activity>
+        <activity
+            android:name="com.jt.hearthstone.DeckGuideDetail"
+            android:label="@string/title_activity_deck_guide_detail" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.DeckGuides" />
         </activity>
     </application>
 

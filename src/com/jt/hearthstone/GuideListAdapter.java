@@ -5,6 +5,7 @@ import java.util.List;
 import android.R.integer;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -18,13 +19,16 @@ public class GuideListAdapter extends BaseAdapter {
 	private int count;
 	private List<String> deckNames;
 	private List<Classes> classes;
+	private SparseArray<String> sparseRatings;
 
-	public GuideListAdapter(Context c, int count, List<String> deckNames, List<Classes> classes) {
+	public GuideListAdapter(Context c, int count, List<String> deckNames,
+			List<Classes> classes, SparseArray<String> sparseRatings) {
 		mContext = c;
 		this.count = count;
 		this.deckNames = deckNames;
 		this.classes = classes;
-		
+		this.sparseRatings = sparseRatings;
+
 	}
 
 	public int getCount() {
@@ -42,6 +46,7 @@ public class GuideListAdapter extends BaseAdapter {
 	// Custom ViewHolder class to make scrolling smoother
 	static class ViewHolder {
 		TextView tvDeckName = null;
+		TextView tvRating = null;
 		ImageView ivClass = null;
 	}
 
@@ -60,7 +65,8 @@ public class GuideListAdapter extends BaseAdapter {
 			vh = new ViewHolder();
 			vh.tvDeckName = findById(convertView, R.id.tvDeckName);
 			vh.ivClass = findById(convertView, R.id.ivClassImage);
-			
+			vh.tvRating = findById(convertView, R.id.tvRating);
+
 			convertView.setTag(vh);
 
 		} else {
@@ -68,9 +74,12 @@ public class GuideListAdapter extends BaseAdapter {
 		}
 
 		vh.tvDeckName.setTypeface(font);
-		
+		vh.tvRating.setTypeface(font);
+
 		vh.tvDeckName.setText(deckNames.get(position));
 		
+		vh.tvRating.setText(sparseRatings.get(position));
+
 		switch (classes.get(position)) {
 		case DRUID:
 			vh.ivClass.setImageResource(R.drawable.druid);
@@ -99,7 +108,7 @@ public class GuideListAdapter extends BaseAdapter {
 		case WARRIOR:
 			vh.ivClass.setImageResource(R.drawable.warrior);
 			break;
-			
+
 		}
 
 		return convertView;

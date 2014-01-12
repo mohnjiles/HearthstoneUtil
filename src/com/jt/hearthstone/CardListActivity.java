@@ -364,7 +364,7 @@ public class CardListActivity extends ActionBarActivity {
 					SettingsActivity.class));
 			return true;
 		case android.R.id.home:
-			// When the back button on the ActionBar is pressed, go back one
+			// When the back button on the ActionBar is pressed, go up one
 			// Activity
 			NavUtils.navigateUpFromSameTask(this);
 			return true;

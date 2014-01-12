@@ -51,6 +51,12 @@
         <item>Attack</item>
         <item>Health</item>
     </string-array>
+    <string-array name="Sorts">
+        <item>Rarity</item>
+        <item>Mana Cost</item>
+        <item>Attack</item>
+        <item>Health</item>
+    </string-array>
     <string-array name="ContextMenuAdd">
         <item>Add to Deck</item>
     </string-array>
@@ -97,5 +103,6 @@
     <string name="title_activity_arena_fragment">ArenaFragment</string>
     <string name="title_activity_arena_deck_fragment">ArenaDeckFragment</string>
     <string name="title_activity_deck_guides">DeckGuides</string>
+    <string name="title_activity_deck_guide_detail">DeckGuideDetail</string>
 
 </resources>
