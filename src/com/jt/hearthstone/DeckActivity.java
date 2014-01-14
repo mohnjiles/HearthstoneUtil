@@ -4,6 +4,7 @@ import static butterknife.Views.findById;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -188,7 +189,7 @@ public class DeckActivity extends Fragment {
 			pos = info.position;
 			String menuItems = "Remove card \""
 					+ cardListUnique.get(info.position).getName() + "\"";
-			menu.add(Menu.FIRST, 0, 0, menuItems);
+			menu.add(Menu.NONE, 0, 0, menuItems);
 		} else {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
@@ -218,10 +219,6 @@ public class DeckActivity extends Fragment {
 			// Save the updated deck
 			DeckUtils.saveDeck(getActivity(), listDecks.get(position), cardList);
 
-			// Tell adapters data has changed!
-			adapter.notifyDataSetChanged();
-			adapter2.notifyDataSetChanged();
-
 			// Refresh Views with updated data
 			doSomeStuff(
 					(List<Cards>) DeckUtils.getDeck(getActivity(),
@@ -229,15 +226,15 @@ public class DeckActivity extends Fragment {
 			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
 
 			// Set current card count
-			tvNumCards.setText("" + cardListUnique.size() + " / 30");
+			tvNumCards.setText("" + cardList.size() + " / 30");
 
-			if (cardListUnique.size() == 0
+			if (cardList.size() == 0
 					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
 				tvNumCards.setTextSize(bigSp);
 				tvNumCards
 						.setText("Looks like there's nothing here. Swipe right to get started!");
 				ivSwipe.setVisibility(View.VISIBLE);
-			} else if (cardListUnique.size() == 0
+			} else if (cardList.size() == 0
 					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
 				tvNumCards.setTextSize(bigSp);
 				tvNumCards
@@ -248,6 +245,46 @@ public class DeckActivity extends Fragment {
 			setManaChart(cardList);
 			setPieGraph(cardList);
 
+		} else {
+			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
+				Cards card = it.next();
+				if (card.getName().equals(cardListUnique.get(pos).getName())) {
+					it.remove();
+					break;
+				}
+			}
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
+			Log.i("Card Removed", "Card removed, pos: " + pos);
+
+			// Save the updated deck
+			DeckUtils.saveDeck(getActivity(), listDecks.get(position), cardList);
+
+			// Refresh Views with updated data
+			doSomeStuff(
+					(List<Cards>) DeckUtils.getDeck(getActivity(),
+							listDecks.get(position)), listDecks.get(position));
+			Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+
+			// Set current card count
+			tvNumCards.setText("" + cardList.size() + " / 30");
+
+			if (cardList.size() == 0
+					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				tvNumCards.setTextSize(bigSp);
+				tvNumCards
+						.setText("Looks like there's nothing here. Swipe right to get started!");
+				ivSwipe.setVisibility(View.VISIBLE);
+			} else if (cardList.size() == 0
+					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				tvNumCards.setTextSize(bigSp);
+				tvNumCards
+						.setText("Looks like there's nothing here. Add cards from the left to get started!");
+				ivSwipe.setVisibility(View.VISIBLE);
+			}
+
+			setManaChart(cardList);
+			setPieGraph(cardList);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -384,14 +421,8 @@ public class DeckActivity extends Fragment {
 			Collections.sort(cardListUnique, new CardComparator(2, false));
 		}
 
-		if (adapter2 == null && result != null) {
-			adapter2 = new ImageAdapter(getActivity(), result);
-		}
-		if (result != null) {
-			adapter = new DeckListAdapter(getActivity(), result);
-		}
-		gvDeck.setAdapter(adapter2);
-		lvDeck.setAdapter(adapter);
+		gvDeck.setAdapter(new ImageAdapter(getActivity(), result));
+		lvDeck.setAdapter(new DeckListAdapter(getActivity(), result));
 	}
 
 	public static void setManaChart(List<Cards> cardList) {
