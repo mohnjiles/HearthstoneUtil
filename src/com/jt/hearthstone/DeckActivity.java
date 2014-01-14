@@ -58,7 +58,7 @@ public class DeckActivity extends Fragment {
 	List<Cards> cardList;
 	List<Integer> deckClasses;
 
-	private ArrayList<Cards> cardListUnique;
+	ArrayList<Cards> cardListUnique;
 	private ArrayList<String> listDecks = DeckSelector.listDecks;
 	private ImageLoader loader = ImageLoader.getInstance();
 	private static BarGraph manaChart;
@@ -183,6 +183,11 @@ public class DeckActivity extends Fragment {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		
+		if (cardListUnique.size() == 0) {
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+		}
+		
 		if (v.getId() == R.id.lvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardListUnique.get(info.position).getName());
@@ -245,7 +250,7 @@ public class DeckActivity extends Fragment {
 			setManaChart(cardList);
 			setPieGraph(cardList);
 
-		} else {
+		} else if (item.getGroupId() == Menu.NONE){
 			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
 				Cards card = it.next();
 				if (card.getName().equals(cardListUnique.get(pos).getName())) {

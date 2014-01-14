@@ -19,6 +19,7 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.http.HttpResponse;
@@ -611,38 +612,62 @@ public class CardListFragment extends Fragment {
 	}
 
 	public void doSomeStuff(List<Cards> result, String deckName) {
+
+		ArrayList<Cards> unique;
+
+		if (result != null) {
+			unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
+		} else {
+			unique = new ArrayList<Cards>();
+		}
+
+		// Get text sizes in sp
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
 				10, getActivity().getResources().getDisplayMetrics());
 		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
 				14, getActivity().getResources().getDisplayMetrics());
 
+		// Get screen size
 		int screenSize = getActivity().getResources().getConfiguration().screenLayout
 				& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		// If a null list was passed, try to manually lookup deck
 		if (result == null) {
 			result = (List<Cards>) DeckUtils.getDeck(getActivity(), deckName);
+			if (result == null) {
+				unique = new ArrayList<Cards>();
+			} else {
+				unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
+			}
 		}
-		deckFrag.cardList = result;
-		if (result.size() == 0
-				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			deckFrag.tvNumCards.setTextSize(bigSp);
-			deckFrag.tvNumCards
-					.setText("Looks like there's nothing here. Swipe right to get started!");
-			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-		} else if (result.size() == 0
-				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			deckFrag.tvNumCards.setTextSize(bigSp);
-			deckFrag.tvNumCards
-					.setText("Looks like there's nothing here. Add cards from the left to get started!");
-			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-		} else {
-			deckFrag.tvNumCards.setTextSize(sp);
-			deckFrag.tvNumCards.setText("" + result.size() + " / 30");
-			deckFrag.ivSwipe.setVisibility(View.GONE);
+		deckFrag.cardListUnique = unique;
+		cardList = result;
+		if (result != null) {
+			if (result.size() == 0
+					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				deckFrag.tvNumCards.setTextSize(bigSp);
+				deckFrag.tvNumCards
+						.setText("Looks like there's nothing here. Swipe right to get started!");
+				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+			} else if (result.size() == 0
+					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				deckFrag.tvNumCards.setTextSize(bigSp);
+				deckFrag.tvNumCards
+						.setText("Looks like there's nothing here. Add cards from the left to get started!");
+				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+			} else {
+				deckFrag.tvNumCards.setTextSize(sp);
+				deckFrag.tvNumCards.setText("" + result.size() + " / 30");
+				deckFrag.ivSwipe.setVisibility(View.GONE);
+			}
 		}
-		Collections.sort(result, new CardComparator(2, false));
-		deckFrag.adapter2 = new ImageAdapter(getActivity(), result);
-		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
-		deckFrag.adapter = new DeckListAdapter(getActivity(), result);
-		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
+
+		if (cardList != null) {
+			Collections.sort(deckFrag.cardList, new CardComparator(2, false));
+			Collections.sort(deckFrag.cardListUnique, new CardComparator(2, false));
+		}
+
+		deckFrag.gvDeck.setAdapter(new ImageAdapter(getActivity(), result));
+		deckFrag.lvDeck.setAdapter(new DeckListAdapter(getActivity(), result));
 	}
 }
