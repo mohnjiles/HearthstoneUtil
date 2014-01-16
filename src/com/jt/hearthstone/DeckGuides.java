@@ -11,6 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import android.R.integer;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -196,6 +199,14 @@ public class DeckGuides extends ActionBarActivity {
 		protected void onPostExecute(Document result) {
 			dialog.cancel();
 			SparseArray<String> sparseRatings = new SparseArray<String>();
+
+			if (result == null) {
+				Crouton.makeText(
+						DeckGuides.this,
+						"Failed to load guides. Check your internet connectoin and try again later",
+						Style.ALERT).show();
+				return;
+			}
 
 			elements = result.select("a[class]");
 			moreElements = result.select("tr[class~=(even|odd)] > td");

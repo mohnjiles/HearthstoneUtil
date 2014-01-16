@@ -100,5 +100,6 @@
     <string name="title_activity_arena_deck_fragment">ArenaDeckFragment</string>
     <string name="title_activity_deck_guides">DeckGuides</string>
     <string name="title_activity_deck_guide_detail">DeckGuideDetail</string>
+    <string name="title_activity_news">NewsActivity</string>
 
 </resources>

@@ -11,6 +11,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -58,8 +61,8 @@ public class DeckGuideDetail extends ActionBarActivity {
 		// Get url from last activity
 		url = intent.getStringExtra("url");
 		// Load the deck selected by user in last activity
-//		new FetchDeckCards(this).execute(url);
-		
+		// new FetchDeckCards(this).execute(url);
+
 		String[] sortNames = getResources().getStringArray(R.array.Sorts);
 		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
 				R.layout.spinner_row, R.id.name, sortNames);
@@ -75,25 +78,28 @@ public class DeckGuideDetail extends ActionBarActivity {
 					new FetchDeckCards(DeckGuideDetail.this).execute(url);
 					break;
 				case 1:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url + "?sort=cost");
+					new FetchDeckCards(DeckGuideDetail.this).execute(url
+							+ "?sort=cost");
 					break;
 				case 2:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url + "?sort=atk");
+					new FetchDeckCards(DeckGuideDetail.this).execute(url
+							+ "?sort=atk");
 					break;
 				case 3:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url + "?sort=hp");
+					new FetchDeckCards(DeckGuideDetail.this).execute(url
+							+ "?sort=hp");
 					break;
 				}
-				
+
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
 				// TODO Auto-generated method stub
-				
+
 			}
 		});
-		
+
 	}
 
 	@Override
@@ -197,6 +203,11 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 					}
 				});
+			} else {
+				Crouton.makeText(
+						DeckGuideDetail.this,
+						"Failed to load guides. Check your internet connectoin and try again later",
+						Style.ALERT).show();
 			}
 
 			super.onPostExecute(result);

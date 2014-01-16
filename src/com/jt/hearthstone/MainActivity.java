@@ -36,6 +36,7 @@ public class MainActivity extends ActionBarActivity {
 	private Button btnClasses;
 	private Button btnDeckBuilder;
 	private Button btnArena;
+	private Button btnNews;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -57,15 +58,18 @@ public class MainActivity extends ActionBarActivity {
 		btnClasses = findById(this, R.id.btnClasses);
 		btnDeckBuilder = findById(this, R.id.btnDeckBuilder);
 		btnArena = findById(this, R.id.btnArena);
+		btnNews = findById(this, R.id.btnNews);
 
 		btnCardList.setTypeface(font);
 		btnClasses.setTypeface(font);
 		btnDeckBuilder.setTypeface(font);
 		btnArena.setTypeface(font);
+		btnNews.setTypeface(font);
 		btnCardList.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnClasses.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnDeckBuilder.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnArena.setShadowLayer(1, 1, 1, Color.WHITE);
+		btnNews.setShadowLayer(1, 1, 1, Color.WHITE);
 		Log.w("Before async", "before async");
 		new CheckVersion().execute();
 		Log.w("After async", "after async");
@@ -105,6 +109,10 @@ public class MainActivity extends ActionBarActivity {
 
 	public void deckSelectorPressed(View view) {
 		startActivity(new Intent(MainActivity.this, DeckSelector.class));
+	}
+	
+	public void newsPressed(View view) {
+		startActivity(new Intent(MainActivity.this, NewsActivity.class));
 	}
 	
 	private class CheckVersion extends AsyncTask<Void, Void, String> {

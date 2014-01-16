@@ -126,6 +126,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.DeckGuides" />
         </activity>
+        <activity
+            android:name="com.jt.hearthstone.NewsActivity"
+            android:label="@string/title_activity_news"
+            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.jt.hearthstone.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
