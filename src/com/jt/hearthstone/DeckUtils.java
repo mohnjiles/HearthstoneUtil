@@ -23,9 +23,10 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckUtils {
 
-	static List<? extends Object> getDeck(Context context, String deckName) {
+	@SuppressWarnings("unchecked")
+	static List<Cards> getCardsList(Context context, String deckName) {
 		InputStream instream = null;
-		List<? extends Object> list = null;
+		List<Cards> list = null;
 		try {
 			instream = context.openFileInput(deckName);
 		} catch (FileNotFoundException e) {
@@ -37,7 +38,83 @@ public class DeckUtils {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					list = (List<?>) objStream.readObject();
+					list = (List<Cards>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static List<String> getStringList(Context context, String deckName) {
+		InputStream instream = null;
+		List<String> list = null;
+		try {
+			instream = context.openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			list = new ArrayList<String>();
+			e.printStackTrace();
+		}
+
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<String>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+	
+	@SuppressWarnings("unchecked")
+	static List<Integer> getIntegerDeck(Context context, String deckName) {
+		InputStream instream = null;
+		List<Integer> list = null;
+		try {
+			instream = context.openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			list = new ArrayList<Integer>();
+			e.printStackTrace();
+		}
+
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<Integer>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -81,7 +158,7 @@ public class DeckUtils {
 
 	static void renameDeck(final Context cxt, final int position,
 			final FragmentActivity fragmentActivity, final List<Cards> cardList) {
-		final ArrayList<String> listDecks = (ArrayList<String>) getDeck(cxt,
+		final List<String> listDecks = (List<String>) getStringList(cxt,
 				"decklist");
 
 		LayoutInflater inflater = (LayoutInflater) cxt

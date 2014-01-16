@@ -1,6 +1,5 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -13,10 +12,10 @@ import android.widget.TextView;
 
 public class DecksAdapter extends BaseAdapter {
     private Context mContext;
-    private ArrayList<String> cardList;
+    private List<String> cardList;
     private List<Integer> classList;
 
-    public DecksAdapter(Context c, ArrayList<String> list, List<Integer> classes) {
+    public DecksAdapter(Context c, List<String> list, List<Integer> classes) {
         mContext = c;
         cardList = list;
         classList = classes;

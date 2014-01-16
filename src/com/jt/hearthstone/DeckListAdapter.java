@@ -1,6 +1,7 @@
 package com.jt.hearthstone;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -9,7 +10,6 @@ import java.util.Map;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -19,15 +19,15 @@ import android.widget.TextView;
 public class DeckListAdapter extends BaseAdapter {
 	private Context mContext;
 	private String cardName;
-	private ArrayList<Cards> cardListUnique = new ArrayList<Cards>();
+	private List<Cards> cardListUnique;
 	private Map<Cards, Integer> cardCounts = new HashMap<Cards, Integer>();
 
 	public DeckListAdapter(Context c, List<Cards> cardList) {
 		mContext = c;
-
 		cardListUnique = new ArrayList<Cards>(
 				new LinkedHashSet<Cards>(cardList));
 
+		cardCounts.clear();
 		for (Cards card : cardList) {
 			Integer current = cardCounts.get(card);
 			if (current == null) {
@@ -41,6 +41,8 @@ public class DeckListAdapter extends BaseAdapter {
 			// cardCounts.get(card));
 
 		}
+		
+		Collections.sort(cardListUnique, new CardComparator(2, false));
 
 	}
 
@@ -54,6 +56,25 @@ public class DeckListAdapter extends BaseAdapter {
 
 	public long getItemId(int position) {
 		return 0;
+	}
+	
+	public void update(List<Cards> cardList) {
+		cardListUnique = new ArrayList<Cards>(
+				new LinkedHashSet<Cards>(cardList));
+
+		cardCounts.clear();
+		for (Cards card : cardList) {
+			Integer current = cardCounts.get(card);
+			if (current == null) {
+				current = 1;
+			} else {
+				current++;
+			}
+			cardCounts.put(card, current);
+		}
+		
+		Collections.sort(cardListUnique, new CardComparator(2, false));
+		this.notifyDataSetChanged();
 	}
 
 	// Custom ViewHolder class to make scrolling smoother

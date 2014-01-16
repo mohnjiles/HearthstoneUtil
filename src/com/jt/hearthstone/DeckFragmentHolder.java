@@ -23,7 +23,6 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -311,40 +310,4 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			break;
 		}
 	}
-
-	public void doSomeStuff(List<Cards> result, String deckName) {
-		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				10, getResources().getDisplayMetrics());
-		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				14, getResources().getDisplayMetrics());
-
-		int screenSize = getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-		if (result == null) {
-			result = (List<Cards>) DeckUtils.getDeck(this, deckName);
-		}
-		deckFrag.cardList = result;
-		if (result.size() == 0
-				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			deckFrag.tvNumCards.setTextSize(bigSp);
-			deckFrag.tvNumCards
-					.setText("Looks like there's nothing here. Swipe right to get started!");
-			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-		} else if (result.size() == 0
-				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			deckFrag.tvNumCards.setTextSize(bigSp);
-			deckFrag.tvNumCards
-					.setText("Looks like there's nothing here. Add cards from the left to get started!");
-			deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-		} else {
-			deckFrag.tvNumCards.setTextSize(sp);
-			deckFrag.tvNumCards.setText("" + result.size() + " / 30");
-			deckFrag.ivSwipe.setVisibility(View.GONE);
-		}
-		deckFrag.adapter2 = new ImageAdapter(this, result);
-		deckFrag.gvDeck.setAdapter(deckFrag.adapter2);
-		deckFrag.adapter = new DeckListAdapter(this, result);
-		deckFrag.lvDeck.setAdapter(deckFrag.adapter);
-	}
-
 }

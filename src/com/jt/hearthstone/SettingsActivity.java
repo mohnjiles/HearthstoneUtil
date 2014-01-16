@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.List;
 
 import android.os.Bundle;
-import android.os.Environment;
 import android.preference.CheckBoxPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
@@ -71,8 +70,8 @@ public class SettingsActivity extends PreferenceActivity{
 		
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				List<String> deckList = (List<String>) DeckUtils.getDeck(SettingsActivity.this, "decklist");
-				List<Integer> classesDeck = (List<Integer>) DeckUtils.getDeck(SettingsActivity.this, "deckclasses");
+				List<String> deckList = (List<String>) DeckUtils.getStringList(SettingsActivity.this, "decklist");
+				List<Integer> classesDeck = (List<Integer>) DeckUtils.getIntegerDeck(SettingsActivity.this, "deckclasses");
 				if (deckList.size() > 0) {
 					deckList.clear();
 					Crouton.makeText(SettingsActivity.this, "Deck List cleared.", Style.INFO).show();

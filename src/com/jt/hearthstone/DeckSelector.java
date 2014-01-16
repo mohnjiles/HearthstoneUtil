@@ -3,21 +3,15 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -32,18 +26,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckSelector extends ActionBarActivity {
 
 
-	static ArrayList<String> listDecks = new ArrayList<String>();
-	static ArrayList<Integer> deckClasses;
+	static List<String> listDecks = new ArrayList<String>();
+	static List<Integer> deckClasses;
 	static ProgressDialog dialog;
 	
 	private GridView gvDecks;
@@ -62,8 +56,7 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setTitle("Decks");
 		gvDecks = findById(this, R.id.gvDecks);
 		registerForContextMenu(gvDecks);
-		deckClasses = (ArrayList<Integer>) DeckUtils.getDeck(this, "deckclasses");
-		
+		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(this, "deckclasses");		
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
 		InputStream instream = null;

@@ -1,5 +1,6 @@
 package com.jt.hearthstone;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -26,6 +27,13 @@ public class ImageAdapter extends BaseAdapter {
 
     public int getCount() {
     	return cardList.size();
+    }
+    
+    public void update(List<Cards> list){
+    	cardList.clear();
+    	cardList.addAll(list);
+    	Collections.sort(cardList, new CardComparator(2, false));
+    	this.notifyDataSetChanged();
     }
 
     public Object getItem(int position) {
@@ -77,6 +85,7 @@ public class ImageAdapter extends BaseAdapter {
     	vh.tv.setTypeface(font);
     	vh.tv.setText(cardList.get(position).getName());
     	vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
+    	
     	// Load the image for the ImageView
     	imageLoader.displayImage(url, vh.iv, Utils.defaultOptions);
     	return convertView;

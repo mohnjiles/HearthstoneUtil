@@ -27,7 +27,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
 public class Utils {
 	private static Context cxt = HearthstoneUtil.getAppContext();
-	private static Locale curLocale = cxt.getResources().getConfiguration().locale;
+	static Locale curLocale = cxt.getResources().getConfiguration().locale;
 	static Cards[] cards;
 
 	static final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()

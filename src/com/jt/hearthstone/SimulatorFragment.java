@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.R.integer;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -42,7 +40,7 @@ public class SimulatorFragment extends Fragment {
 	private ImageLoader loader = ImageLoader.getInstance();
 	private ImageAdapter adapter;
 
-	private ArrayList<String> listDecks = DeckSelector.listDecks;
+	private List<String> listDecks = DeckSelector.listDecks;
 	private List<Cards> cardList;
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
@@ -103,7 +101,7 @@ public class SimulatorFragment extends Fragment {
 		Intent intent = getActivity().getIntent();
 		final int position = intent.getIntExtra("position", 0);
 
-		cardList = (List<Cards>) DeckUtils.getDeck(getActivity(),
+		cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
 				listDecks.get(position));
 		if (spinnerNumCards.getSelectedItem() != null) {
 			numCards = Integer.parseInt(spinnerNumCards.getSelectedItem()
@@ -139,7 +137,7 @@ public class SimulatorFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				cardList = (List<Cards>) DeckUtils.getDeck(getActivity(),
+				cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
 						listDecks.get(position));
 				Collections.shuffle(cardList);
 
@@ -158,8 +156,7 @@ public class SimulatorFragment extends Fragment {
 					for (int i = 0; i < numToShow; i++) {
 						cardsToShow.add(cardList.get(i));
 					}
-					adapter.notifyDataSetChanged();
-					gvCards.setAdapter(adapter);
+					adapter.update(cardsToShow);
 				} else {
 					Crouton.makeText(getActivity(),
 							"Not enough cards in the deck.", Style.ALERT)
@@ -177,8 +174,7 @@ public class SimulatorFragment extends Fragment {
 				if (cardsToShow.size() < cardList.size()) {
 					cardsToShow.add(cardList.get(cardsToShow.size()));
 					int index = gvCards.getLastVisiblePosition();
-					adapter.notifyDataSetChanged();
-					gvCards.setAdapter(adapter);
+					adapter.update(cardsToShow);
 					gvCards.setSelection(index + 1);
 				} else {
 					Crouton.makeText(getActivity(), "No more cards.",

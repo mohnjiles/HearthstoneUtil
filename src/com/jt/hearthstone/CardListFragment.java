@@ -11,7 +11,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -19,21 +18,13 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashSet;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.AssetManager;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -191,7 +182,7 @@ public class CardListFragment extends Fragment {
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
-		
+
 		// Get deck list from file
 		getDeckList();
 
@@ -210,7 +201,7 @@ public class CardListFragment extends Fragment {
 				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
-		
+
 		// Custom listener for CheckBoxes
 		CustomOnCheckedChangeListener checkListener = new CustomOnCheckedChangeListener(
 				getActivity());
@@ -219,7 +210,7 @@ public class CardListFragment extends Fragment {
 		cbReverse.setOnCheckedChangeListener(checkListener);
 
 		// Spinner setup (set items/adapters/etc)
-		deckClasses = (List<Integer>) DeckUtils.getDeck(getActivity(),
+		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(getActivity(),
 				"deckclasses");
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
@@ -234,8 +225,6 @@ public class CardListFragment extends Fragment {
 
 		spinnerSort.setAdapter(spinAdapter);
 		spinnerMechanic.setAdapter(spinSortAdapter);
-		
-		
 
 		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
 				getActivity());
@@ -280,7 +269,8 @@ public class CardListFragment extends Fragment {
 
 		case R.id.action_rename:
 			if (deckOne == null) {
-				deckOne = (List<Cards>) DeckUtils.getDeck(getActivity(), deckList.get(deckListPos));
+				deckOne = (List<Cards>) DeckUtils.getCardsList(getActivity(),
+						deckList.get(deckListPos));
 			}
 			DeckUtils.renameDeck(getActivity(), deckListPos, getActivity(),
 					deckOne);
@@ -308,6 +298,7 @@ public class CardListFragment extends Fragment {
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
+
 		if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
@@ -321,38 +312,72 @@ public class CardListFragment extends Fragment {
 	public boolean onContextItemSelected(MenuItem item) {
 
 		if (item.getGroupId() == 1337) {
-			addCards(deckOne, deckListPos);
-			return super.onContextItemSelected(item);
+			addCards();
 		}
 		return super.onContextItemSelected(item);
 	}
 
-	private void addCards(List<Cards> list, int menuItemIndex) {
+	private void addCards() {
 
-		if (DeckUtils.getDeck(getActivity(), deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) DeckUtils.getDeck(getActivity(),
-					deckList.get(menuItemIndex));
-		} else {
-			list = new ArrayList<Cards>();
-		}
+		List<Cards> cardsList = (List<Cards>) DeckUtils.getCardsList(
+				getActivity(), deckList.get(deckListPos));
 
-		if (list.size() < 30) {
-			list.add(cardList.get(position));
+		if (cardsList.size() < 30) {
+			cardsList.add(cardList.get(position));
 		} else {
 			Crouton.makeText(getActivity(),
 					"Cannot have more than 30 cards in the deck", Style.ALERT)
 					.show();
 		}
 
-		DeckActivity.setManaChart(list);
-		DeckActivity.setPieGraph(list);
+		DeckActivity.setManaChart(cardsList);
+		DeckActivity.setPieGraph(cardsList);
 
-		DeckUtils.saveDeck(getActivity(), deckList.get(menuItemIndex), list);
-		doSomeStuff(
-				(List<Cards>) DeckUtils.getDeck(getActivity(),
-						deckList.get(menuItemIndex)),
-				deckList.get(menuItemIndex));
-		deckFrag.adapter = new DeckListAdapter(getActivity(), list);
+		DeckUtils.saveDeck(getActivity(), deckList.get(deckListPos), cardsList);
+
+		// Get text sizes in sp
+		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				10, getActivity().getResources().getDisplayMetrics());
+		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
+				14, getActivity().getResources().getDisplayMetrics());
+
+		// Get screen size
+		int screenSize = getActivity().getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		if (cardsList != null) {
+			if (cardsList.size() == 0
+					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				deckFrag.tvNumCards.setTextSize(bigSp);
+				deckFrag.tvNumCards
+						.setText("Looks like there's nothing here. Swipe right to get started!");
+				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+			} else if (cardsList.size() == 0
+					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+				deckFrag.tvNumCards.setTextSize(bigSp);
+				deckFrag.tvNumCards
+						.setText("Looks like there's nothing here. Add cards from the left to get started!");
+				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
+			} else {
+				deckFrag.tvNumCards.setTextSize(sp);
+				deckFrag.tvNumCards.setText("" + cardsList.size() + " / 30");
+				deckFrag.ivSwipe.setVisibility(View.GONE);
+			}
+		}
+
+		if (cardsList != null) {
+			Collections.sort(cardsList, new CardComparator(2, false));
+		}
+
+		cardsList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
+				deckList.get(deckListPos));
+		deckFrag.adapter.update(cardsList);
+		deckFrag.adapter2.update(cardsList);
+		// deckFrag.gvDeck.setAdapter(new ImageAdapter(getActivity(),
+		// cardsList));
+		// deckFrag.lvDeck.setAdapter(new DeckListAdapter(getActivity(),
+		// cardsList));
+
 	}
 
 	private void getDeckList() {
@@ -609,65 +634,5 @@ public class CardListFragment extends Fragment {
 			Log.e("tag", e.getMessage());
 		}
 
-	}
-
-	public void doSomeStuff(List<Cards> result, String deckName) {
-
-		ArrayList<Cards> unique;
-
-		if (result != null) {
-			unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
-		} else {
-			unique = new ArrayList<Cards>();
-		}
-
-		// Get text sizes in sp
-		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				10, getActivity().getResources().getDisplayMetrics());
-		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				14, getActivity().getResources().getDisplayMetrics());
-
-		// Get screen size
-		int screenSize = getActivity().getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-
-		// If a null list was passed, try to manually lookup deck
-		if (result == null) {
-			result = (List<Cards>) DeckUtils.getDeck(getActivity(), deckName);
-			if (result == null) {
-				unique = new ArrayList<Cards>();
-			} else {
-				unique = new ArrayList<Cards>(new LinkedHashSet<Cards>(result));
-			}
-		}
-		deckFrag.cardListUnique = unique;
-		cardList = result;
-		if (result != null) {
-			if (result.size() == 0
-					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-				deckFrag.tvNumCards.setTextSize(bigSp);
-				deckFrag.tvNumCards
-						.setText("Looks like there's nothing here. Swipe right to get started!");
-				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-			} else if (result.size() == 0
-					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-				deckFrag.tvNumCards.setTextSize(bigSp);
-				deckFrag.tvNumCards
-						.setText("Looks like there's nothing here. Add cards from the left to get started!");
-				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-			} else {
-				deckFrag.tvNumCards.setTextSize(sp);
-				deckFrag.tvNumCards.setText("" + result.size() + " / 30");
-				deckFrag.ivSwipe.setVisibility(View.GONE);
-			}
-		}
-
-		if (cardList != null) {
-			Collections.sort(deckFrag.cardList, new CardComparator(2, false));
-			Collections.sort(deckFrag.cardListUnique, new CardComparator(2, false));
-		}
-
-		deckFrag.gvDeck.setAdapter(new ImageAdapter(getActivity(), result));
-		deckFrag.lvDeck.setAdapter(new DeckListAdapter(getActivity(), result));
 	}
 }

@@ -50,8 +50,15 @@ public class CardComparator implements Comparator<Cards> {
 			}
 		case 2:
 			if (!reverse) {
-				return Double.compare(left.getCost().doubleValue(), right
+				int c = Double.compare(left.getCost().doubleValue(), right
 						.getCost().doubleValue());
+				if (c == 0) {
+					c = left.getName().toString()
+							.compareTo(right.getName().toString());
+				}
+				
+				return c;
+				
 			} else {
 				return Double.compare(right.getCost().doubleValue(), left
 						.getCost().doubleValue());

@@ -1,27 +1,13 @@
 package com.jt.hearthstone;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
@@ -52,7 +37,6 @@ public class ArenaFragment extends Fragment {
 	ImageLoader loader = ImageLoader.getInstance();
 	private Classes selectedClass;
 	DeckListAdapter adapter;
-	int doOnce = 0;
 	ArenaDeckFragment deckFrag;
 	ActionBar aBar;
 
@@ -145,7 +129,7 @@ public class ArenaFragment extends Fragment {
 		textView.setTypeface(tf);
 
 		// Populate cards array with GSON
-		getCards();
+		cards = Utils.setupCardList();
 
 		if (savedInstanceState != null) {
 			
@@ -346,6 +330,8 @@ public class ArenaFragment extends Fragment {
 			} else if (listChoices.size() > 0 && v.getId() == R.id.ivItem3) {
 				listDeck.add(listChoices.get(2));
 			}
+			
+			DeckUtils.saveDeck(getActivity(), "arenaDeck", listDeck);
 
 			// Update TextView with current deck size
 			deckFrag.tvDeckSize.setText(listDeck.size() + " / 30");
@@ -571,82 +557,6 @@ public class ArenaFragment extends Fragment {
 			loader.displayImage("http://54.224.222.135/"
 					+ listChoices.get(2).getImage() + ".png", ivItem3,
 					Utils.defaultOptions);
-		}
-
-	}
-
-	/**
-	 * Function that takes no arguments; it merely parses the JSON into our POJO
-	 */
-	private void getCards() {
-		Gson gson = new Gson();
-
-		FileInputStream fis = null;
-		try {
-			fis = getActivity().openFileInput("cards.json");
-		} catch (FileNotFoundException e1) {
-			copyFile("cards.json");
-			try {
-				fis = getActivity().openFileInput("cards.json");
-			} catch (FileNotFoundException e) {
-				Log.wtf("How is this possible?", "cards.json broke");
-				e.printStackTrace();
-			}
-			e1.printStackTrace();
-		}
-		Writer writer = new StringWriter();
-		char[] buffer = new char[1024];
-		try {
-			Reader reader = new BufferedReader(new InputStreamReader(fis,
-					"UTF-8"));
-			int n;
-			while ((n = reader.read(buffer)) != -1) {
-				writer.write(buffer, 0, n);
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				fis.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// The json String from the file
-		String jsonString = writer.toString();
-
-		// Set our pojo from the GSON data
-		cards = gson.fromJson(jsonString, Cards[].class);
-	}
-	
-	private void copyFile(String filename) {
-		AssetManager assetManager = getActivity().getAssets();
-
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			in = assetManager.open(filename);
-			String newFileName = getActivity().getFilesDir().getPath() + "/"
-					+ filename;
-			out = new FileOutputStream(newFileName);
-
-			byte[] buffer = new byte[1024];
-			int read;
-			while ((read = in.read(buffer)) != -1) {
-				out.write(buffer, 0, read);
-			}
-			in.close();
-			in = null;
-			out.flush();
-			out.close();
-			out = null;
-		} catch (IOException e) {
-			Log.e("copyFile", e.getMessage());
 		}
 
 	}

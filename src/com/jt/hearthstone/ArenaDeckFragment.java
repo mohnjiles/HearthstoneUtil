@@ -3,6 +3,7 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -36,16 +37,20 @@ import com.echo.holographlibrary.PieSlice;
  */
 public class ArenaDeckFragment extends Fragment {
 
+	GridView gvDeck;
 	ListView lvArena;
 	TextView tvDeckSize;
-	PieGraph pieGraph;
-	BarGraph manaChart;
-	GridView gvDeck;
+	
+	private PieGraph pieGraph;
+	private BarGraph manaChart;
+	
+	ImageAdapter gridAdapter;
+	DeckListAdapter listAdapter;
 
-	private boolean isGrid = true;
-
-	private List<Cards> cardList;
+	private ArrayList<Cards> cardList;
 	private ArrayList<Cards> cardListUnique;
+	
+	private boolean isGrid = true;
 
 	/**
 	 * Overriding onCreateView to inflate our XML layout and to find the views.
@@ -72,40 +77,46 @@ public class ArenaDeckFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		// Get reference to main Arena Fragment
-		ArenaFragment arenaFrag = (ArenaFragment) getActivity()
-				.getSupportFragmentManager().findFragmentByTag(
-						Utils.makeFragmentName(R.id.pager, 0));
-
-		// Set our local cardlist to the one from other fragment
-		cardList = arenaFrag.listDeck;
-		if (cardList != null) {
-			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
-					cardList));
-		} else {
-			cardListUnique = new ArrayList<Cards>();
-		}
+		refreshList();
+		
+		// Set up adapters for ListView & GridView
+		gridAdapter = new ImageAdapter(getActivity(), cardList);
+		listAdapter = new DeckListAdapter(getActivity(), cardList);
+		
+		lvArena.setAdapter(listAdapter);
+		gvDeck.setAdapter(gridAdapter);
+		
 		tvDeckSize.setTypeface(TypefaceCache.get(getActivity().getAssets(),
 				"fonts/belwebd.ttf"));
 
+		/*
+		 * ********** START PopupWindow stuff **********
+		 */
 		MyWindow.setContext(getActivity());
 
 		lvArena.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
+				refreshList();
 				MyWindow.initiatePopupWindow(cardListUnique, position, parent);
 			}
 		});
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
+				refreshList();
 				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
+		
+		/*
+		 * ********** END PopupWindow stuff **********
+		 */
 
 		if (savedInstanceState != null) {
 			this.isGrid = savedInstanceState.getBoolean("isGrid");
 		}
+		
 		if (isGrid) {
 			lvArena.setVisibility(View.GONE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -119,6 +130,7 @@ public class ArenaDeckFragment extends Fragment {
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		super.onViewStateRestored(savedInstanceState);
+		refreshList();
 		if (cardList != null) {
 			update(cardList);
 		}
@@ -175,9 +187,9 @@ public class ArenaDeckFragment extends Fragment {
 		}
 	}
 
-	public void update(List<Cards> cardList) {
-		lvArena.setAdapter(new DeckListAdapter(getActivity(), cardList));
-		gvDeck.setAdapter(new ImageAdapter(getActivity(), cardList));
+	public void update(ArrayList<Cards> cardList) {
+		gridAdapter.update(cardList);
+		listAdapter.update(cardList);
 		tvDeckSize.setText(cardList.size() + " / 30");
 		setManaChart(cardList);
 		setPieGraph(cardList);
@@ -187,7 +199,7 @@ public class ArenaDeckFragment extends Fragment {
 	public void setManaChart(List<Cards> cardList) {
 		ArrayList<Bar> points = new ArrayList<Bar>();
 
-		int costs[] = new int[20];
+		int costs[] = new int[8];
 
 		for (Cards card : cardList) {
 			if (card.getCost() != null) {
@@ -253,6 +265,13 @@ public class ArenaDeckFragment extends Fragment {
 			slice.setValue(weapons);
 			pieGraph.addSlice(slice);
 		}
+	}
+	
+	private void refreshList() {
+		cardList = (ArrayList<Cards>) DeckUtils.getCardsList(getActivity(), "arenaDeck");
+		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+		Collections.sort(cardList, new CardComparator(2, false));
+		Collections.sort(cardListUnique, new CardComparator(2, false));
 	}
 
 }

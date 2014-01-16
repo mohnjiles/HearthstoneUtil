@@ -1,20 +1,7 @@
 package com.jt.hearthstone;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
-import com.jfeinstein.jazzyviewpager.JazzyViewPager;
-import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
-import com.viewpagerindicator.CirclePageIndicator;
-import com.viewpagerindicator.IconPageIndicator;
-import com.viewpagerindicator.LinePageIndicator;
-import com.viewpagerindicator.TabPageIndicator;
-import com.viewpagerindicator.TitlePageIndicator;
-
-import android.R.integer;
-import android.app.ActionBar.Tab;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -25,16 +12,16 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.ListView;
+
+import com.jfeinstein.jazzyviewpager.JazzyViewPager;
+import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
+import com.viewpagerindicator.TitlePageIndicator;
 
 /**
  * Parent class for Arena-related Fragments. Sets up and loads ViewPager and
@@ -45,13 +32,12 @@ import android.widget.ListView;
  */
 public class ArenaSimulator extends ActionBarActivity {
 
-	JazzyViewPager myPager;
-	TitlePageIndicator titleIndicator;
-	FragmentAdapter adapter;
-	ActionBar aBar;
-	ArenaDeckFragment deckFragment;
-	TransitionEffect tf;
-	SharedPreferences prefs;
+	private JazzyViewPager myPager;
+	private TitlePageIndicator titleIndicator;
+	private FragmentAdapter adapter;
+	private ActionBar aBar;
+	private TransitionEffect tf;
+	private SharedPreferences prefs;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -67,49 +53,49 @@ public class ArenaSimulator extends ActionBarActivity {
 		myPager = (JazzyViewPager) findViewById(R.id.pager);
 		titleIndicator = (TitlePageIndicator) findViewById(R.id.titles);
 
+		// Add fragments to ArrayList for our custom FragmentPagerAdapter
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
-
 		ArenaFragment fragZero = new ArenaFragment();
 		fragments.add(fragZero);
-
 		ArenaDeckFragment fragOne = new ArenaDeckFragment();
 		fragments.add(fragOne);
 
+		// Get TransitionEffect from user settings
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-		if (prefs.getString("transition_effect", "Stack").equals("Accordion")) {
+		if (prefs.getString("transition_effect", "Standard").equals("Accordion")) {
 			tf = TransitionEffect.Accordion;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Cube Out")) {
 			tf = TransitionEffect.CubeOut;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Cube In")) {
 			tf = TransitionEffect.CubeIn;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Flip Horizontal")) {
 			tf = TransitionEffect.FlipHorizontal;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Flip Vertical")) {
 			tf = TransitionEffect.FlipVertical;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Rotate Down")) {
 			tf = TransitionEffect.RotateDown;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Rotate Up")) {
 			tf = TransitionEffect.RotateUp;
-		} else if (prefs.getString("transition_effect", "Stack")
-				.equals("Stack")) {
+		} else if (prefs.getString("transition_effect", "Standard")
+				.equals("Standard")) {
 			tf = TransitionEffect.Stack;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Standard")) {
 			tf = TransitionEffect.Standard;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Tablet")) {
 			tf = TransitionEffect.Tablet;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Zoom In")) {
 			tf = TransitionEffect.ZoomIn;
-		} else if (prefs.getString("transition_effect", "Stack").equals(
+		} else if (prefs.getString("transition_effect", "Standard").equals(
 				"Zoom Out")) {
 			tf = TransitionEffect.ZoomOut;
 		} else {
@@ -160,10 +146,7 @@ public class ArenaSimulator extends ActionBarActivity {
 	 * @author JT
 	 * 
 	 */
-	public class FragmentAdapter extends FragmentPagerAdapter implements
-			Serializable {
-
-		private static final long serialVersionUID = 1337L;
+	public class FragmentAdapter extends FragmentPagerAdapter {
 
 		FragmentManager mManager;
 		ArrayList<Fragment> localFragmentArray;
@@ -231,9 +214,10 @@ public class ArenaSimulator extends ActionBarActivity {
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 0));
 		ArenaDeckFragment frag2 = (ArenaDeckFragment) getSupportFragmentManager()
 				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
-		frag.doOnce = 0;
 		if (frag.listDeck != null) {
 			frag.listDeck.clear();
+		} else {
+			frag.listDeck = new ArrayList<Cards>();
 		}
 
 		if (frag.listChoices != null) {
@@ -241,11 +225,11 @@ public class ArenaSimulator extends ActionBarActivity {
 		}
 
 		frag.textView.setText("Choose a Hero");
+		frag2.listAdapter.update(frag.listDeck);
 		frag.pickRandomHero();
 
-		frag2.lvArena.setAdapter(frag.adapter);
 		frag2.tvDeckSize.setText("0 / 30");
-		frag2.update(frag.listDeck);
+		frag2.gridAdapter.update(frag.listDeck);
 	}
 
 }

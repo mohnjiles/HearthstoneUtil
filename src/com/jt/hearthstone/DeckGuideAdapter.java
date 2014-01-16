@@ -1,9 +1,9 @@
 package com.jt.hearthstone;
 
-import java.util.Collections;
+import static butterknife.Views.findById;
+
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -13,8 +13,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import static butterknife.Views.findById;
 
 public class DeckGuideAdapter extends BaseAdapter {
 	private Context mContext;

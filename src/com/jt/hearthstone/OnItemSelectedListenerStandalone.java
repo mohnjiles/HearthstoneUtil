@@ -1,10 +1,10 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
 import static butterknife.Views.findById;
+
+import java.util.ArrayList;
 import java.util.Collections;
 
-import android.content.pm.ActivityInfo;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -171,7 +171,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 			switch (spinnerClass.getSelectedItemPosition()) {
 			case 0:
 				if (mSearchView != null) {
-					query = mSearchView.getQuery().toString().toLowerCase();
+					query = mSearchView.getQuery().toString().toLowerCase(Utils.curLocale);
 				} else {
 					query = "";
 				}
@@ -181,7 +181,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					cardList.clear();
 					for (Cards card : cards) {
 						if (card.getDescription() != null
-								&& card.getName().toLowerCase().contains(query)
+								&& card.getName().toLowerCase(Utils.curLocale).contains(query)
 								&& card.getDescription().contains(
 										spinner.getSelectedItem().toString())) {
 							cardList.add(card);
@@ -288,7 +288,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	 */
 	private void setCardList(Classes classes, String selectedItem) {
 		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+			query = mSearchView.getQuery().toString().toLowerCase(Utils.curLocale);
 		} else {
 			query = "";
 		}
@@ -299,15 +299,15 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& card.getClasss().intValue() == classes.getValue()
 					&& card.getDescription().contains(selectedItem)
 					&& !card.getName().equals(classes.getHeroName())
-					&& card.getName().toLowerCase().contains(query)) {
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)) {
 				Log.i("setCardList(classes, string)", "" + query + "   "
-						+ card.getName().toLowerCase());
+						+ card.getName().toLowerCase(Utils.curLocale));
 				cardList.add(card);
 			}
 			if (includeNeutralCards.isChecked()) {
 				if (card.getClasss() == null && card.getDescription() != null
 						&& card.getDescription().contains(selectedItem)
-						&& card.getName().toLowerCase().contains(query)
+						&& card.getName().toLowerCase(Utils.curLocale).contains(query)
 						&& !card.getName().equals(classes.getHeroName())) {
 					cardList.add(card);
 				}
@@ -325,7 +325,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 
 	private void setCardList(Classes classes) {
 		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+			query = mSearchView.getQuery().toString().toLowerCase(Utils.curLocale);
 		} else {
 			query = "";
 		}
@@ -337,11 +337,11 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 			if (card.getClasss() != null
 					&& card.getClasss().intValue() == classes.getValue()
 					&& !card.getName().equals(classes.getHeroName())
-					&& card.getName().toLowerCase().contains(query)) {
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)) {
 				cardList.add(card);
 			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
-					&& card.getName().toLowerCase().contains(query)) {
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)) {
 				cardList.add(card);
 			}
 
@@ -363,7 +363,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 	private void setCardList() {
 
 		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+			query = mSearchView.getQuery().toString().toLowerCase(Utils.curLocale);
 		} else {
 			query = "";
 		}
@@ -389,11 +389,11 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !name.equals(classArray[6].getHeroName())
 					&& !name.equals(classArray[7].getHeroName())
 					&& !name.equals(classArray[8].getHeroName())
-					&& name.toLowerCase().contains(query)) {
+					&& name.toLowerCase(Utils.curLocale).contains(query)) {
 				cardList.add(card);
 			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
-					&& card.getName().toLowerCase().contains(query)) {
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)) {
 				cardList.add(card);
 			}
 		}
@@ -413,7 +413,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 				Classes.SHAMAN, Classes.WARLOCK, Classes.WARRIOR };
 
 		if (mSearchView != null) {
-			query = mSearchView.getQuery().toString().toLowerCase();
+			query = mSearchView.getQuery().toString().toLowerCase(Utils.curLocale);
 		} else {
 			query = "";
 		}
@@ -424,7 +424,7 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 		Log.i("query", "" + query);
 		// Repopulate the card list with class cards
 		for (Cards card : cards) {
-			String name = card.getName().toLowerCase();
+			String name = card.getName().toLowerCase(Utils.curLocale);
 			if (!name.equals(classArray[0].getHeroName())
 					&& !name.equals(classArray[1].getHeroName())
 					&& !name.equals(classArray[2].getHeroName())
@@ -434,13 +434,13 @@ public class OnItemSelectedListenerStandalone implements OnItemSelectedListener 
 					&& !name.equals(classArray[6].getHeroName())
 					&& !name.equals(classArray[7].getHeroName())
 					&& !name.equals(classArray[8].getHeroName())
-					&& card.getName().toLowerCase().contains(query)
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)
 					&& card.getDescription() != null
 					&& card.getDescription().contains(selectedItem)) {
 				cardList.add(card);
 			} else if (includeNeutralCards.isChecked()
 					&& card.getClasss() == null
-					&& card.getName().toLowerCase().contains(query)) {
+					&& card.getName().toLowerCase(Utils.curLocale).contains(query)) {
 				cardList.add(card);
 			}
 		}

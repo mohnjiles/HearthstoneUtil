@@ -22,9 +22,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.HttpStatus;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -178,7 +176,6 @@ public class CardListActivity extends ActionBarActivity {
 		// Set the gridview's adapter to our custom adapter
 		grid.setAdapter(adapter);
 		listCards.setAdapter(adapter2);
-		
 
 		// Get deck list from file
 		getDeckList();
@@ -202,7 +199,6 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Sort the card list with our own custom Comparator
 		// -- this sorts by Mana Cost
-
 
 		registerForContextMenu(listCards);
 		registerForContextMenu(grid);
@@ -342,15 +338,17 @@ public class CardListActivity extends ActionBarActivity {
 		menu.findItem(R.id.action_switch).setIcon(
 				R.drawable.collections_view_as_list);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
-		mSearchView.setOnQueryTextListener(new SearchListener2(CardListActivity.this, cardList,
-				cards, grid, listCards, adapter, adapter2, searchItem));
-		
+		mSearchView.setOnQueryTextListener(new SearchListener2(
+				CardListActivity.this, cardList, cards, grid, listCards,
+				adapter, adapter2, searchItem));
+
 		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
-				CardListActivity.this, mSearchView, cardList, cards, adapter, adapter2);
+				CardListActivity.this, mSearchView, cardList, cards, adapter,
+				adapter2);
 		spinner.setOnItemSelectedListener(listener);
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
-		
+
 		return true;
 	}
 
@@ -425,8 +423,8 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		menuItemIndex = item.getItemId();
-		final List<Integer> deckClasses = (List<Integer>) DeckUtils.getDeck(
-				this, "deckclasses");
+		final List<Integer> deckClasses = (List<Integer>) DeckUtils
+				.getIntegerDeck(this, "deckclasses");
 		switch (menuItemIndex) {
 		case 0:
 			if (item.getTitle().equals("Add to new deck")) {
@@ -499,7 +497,7 @@ public class CardListActivity extends ActionBarActivity {
 								ArrayList<Cards> newDeck = new ArrayList<Cards>();
 								DeckUtils.saveDeck(CardListActivity.this,
 										nameBox.getText().toString(), newDeck);
-								addCards(newDeck, deckList.size() - 1);
+								addCards();
 							}
 						});
 				builder.setNegativeButton("Cancel",
@@ -515,58 +513,28 @@ public class CardListActivity extends ActionBarActivity {
 
 				return true;
 			} else {
-				addCards(deckOne, menuItemIndex);
+				addCards();
 				return true;
 			}
-		case 1:
-			addCards(deckTwo, menuItemIndex);
-			return true;
-		case 2:
-			addCards(deckThree, menuItemIndex);
-			return true;
-		case 3:
-			addCards(deckFour, menuItemIndex);
-			return true;
-		case 4:
-			addCards(deckFive, menuItemIndex);
-			return true;
-		case 5:
-			addCards(deckSix, menuItemIndex);
-			return true;
-		case 6:
-			addCards(deckSeven, menuItemIndex);
-			return true;
-		case 7:
-			addCards(deckEight, menuItemIndex);
-			return true;
-		case 8:
-			addCards(deckNine, menuItemIndex);
-			return true;
-		case 9:
-			addCards(deckTen, menuItemIndex);
-			return true;
-
 		}
 		return true;
 	}
 
-	private void addCards(List<Cards> list, int menuItemIndex) {
+	private void addCards() {
 
-		// Add check for full deck
-		if (DeckUtils.getDeck(this, deckList.get(menuItemIndex)).size() == 30) {
+		List<Cards> list = DeckUtils.getCardsList(this,
+				deckList.get(menuItemIndex));
+		
+		if (list == null) {
+			list = new ArrayList<Cards>();
+		}
 
+		if (list.size() == 30) {
 			Crouton.makeText(
 					this,
 					"Cannot add card. Deck \"" + deckList.get(menuItemIndex)
 							+ "\" is full.", Style.ALERT).show();
 			return;
-		}
-
-		if (DeckUtils.getDeck(this, deckList.get(menuItemIndex)) != null) {
-			list = (List<Cards>) DeckUtils.getDeck(this,
-					deckList.get(menuItemIndex));
-		} else {
-			list = new ArrayList<Cards>();
 		}
 
 		list.add(cardList.get(position));
@@ -616,7 +584,8 @@ public class CardListActivity extends ActionBarActivity {
 			// Create a new HTTP Client
 			DefaultHttpClient defaultClient = new DefaultHttpClient();
 			// Setup the get request
-			HttpGet httpGetRequest = new HttpGet("http://54.224.222.135/cards.json");
+			HttpGet httpGetRequest = new HttpGet(
+					"http://54.224.222.135/cards.json");
 
 			// Execute the request in the client
 			HttpResponse httpResponse = null;
@@ -640,13 +609,13 @@ public class CardListActivity extends ActionBarActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
+
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
-			
+
 		}
 
 	}
