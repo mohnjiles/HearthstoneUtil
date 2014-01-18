@@ -4,6 +4,7 @@ import java.util.Hashtable;
 
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
+import android.util.Log;
 
 public class TypefaceCache {
 
@@ -13,8 +14,15 @@ public class TypefaceCache {
         synchronized (CACHE) {
 
             if (!CACHE.containsKey(name)) {
-                Typeface t = Typeface.createFromAsset(manager, name);
-                CACHE.put(name, t);
+                try {
+                    Typeface t = Typeface.createFromAsset(manager,
+                            name);
+                    CACHE.put(name, t);
+                } catch (Exception e) {
+                    Log.e("TypefaceCache", "Could not get typeface '" + name
+                            + "' because " + e.getMessage());
+                    return null;
+                }
             }
             return CACHE.get(name);
         }

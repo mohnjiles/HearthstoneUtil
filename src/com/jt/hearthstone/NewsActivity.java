@@ -6,15 +6,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.impl.EnglishReasonPhraseCatalog;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -22,11 +19,18 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class NewsActivity extends ActionBarActivity {
 
 	private ListView lvNews;
+	private List<String> articleUrls;
+	private List<String> newsTitles;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,17 +91,27 @@ public class NewsActivity extends ActionBarActivity {
 		protected void onPostExecute(Document result) {
 			Elements titles = null;
 			Elements images = null;
-			List<String> newsTitles = new ArrayList<String>();
-			List<String> urls = new ArrayList<String>();
+			Elements urls = null;
+			newsTitles = new ArrayList<String>();
+			List<String> imageUrls = new ArrayList<String>();
+			articleUrls = new ArrayList<String>();
 			if (result != null) {
+				result.select("div.featured-news-container").remove();
 				titles = result.select("span.article-title");
 				images = result.select("div.article-image");
+				urls = result.select("a[itemprop=url]");
+
+				for (Element e : urls) {
+					if (e.attr("href").length() > 25) {
+						articleUrls.add("http://us.battle.net" + e.attr("href"));
+					}
+				}
 
 				for (Element e : images) {
 					String imageUrl = (e.attr("style").toString()).replace(
 							"background-image:url(//", "http://").replace(")",
 							"");
-					urls.add(imageUrl);
+					imageUrls.add(imageUrl);
 				}
 
 				for (Element e : titles) {
@@ -111,8 +125,22 @@ public class NewsActivity extends ActionBarActivity {
 			}
 
 			NewsListAdapter adapter = new NewsListAdapter(NewsActivity.this,
-					newsTitles.size(), newsTitles, urls);
+					newsTitles.size(), newsTitles, imageUrls);
 			lvNews.setAdapter(adapter);
+			
+			lvNews.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
+					intent.putExtra("url", articleUrls.get(arg2));
+					intent.putExtra("title", newsTitles.get(arg2));
+					startActivity(intent);
+					
+				}
+			});
+			
 			super.onPostExecute(result);
 		}
 	}
