@@ -76,7 +76,7 @@ public class ImageAdapter extends BaseAdapter {
     		vh.tv = (TextView) convertView.findViewById(R.id.grid_item_text);
     		vh.iv = (ImageView) convertView.findViewById(R.id.grid_item_image);
     		convertView.setTag(vh);	
-    		vh.iv.setImageResource(R.drawable.cards);
+    		vh.iv.setImageBitmap(ImageCache.get(mContext, R.drawable.cards));
     		
     	} else {
     		vh = (ViewHolder)convertView.getTag();
