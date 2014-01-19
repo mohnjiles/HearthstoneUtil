@@ -11,7 +11,10 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -42,7 +45,7 @@ public class NewsActivity extends ActionBarActivity {
 
 		lvNews = findById(this, R.id.lvNews);
 
-		new FetchNews().execute();
+		new FetchNews(this).execute();
 	}
 
 	@Override
@@ -70,6 +73,14 @@ public class NewsActivity extends ActionBarActivity {
 	}
 
 	private class FetchNews extends AsyncTask<Void, Void, Document> {
+		
+		private Context c;
+		private ProgressDialog dialog;
+		
+		public FetchNews(Context c) {
+			this.c = c;
+			dialog = new ProgressDialog(c);
+		}
 
 		@Override
 		protected Document doInBackground(Void... params) {
@@ -86,15 +97,25 @@ public class NewsActivity extends ActionBarActivity {
 			}
 			return doc;
 		}
+		
+		@Override
+		protected void onPreExecute() {
+			dialog = ProgressDialog.show(c, "", "Loading news...");
+			super.onPreExecute();
+		}
 
 		@Override
 		protected void onPostExecute(Document result) {
+			
+			dialog.cancel();
+			
 			Elements titles = null;
 			Elements images = null;
 			Elements urls = null;
 			newsTitles = new ArrayList<String>();
 			List<String> imageUrls = new ArrayList<String>();
 			articleUrls = new ArrayList<String>();
+			
 			if (result != null) {
 				result.select("div.featured-news-container").remove();
 				titles = result.select("span.article-title");
@@ -127,6 +148,7 @@ public class NewsActivity extends ActionBarActivity {
 			NewsListAdapter adapter = new NewsListAdapter(NewsActivity.this,
 					newsTitles.size(), newsTitles, imageUrls);
 			lvNews.setAdapter(adapter);
+			lvNews.setCacheColorHint(Color.TRANSPARENT);
 			
 			lvNews.setOnItemClickListener(new OnItemClickListener() {
 

@@ -8,40 +8,47 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 public class NewsDetailActivity extends ActionBarActivity {
 
 	private WebView wvDetails;
 	private String url;
-	
+	private String title;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_news_detail);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-		
+
 		Intent intent = getIntent();
 		url = intent.getStringExtra("url");
-		
-		String title = intent.getStringExtra("title");
-		
-		getSupportActionBar().setTitle(title);
-		
-		wvDetails = findById(this, R.id.wvDetail);
-		
-		new FetchNewsDetail().execute();
-	}
 
+		title = intent.getStringExtra("title");
+
+		getSupportActionBar().setTitle(title);
+
+		wvDetails = findById(this, R.id.wvDetail);
+
+		new FetchNewsDetail(this).execute();
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -66,8 +73,15 @@ public class NewsDetailActivity extends ActionBarActivity {
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	private class FetchNewsDetail extends AsyncTask<Void, Void, Document> {
+		private Context c;
+		private ProgressDialog dialog;
+
+		public FetchNewsDetail(Context c) {
+			this.c = c;
+			dialog = new ProgressDialog(c);
+		}
 
 		@Override
 		protected Document doInBackground(Void... params) {
@@ -86,16 +100,32 @@ public class NewsDetailActivity extends ActionBarActivity {
 		}
 
 		@Override
+		protected void onPreExecute() {
+			dialog = ProgressDialog.show(c, "", "Loading " + title + "...");
+			super.onPreExecute();
+		}
+
+		@Override
 		protected void onPostExecute(Document result) {
-			
+			dialog.cancel();
 			Element content = null;
-			
+
 			if (result != null) {
 				result.select("img").remove();
 				content = result.select("div.article-content").first();
-				String html = content.toString();
+				String html = content.toString().replace("'", "&apos;");
 				wvDetails.loadData(html, "text/html; charset=UTF-8", null);
-				wvDetails.setBackgroundColor(Color.argb(1, 0, 0, 0));
+				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+					wvDetails.setBackgroundColor(Color.argb(1, 0, 0, 0));
+				} else {
+					wvDetails.setBackgroundColor(0x00000000);
+				}
+				
+			} else {
+				Crouton.makeText(
+						NewsDetailActivity.this,
+						"Failed to load article. Check your internet connectoin and try again later",
+						Style.ALERT).show();
 			}
 			super.onPostExecute(result);
 		}
