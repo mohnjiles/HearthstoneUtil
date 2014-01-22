@@ -8,9 +8,7 @@
     <dimen name="card_icon_padding_left">-72dp</dimen>
     <dimen name="card_icon_padding_right">-40dp</dimen>
     <dimen name="card_name_padding">48dp</dimen>
-    <dimen name="card_name_text_size">18sp</dimen>
-    <dimen name="card_stats_text_size">18sp</dimen>
-    <dimen name="card_class_size">36dp</dimen>
+    <dimen name="card_class_size">64dp</dimen>
     <dimen name="card_stats_image_size">36dp</dimen>
     <dimen name="grid_column_width">184dp</dimen>
     <dimen name="spinner_size">175dp</dimen>
@@ -19,10 +17,12 @@
     <dimen name="arena_width">300dp</dimen>
     <dimen name="arena_text_margin">16dp</dimen>
     <dimen name="deck_grid_size">276dp</dimen>
-    
+
     <!-- Text Sizes -->
     <dimen name="card_list_textview">18sp</dimen>
     <dimen name="spinner_textview">18sp</dimen>
     <dimen name="arena_text">22sp</dimen>
+    <dimen name="card_name_text_size">20sp</dimen>
+    <dimen name="card_stats_text_size">20sp</dimen>
 
 </resources>

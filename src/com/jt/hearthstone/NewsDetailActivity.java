@@ -20,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
@@ -111,6 +112,9 @@ public class NewsDetailActivity extends ActionBarActivity {
 			Element content = null;
 
 			if (result != null) {
+				
+				Log.w("url", url);
+				
 				result.select("img").remove();
 				content = result.select("div.article-content").first();
 				String html = content.toString().replace("'", "&apos;");

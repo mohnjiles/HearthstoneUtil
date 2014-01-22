@@ -71,7 +71,7 @@ public class DeckSelector extends ActionBarActivity {
 			if (instream != null) {
 				ObjectInputStream objStream = new ObjectInputStream(instream);
 				try {
-					listDecks = (ArrayList<String>) objStream.readObject();
+					listDecks = (List<String>) objStream.readObject();
 					if (instream != null) {
 						instream.close();
 					}
@@ -101,6 +101,7 @@ public class DeckSelector extends ActionBarActivity {
 				Intent intent = new Intent(DeckSelector.this,
 						DeckFragmentHolder.class);
 				intent.putExtra("position", arg2);
+				intent.putStringArrayListExtra("listDecks", (ArrayList<String>) listDecks);
 				intent.putExtra("name", listDecks.get(arg2));
 				startActivity(intent);
 			}

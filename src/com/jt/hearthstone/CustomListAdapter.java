@@ -58,7 +58,6 @@ public class CustomListAdapter extends BaseAdapter {
 	// Custom ViewHolder class to make scrolling smoother
 	private static class ViewHolder {
 		ImageView ivClassIcon = null;
-		ImageView ivBackground = null;
 		TextView tvCardName = null;
 		TextView tvManaCost = null;
 		TextView tvAttack = null;
@@ -89,8 +88,6 @@ public class CustomListAdapter extends BaseAdapter {
 			vh.tvAttack = (TextView) convertView.findViewById(R.id.tvAttack);
 			vh.tvHealth = (TextView) convertView.findViewById(R.id.tvHealth);
 			vh.tvManaCost = (TextView) convertView.findViewById(R.id.tvMana);
-			vh.ivBackground = (ImageView) convertView
-					.findViewById(R.id.ivBackground);
 			vh.tvNum = (TextView) convertView.findViewById(R.id.tvNumOfCard);
 			convertView.setTag(vh);
 
@@ -100,19 +97,11 @@ public class CustomListAdapter extends BaseAdapter {
 
 		int quality = cardList.get(position).getQuality().intValue();
 
-		String mDrawablename = "files_"
-				+ cardList.get(position).getImage().toLowerCase() + "_rect";
-		int resID = mContext.getResources().getIdentifier(mDrawablename,
-				"drawable", mContext.getPackageName());
-
-		vh.ivBackground.setImageBitmap(ImageCache.get(mContext, resID));
-
 		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
-
-		vh.tvCardName.setShadowLayer(0.01f, 1, 0, Color.BLACK);
-		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvCardName.setShadowLayer(0.01f, 1, 0, Color.BLACK);
+//		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvCardName.setTypeface(font);
 		vh.tvAttack.setTypeface(font);
 		vh.tvHealth.setTypeface(font);

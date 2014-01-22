@@ -40,7 +40,7 @@ public class SimulatorFragment extends Fragment {
 	private ImageLoader loader = ImageLoader.getInstance();
 	private ImageAdapter adapter;
 
-	private List<String> listDecks = DeckSelector.listDecks;
+	private List<String> listDecks;
 	private List<Cards> cardList;
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
@@ -63,6 +63,7 @@ public class SimulatorFragment extends Fragment {
 		tvStartingSize = findById(V, R.id.textView1);
 		
 		position = getActivity().getIntent().getIntExtra("position", 0);
+		listDecks = getActivity().getIntent().getStringArrayListExtra("listDecks");
 		
 		setHasOptionsMenu(true);
 

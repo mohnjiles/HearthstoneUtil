@@ -45,6 +45,7 @@ public class NewsActivity extends ActionBarActivity {
 
 		lvNews = findById(this, R.id.lvNews);
 
+		// Launch Asynctask to load article list
 		new FetchNews(this).execute();
 	}
 
@@ -73,10 +74,10 @@ public class NewsActivity extends ActionBarActivity {
 	}
 
 	private class FetchNews extends AsyncTask<Void, Void, Document> {
-		
+
 		private Context c;
 		private ProgressDialog dialog;
-		
+
 		public FetchNews(Context c) {
 			this.c = c;
 			dialog = new ProgressDialog(c);
@@ -86,6 +87,9 @@ public class NewsActivity extends ActionBarActivity {
 		protected Document doInBackground(Void... params) {
 			Document doc = null;
 			try {
+
+				// Pretend we're Google Chrome & grab the HTML doc
+
 				doc = Jsoup
 						.connect("http://us.battle.net/hearthstone/en/blog/")
 						.timeout(5000)
@@ -97,38 +101,67 @@ public class NewsActivity extends ActionBarActivity {
 			}
 			return doc;
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
+
+			// Show Loading dialog
 			dialog = ProgressDialog.show(c, "", "Loading news...");
 			super.onPreExecute();
 		}
 
 		@Override
 		protected void onPostExecute(Document result) {
-			
+
 			dialog.cancel();
-			
+
 			Elements titles = null;
 			Elements images = null;
 			Elements urls = null;
 			newsTitles = new ArrayList<String>();
 			List<String> imageUrls = new ArrayList<String>();
 			articleUrls = new ArrayList<String>();
-			
+
 			if (result != null) {
+
+				/*
+				 * Before we parse the data, need to remove a few things to make
+				 * sure we get the right data
+				 */
+
+				/*
+				 * Remove featured articles container so we don't get duplicate
+				 * links
+				 */
 				result.select("div.featured-news-container").remove();
+
+				/*
+				 * Remove all links that link to the comments, because those
+				 * will also be duplicates
+				 */
+				result.select("a.comments-link").remove();
+
+				// Grab the article titles, image URLs, and article URLs
 				titles = result.select("span.article-title");
 				images = result.select("div.article-image");
-				urls = result.select("a[itemprop=url]");
+				urls = result.select("a[href^=/hearthstone/en/blog/1]");
 
 				for (Element e : urls) {
+
+					/*
+					 * Add links to List if the URL is longer than 25
+					 * characters. Additional check to make sure we only get the
+					 * links we want
+					 */
 					if (e.attr("href").length() > 25) {
-						articleUrls.add("http://us.battle.net" + e.attr("href"));
+						articleUrls
+								.add("http://us.battle.net" + e.attr("href"));
 					}
 				}
 
 				for (Element e : images) {
+
+					// Replace html with prefix for our image URL
 					String imageUrl = (e.attr("style").toString()).replace(
 							"background-image:url(//", "http://").replace(")",
 							"");
@@ -136,9 +169,11 @@ public class NewsActivity extends ActionBarActivity {
 				}
 
 				for (Element e : titles) {
+					// Simply read the text of the tag and add it to the List
 					newsTitles.add(e.text());
 				}
 			} else {
+				// If we failed to load the web page, inform the user
 				Crouton.makeText(
 						NewsActivity.this,
 						"Failed to load news. Check your internet connection and try again later",
@@ -149,20 +184,21 @@ public class NewsActivity extends ActionBarActivity {
 					newsTitles.size(), newsTitles, imageUrls);
 			lvNews.setAdapter(adapter);
 			lvNews.setCacheColorHint(Color.TRANSPARENT);
-			
+
 			lvNews.setOnItemClickListener(new OnItemClickListener() {
 
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
-					Intent intent = new Intent(NewsActivity.this, NewsDetailActivity.class);
+					Intent intent = new Intent(NewsActivity.this,
+							NewsDetailActivity.class);
 					intent.putExtra("url", articleUrls.get(arg2));
 					intent.putExtra("title", newsTitles.get(arg2));
 					startActivity(intent);
-					
+
 				}
 			});
-			
+
 			super.onPostExecute(result);
 		}
 	}

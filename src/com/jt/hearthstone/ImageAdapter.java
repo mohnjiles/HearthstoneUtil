@@ -3,6 +3,7 @@ package com.jt.hearthstone;
 import java.util.Collections;
 import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -66,6 +67,7 @@ public class ImageAdapter extends BaseAdapter {
     	if (!imageLoader.isInited()) {
     		imageLoader.init(Utils.squareConfig(mContext));
     	}
+    	
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.
     	// We do this because re-using views makes memory happy :)
@@ -84,10 +86,13 @@ public class ImageAdapter extends BaseAdapter {
 		// Set the Text of the TextView
     	vh.tv.setTypeface(font);
     	vh.tv.setText(cardList.get(position).getName());
-    	vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
+    	//vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
     	
     	// Load the image for the ImageView
-    	imageLoader.displayImage(url, vh.iv, Utils.defaultOptions);
+    	int resID = Utils.getResIdByName(mContext, cardList.get(position).getImage());
+    	String squareUrl = "drawable://" + resID;
+    	imageLoader.displayImage(squareUrl, vh.iv, Utils.defaultOptions);
+    	
     	return convertView;
     	
     }

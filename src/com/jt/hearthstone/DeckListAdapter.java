@@ -80,7 +80,6 @@ public class DeckListAdapter extends BaseAdapter {
 	// Custom ViewHolder class to make scrolling smoother
 	static class ViewHolderTwo {
 		ImageView ivClassIcon = null;
-		ImageView ivBackground = null;
 		TextView tvCardName = null;
 		TextView tvManaCost = null;
 		TextView tvAttack = null;
@@ -113,30 +112,18 @@ public class DeckListAdapter extends BaseAdapter {
 			vh.tvHealth = (TextView) convertView.findViewById(R.id.tvHealth);
 			vh.tvManaCost = (TextView) convertView.findViewById(R.id.tvMana);
 			vh.tvNum = (TextView) convertView.findViewById(R.id.tvNumOfCard);
-			vh.ivBackground = (ImageView) convertView
-					.findViewById(R.id.ivBackground);
 			convertView.setTag(vh);
 			vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
 
 		} else {
 			vh = (ViewHolderTwo) convertView.getTag();
 		}
-		if (cardListUnique.size() > 0) {
-			String mDrawablename = "files_"
-					+ cardListUnique.get(position).getImage().toLowerCase()
-					+ "_rect";
-			int resID = mContext.getResources().getIdentifier(mDrawablename,
-					"drawable", mContext.getPackageName());
-			vh.ivBackground.setImageResource(resID);
-		}
 
-		
-
-		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvCardName.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-		vh.tvNum.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvCardName.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+//		vh.tvNum.setShadowLayer(0.01f, 1, 1, Color.BLACK);
 		vh.tvCardName.setTypeface(font);
 		vh.tvAttack.setTypeface(font);
 		vh.tvHealth.setTypeface(font);

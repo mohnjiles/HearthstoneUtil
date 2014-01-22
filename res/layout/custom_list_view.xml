@@ -3,7 +3,9 @@
     android:id="@+id/relativeList"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    android:paddingBottom="8dp"
+    android:paddingTop="8dp" >
 
     <!-- ListRow Left sied Thumbnail image -->
 
@@ -19,13 +21,6 @@
         android:textAlignment="center"
         android:textColor="#FFE600"
         android:textSize="@dimen/card_stats_text_size" />
-
-    <ImageView
-        android:id="@+id/ivBackground"
-        android:layout_width="150dp"
-        android:layout_height="35dp"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true" />
 
     <TextView
         android:id="@+id/tvHealth"
@@ -112,7 +107,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="4dp"
+        android:layout_marginLeft="8dp"
         android:layout_toRightOf="@+id/ivClassImage"
         android:gravity="center"
         android:text="Al&apos;Akir the Windlord"
