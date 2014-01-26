@@ -29,6 +29,7 @@
     <dimen name="arena_width">150dp</dimen>
     <dimen name="arena_text_margin">4dp</dimen>
     <dimen name="deck_grid_size">138dp</dimen>
+    
 
     <!-- Text Sizes -->
     <dimen name="card_list_textview">14sp</dimen>
@@ -36,5 +37,6 @@
     <dimen name="arena_text">14sp</dimen>
     <dimen name="card_name_text_size">16sp</dimen>
     <dimen name="card_stats_text_size">16sp</dimen>
+    <dimen name="sliding_size">16sp</dimen>
 
 </resources>

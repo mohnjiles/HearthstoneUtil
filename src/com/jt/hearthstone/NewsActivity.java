@@ -17,9 +17,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,6 +33,8 @@ public class NewsActivity extends ActionBarActivity {
 	private ListView lvNews;
 	private List<String> articleUrls;
 	private List<String> newsTitles;
+	private List<String> imageUrls;
+	private DrawerLayout drawerLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +45,80 @@ public class NewsActivity extends ActionBarActivity {
 		getSupportActionBar().setTitle("News");
 
 		lvNews = findById(this, R.id.lvNews);
+		drawerLayout = findById(this, R.id.drawerLayout);
 
-		// Launch Asynctask to load article list
-		new FetchNews(this).execute();
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(NewsActivity.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(NewsActivity.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							drawerLayout.closeDrawers();
+							break;
+						case 3:
+							startActivity(new Intent(NewsActivity.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							startActivity(new Intent(NewsActivity.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
+
+		if (savedInstanceState != null) {
+
+			newsTitles = savedInstanceState.getStringArrayList("newsTitles");
+			imageUrls = savedInstanceState.getStringArrayList("imageUrls");
+			articleUrls = savedInstanceState.getStringArrayList("articleUrls");
+
+			NewsListAdapter adapter = new NewsListAdapter(NewsActivity.this,
+					newsTitles.size(), newsTitles, imageUrls);
+			lvNews.setAdapter(adapter);
+			lvNews.setCacheColorHint(Color.TRANSPARENT);
+
+			lvNews.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					Intent intent = new Intent(NewsActivity.this,
+							NewsDetailActivity.class);
+					intent.putExtra("url", articleUrls.get(arg2));
+					intent.putExtra("title", newsTitles.get(arg2));
+					startActivity(intent);
+
+				}
+			});
+		} else {
+			// Launch Asynctask to load article list
+			new FetchNews(this).execute();
+		}
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		
+		outState.putStringArrayList("articleUrls", (ArrayList<String>) articleUrls);
+		outState.putStringArrayList("newsTitles", (ArrayList<String>) newsTitles);
+		outState.putStringArrayList("imageUrls", (ArrayList<String>) imageUrls);
+		
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -67,7 +139,7 @@ public class NewsActivity extends ActionBarActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -119,7 +191,7 @@ public class NewsActivity extends ActionBarActivity {
 			Elements images = null;
 			Elements urls = null;
 			newsTitles = new ArrayList<String>();
-			List<String> imageUrls = new ArrayList<String>();
+			imageUrls = new ArrayList<String>();
 			articleUrls = new ArrayList<String>();
 
 			if (result != null) {

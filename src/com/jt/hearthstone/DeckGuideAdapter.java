@@ -20,7 +20,8 @@ public class DeckGuideAdapter extends BaseAdapter {
 	private List<Cards> cardList;
 	private SparseArray<String> soSparse;
 
-	public DeckGuideAdapter(Context c, int count, List<Cards> cardList, SparseArray<String> soSparse) {
+	public DeckGuideAdapter(Context c, int count, List<Cards> cardList,
+			SparseArray<String> soSparse) {
 		mContext = c;
 		this.count = count;
 		this.cardList = cardList;
@@ -55,8 +56,8 @@ public class DeckGuideAdapter extends BaseAdapter {
 		// inflate it.
 		// We do this because re-using views makes memory happy :)
 		if (convertView == null) {
-			convertView = View.inflate(mContext, R.layout.guide_detail_list_view,
-					null);
+			convertView = View.inflate(mContext,
+					R.layout.guide_detail_list_view, null);
 			vh = new ViewHolder();
 			vh.tvDeckName = findById(convertView, R.id.tvDeckName);
 			vh.tvNumCards = findById(convertView, R.id.tvNumCards);
@@ -68,15 +69,16 @@ public class DeckGuideAdapter extends BaseAdapter {
 			vh = (ViewHolder) convertView.getTag();
 		}
 
-		String numTimes = new StringBuilder(soSparse.get(position)).reverse().toString();
+		String numTimes = new StringBuilder(soSparse.get(position)).reverse()
+				.toString();
 		numTimes = numTimes.replace(" ", "");
-		
+
 		vh.tvDeckName.setTypeface(font);
 		vh.tvNumCards.setTypeface(font);
-		
+
 		vh.tvDeckName.setText(cardList.get(position).getName());
 		vh.tvNumCards.setText(numTimes);
-		
+
 		switch (cardList.get(position).getQuality().intValue()) {
 		case 0:
 			int free = mContext.getResources().getColor(R.color.free);
@@ -101,7 +103,7 @@ public class DeckGuideAdapter extends BaseAdapter {
 			vh.tvDeckName.setTextColor(Color.GREEN);
 			break;
 		}
-		
+
 		if (cardList.get(position).getClasss() != null) {
 			switch (cardList.get(position).getClasss().intValue()) {
 			case 1:

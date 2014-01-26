@@ -60,7 +60,7 @@ public class SimulatorFragment extends Fragment {
 		btnRedraw = findById(V, R.id.btnRedraw);
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
-		tvStartingSize = findById(V, R.id.textView1);
+		tvStartingSize = findById(V, R.id.tvSomeText);
 		
 		position = getActivity().getIntent().getIntExtra("position", 0);
 		listDecks = getActivity().getIntent().getStringArrayListExtra("listDecks");
@@ -157,7 +157,7 @@ public class SimulatorFragment extends Fragment {
 					for (int i = 0; i < numToShow; i++) {
 						cardsToShow.add(cardList.get(i));
 					}
-					adapter.update(cardsToShow);
+					gvCards.setAdapter(adapter);
 				} else {
 					Crouton.makeText(getActivity(),
 							"Not enough cards in the deck.", Style.ALERT)
@@ -175,7 +175,7 @@ public class SimulatorFragment extends Fragment {
 				if (cardsToShow.size() < cardList.size()) {
 					cardsToShow.add(cardList.get(cardsToShow.size()));
 					int index = gvCards.getLastVisiblePosition();
-					adapter.update(cardsToShow);
+					gvCards.setAdapter(adapter);
 					gvCards.setSelection(index + 1);
 				} else {
 					Crouton.makeText(getActivity(), "No more cards.",

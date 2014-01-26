@@ -11,33 +11,38 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
-import android.R.integer;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckGuides extends ActionBarActivity {
 
 	private ListView lvDecks;
 	private Spinner spinClass;
-	List<Classes> classes = new ArrayList<Classes>();
-	List<String> deckNames = new ArrayList<String>();
-	List<String> deckLinks = new ArrayList<String>();
+	private List<Classes> classes = new ArrayList<Classes>();
+	private List<String> deckNames = new ArrayList<String>();
+	private List<String> deckLinks = new ArrayList<String>();
+	private List<String> dustList = new ArrayList<String>();
+	private SerializableSparseArray<String> sparseRatings = new SerializableSparseArray<String>();
+	private CustomListener listener;
+	private GuideListAdapter adapter;
+
+	private String[] mActivityNames;
+	private ListView mDrawerList;
+	private DrawerLayout drawerLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -46,81 +51,48 @@ public class DeckGuides extends ActionBarActivity {
 
 		lvDecks = findById(this, R.id.lvDecks);
 		spinClass = findById(this, R.id.spinClass);
+		drawerLayout = findById(this, R.id.drawerLayout);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Deck Guides");
 
-		String[] classNames = getResources().getStringArray(R.array.Classes);
-		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
-				R.layout.spinner_row, R.id.name, classNames);
-		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-
-		spinClass.setAdapter(spinAdapter);
-
-		spinClass
-				.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+		mDrawerList = findById(this, R.id.left_drawer);
+		mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 					@Override
-					public void onItemSelected(AdapterView<?> arg0, View arg1,
+					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
-
-						deckNames.clear();
-						deckLinks.clear();
-						classes.clear();
-
 						switch (arg2) {
 						case 0:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=0");
+							startActivity(new Intent(DeckGuides.this,
+									CardListActivity.class));
 							break;
 						case 1:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=2");
+							drawerLayout.closeDrawers();
 							break;
 						case 2:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=3");
+							startActivity(new Intent(DeckGuides.this,
+									NewsActivity.class));
 							break;
 						case 3:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=4");
+							startActivity(new Intent(DeckGuides.this,
+									ArenaSimulator.class));
 							break;
 						case 4:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=5");
+							startActivity(new Intent(DeckGuides.this,
+									DeckSelector.class));
 							break;
-						case 5:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=6");
-							break;
-						case 6:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=7");
-							break;
-						case 7:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=8");
-							break;
-						case 8:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=9");
-							break;
-						case 9:
-							new FetchDecks(DeckGuides.this)
-									.execute("http://www.hearthpwn.com/decks?filter-class=10");
-							break;
-
 						}
-
-					}
-
-					@Override
-					public void onNothingSelected(AdapterView<?> arg0) {
-						// TODO Auto-generated method stub
-
 					}
 				});
 
+		listener = new CustomListener();
+		spinClass.setOnItemSelectedListener(listener);
+		
 		lvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
@@ -132,9 +104,19 @@ public class DeckGuides extends ActionBarActivity {
 				intent.putExtra("url",
 						"http://www.hearthpwn.com" + deckLinks.get(arg2));
 				intent.putExtra("deckName", deckNames.get(arg2));
+				intent.putExtra("dust", dustList.get(arg2));
 				startActivity(intent);
 			}
 		});
+
+		String[] classNames = getResources().getStringArray(R.array.Classes);
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
+				R.layout.spinner_row, R.id.name, classNames);
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		spinClass.setAdapter(spinAdapter);
+
+		spinClass.setOnItemSelectedListener(listener);
 	}
 
 	@Override
@@ -146,13 +128,12 @@ public class DeckGuides extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 
 		switch (item.getItemId()) {
 		case android.R.id.home:
 			// When the back button on the ActionBar is pressed, go up one
 			// Activity
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -163,6 +144,7 @@ public class DeckGuides extends ActionBarActivity {
 		Document doc = null;
 		Elements elements = null;
 		Elements moreElements = null;
+		Elements dustCost;
 		private Context cxt;
 		private ProgressDialog dialog;
 
@@ -198,7 +180,6 @@ public class DeckGuides extends ActionBarActivity {
 		@Override
 		protected void onPostExecute(Document result) {
 			dialog.cancel();
-			SparseArray<String> sparseRatings = new SparseArray<String>();
 
 			if (result == null) {
 				Crouton.makeText(
@@ -208,18 +189,19 @@ public class DeckGuides extends ActionBarActivity {
 				return;
 			}
 
+			dustCost = result.select("td.col-dust-cost");
 			elements = result.select("a[class]");
-			moreElements = result.select("tr[class~=(even|odd)] > td");
-
+			moreElements = result
+					.select("div.rating-sum.rating-average.rating-average-ratingPositive");
 			int i = 0;
 			for (Element e : moreElements) {
-				if (e.className().equals("")) {
-					sparseRatings.put(i, e.text());
-					i++;
-				}
+				sparseRatings.put(i, e.text());
+				i++;
 			}
 
-			Log.w("elements", "wat  " + elements.text());
+			for (Element e : dustCost) {
+				dustList.add(e.text());
+			}
 
 			if (elements != null) {
 				for (Element e : elements) {
@@ -264,9 +246,9 @@ public class DeckGuides extends ActionBarActivity {
 						deckLinks.add(link);
 					}
 				}
-
-				lvDecks.setAdapter(new GuideListAdapter(DeckGuides.this,
-						deckNames.size(), deckNames, classes, sparseRatings));
+				adapter = new GuideListAdapter(DeckGuides.this,
+						deckNames.size(), deckNames, classes, sparseRatings);
+				lvDecks.setAdapter(adapter);
 				Log.w("Fetch Guides", "Done fetching guides");
 			} else {
 				Log.w("Load failed!", "Loading guides failed!");
@@ -274,6 +256,73 @@ public class DeckGuides extends ActionBarActivity {
 			super.onPostExecute(result);
 		}
 
+	}
+
+	private class CustomListener implements AdapterView.OnItemSelectedListener {
+
+		public CustomListener() {
+			super();
+		}
+
+		@Override
+		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+				long arg3) {
+
+			deckNames.clear();
+			deckLinks.clear();
+			classes.clear();
+
+			switch (arg2) {
+			case 0:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=0&sort=-rating");
+				break;
+			case 1:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=2&sort=-rating");
+				break;
+			case 2:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=3&sort=-rating");
+				break;
+			case 3:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
+				break;
+			case 4:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=5&sort=-rating");
+				break;
+			case 5:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=6&sort=-rating");
+				break;
+			case 6:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=7&sort=-rating");
+				break;
+			case 7:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
+				break;
+			case 8:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=9&sort=-rating");
+				break;
+			case 9:
+				new FetchDecks(DeckGuides.this)
+						.execute("http://www.hearthpwn.com/decks?filter-class=10&sort=-rating");
+				break;
+
+			}
+
+		}
+
+		@Override
+		public void onNothingSelected(AdapterView<?> arg0) {
+			// TODO Auto-generated method stub
+
+		}
 	}
 
 }

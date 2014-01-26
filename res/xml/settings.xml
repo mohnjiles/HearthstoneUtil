@@ -20,7 +20,7 @@
             android:title="Refresh card list" />
 
         <ListPreference
-            android:defaultValue="Stack"
+            android:defaultValue="Standard"
             android:entries="@array/Transitions"
             android:entryValues="@array/Transitions"
             android:key="transition_effect"

@@ -8,9 +8,6 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -18,19 +15,23 @@ import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.webkit.WebSettings;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
+import android.widget.ListView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class NewsDetailActivity extends ActionBarActivity {
 
 	private WebView wvDetails;
 	private String url;
 	private String title;
+	private String html;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -40,15 +41,67 @@ public class NewsDetailActivity extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		Intent intent = getIntent();
-		url = intent.getStringExtra("url");
 
+		url = intent.getStringExtra("url");
 		title = intent.getStringExtra("title");
 
 		getSupportActionBar().setTitle(title);
 
 		wvDetails = findById(this, R.id.wvDetail);
 
-		new FetchNewsDetail(this).execute();
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(NewsDetailActivity.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(NewsDetailActivity.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							Utils.navigateUp(NewsDetailActivity.this);
+							break;
+						case 3:
+							startActivity(new Intent(NewsDetailActivity.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							startActivity(new Intent(NewsDetailActivity.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
+
+		if (savedInstanceState != null) {
+
+			html = savedInstanceState.getString("html");
+			
+			if (html == null) {
+				new FetchNewsDetail(this).execute();
+			}
+			
+			wvDetails.loadData(html, "text/html; charset=UTF-8", null);
+			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
+				wvDetails.setBackgroundColor(Color.argb(1, 0, 0, 0));
+			} else {
+				wvDetails.setBackgroundColor(0x00000000);
+			}
+
+			
+		} else {
+			new FetchNewsDetail(this).execute();
+		}
 	}
 
 	@Override
@@ -56,6 +109,14 @@ public class NewsDetailActivity extends ActionBarActivity {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.news_detail, menu);
 		return true;
+	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		
+		outState.putString("html", html);
+		
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -69,7 +130,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
@@ -112,19 +173,19 @@ public class NewsDetailActivity extends ActionBarActivity {
 			Element content = null;
 
 			if (result != null) {
-				
+
 				Log.w("url", url);
-				
+
 				result.select("img").remove();
 				content = result.select("div.article-content").first();
-				String html = content.toString().replace("'", "&apos;");
+				html = content.toString().replace("'", "&apos;");
 				wvDetails.loadData(html, "text/html; charset=UTF-8", null);
 				if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 					wvDetails.setBackgroundColor(Color.argb(1, 0, 0, 0));
 				} else {
 					wvDetails.setBackgroundColor(0x00000000);
 				}
-				
+
 			} else {
 				Crouton.makeText(
 						NewsDetailActivity.this,

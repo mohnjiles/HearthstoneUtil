@@ -312,18 +312,28 @@ public class CardListFragment extends Fragment {
 	public boolean onContextItemSelected(MenuItem item) {
 
 		if (item.getGroupId() == 1337) {
-			addCards();
+			addCards(position);
 		}
 		return super.onContextItemSelected(item);
 	}
 
-	private void addCards() {
+	private void addCards(int position) {
+
+		DeckChanceFragment deckChanceFragment = (DeckChanceFragment) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 3));
+
+		Crouton.cancelAllCroutons();
 
 		List<Cards> cardsList = (List<Cards>) DeckUtils.getCardsList(
 				getActivity(), deckList.get(deckListPos));
 
 		if (cardsList.size() < 30) {
 			cardsList.add(cardList.get(position));
+
+			Crouton.makeText(getActivity(),
+					"Card added: " + cardList.get(position).getName(),
+					Style.CONFIRM).show();
 		} else {
 			Crouton.makeText(getActivity(),
 					"Cannot have more than 30 cards in the deck", Style.ALERT)
@@ -377,6 +387,8 @@ public class CardListFragment extends Fragment {
 		// cardsList));
 		// deckFrag.lvDeck.setAdapter(new DeckListAdapter(getActivity(),
 		// cardsList));
+		
+		deckChanceFragment.updatePercents(cardsList, true);
 
 	}
 

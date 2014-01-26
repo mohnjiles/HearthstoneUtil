@@ -52,7 +52,7 @@ public class ArenaFragment extends Fragment {
 		ivItem1 = (ImageView) v.findViewById(R.id.ivItem1);
 		ivItem2 = (ImageView) v.findViewById(R.id.ivItem2);
 		ivItem3 = (ImageView) v.findViewById(R.id.ivItem3);
-		textView = (TextView) v.findViewById(R.id.textView1);
+		textView = (TextView) v.findViewById(R.id.tvSomeText);
 
 		/*
 		 * Tells the parent activity to let this fragment create it's own
@@ -132,7 +132,7 @@ public class ArenaFragment extends Fragment {
 		cards = Utils.setupCardList();
 
 		if (savedInstanceState != null) {
-			
+
 			Classes tag0 = (Classes) savedInstanceState
 					.getSerializable("tag_0");
 			Classes tag1 = (Classes) savedInstanceState
@@ -149,7 +149,7 @@ public class ArenaFragment extends Fragment {
 
 			listDeck = (ArrayList<Cards>) savedInstanceState
 					.getSerializable("listDeck");
-			
+
 			if (listDeck != null && listDeck.size() >= 30) {
 				ivItem1.setVisibility(View.GONE);
 				ivItem2.setVisibility(View.GONE);
@@ -158,7 +158,6 @@ public class ArenaFragment extends Fragment {
 				return;
 			}
 
-			
 			if (tag0 == null) {
 				tag0 = selectedClass;
 			}
@@ -168,22 +167,26 @@ public class ArenaFragment extends Fragment {
 			if (tag2 == null) {
 				tag2 = selectedClass;
 			}
-			
+
 			ivItem1.setTag(tag0);
 			ivItem2.setTag(tag1);
 			ivItem3.setTag(tag2);
-			
+
 			if (tag0.getValue() != tag1.getValue()) {
 				restoreHeroState(ivItem1, tag0);
 				restoreHeroState(ivItem2, tag1);
 				restoreHeroState(ivItem3, tag2);
 			} else {
-				loader.displayImage("http://54.224.222.135/" + card0.getImage()
-						+ ".png", ivItem1, Utils.defaultOptions);
-				loader.displayImage("http://54.224.222.135/" + card1.getImage()
-						+ ".png", ivItem2, Utils.defaultOptions);
-				loader.displayImage("http://54.224.222.135/" + card2.getImage()
-						+ ".png", ivItem3, Utils.defaultOptions);
+				int resId_0 = Utils.getResIdByName(getActivity(), card0
+						.getImage().toLowerCase(Utils.curLocale));
+				int resId_1 = Utils.getResIdByName(getActivity(), card1
+						.getImage().toLowerCase(Utils.curLocale));
+				int resId_2 = Utils.getResIdByName(getActivity(), card2
+						.getImage().toLowerCase(Utils.curLocale));
+
+				ivItem1.setImageBitmap(ImageCache.get(getActivity(), resId_0));
+				ivItem2.setImageBitmap(ImageCache.get(getActivity(), resId_1));
+				ivItem3.setImageBitmap(ImageCache.get(getActivity(), resId_2));
 
 				listChoices.add(card0);
 				listChoices.add(card1);
@@ -192,10 +195,11 @@ public class ArenaFragment extends Fragment {
 				if (listDeck == null) {
 					textView.setText("Choose a card (0 / 30)");
 				} else {
-					textView.setText("Choose a card (" + listDeck.size() + " / 30)");
+					textView.setText("Choose a card (" + listDeck.size()
+							+ " / 30)");
 				}
 			}
-			
+
 			if (ivItem1.getTag() == null) {
 				ivItem1.setTag(selectedClass);
 			}
@@ -330,16 +334,18 @@ public class ArenaFragment extends Fragment {
 			} else if (listChoices.size() > 0 && v.getId() == R.id.ivItem3) {
 				listDeck.add(listChoices.get(2));
 			}
-			
+
 			DeckUtils.saveDeck(getActivity(), "arenaDeck", listDeck);
 
 			// Update TextView with current deck size
 			deckFrag.tvDeckSize.setText(listDeck.size() + " / 30");
 			// Update ListView adapter with new info
 			Collections.sort(listDeck, new CardComparator(2, false));
-			adapter = new DeckListAdapter(HearthstoneUtil.getAppContext(), listDeck);
+			adapter = new DeckListAdapter(HearthstoneUtil.getAppContext(),
+					listDeck);
 			lvArena.setAdapter(adapter);
-			deckFrag.gvDeck.setAdapter(new ImageAdapter(HearthstoneUtil.getAppContext(), listDeck));
+			deckFrag.gvDeck.setAdapter(new ImageAdapter(HearthstoneUtil
+					.getAppContext(), listDeck));
 
 			// Up until we get to 30 cards, get the next 3 random cards
 			if (listDeck.size() < 30) {
@@ -354,7 +360,7 @@ public class ArenaFragment extends Fragment {
 				// Inform them the deck is complete
 				textView.setText("Swipe left to see your finished deck!");
 			}
-			
+
 			deckFrag.setManaChart(listDeck);
 			deckFrag.setPieGraph(listDeck);
 
@@ -387,39 +393,48 @@ public class ArenaFragment extends Fragment {
 			 */
 			switch (random) {
 			case 0:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.valeera_sanguinar));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.valeera_sanguinar));
 				ivs[i].setTag(Classes.ROGUE);
 				break;
 			case 1:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.anduin_wrynn));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.anduin_wrynn));
 				ivs[i].setTag(Classes.PRIEST);
 				break;
 			case 2:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.gul_dan));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.gul_dan));
 				ivs[i].setTag(Classes.WARLOCK);
 				break;
 			case 3:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.garrosh_hellscream));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.garrosh_hellscream));
 				ivs[i].setTag(Classes.WARRIOR);
 				break;
 			case 4:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.jaina_proudmoore));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.jaina_proudmoore));
 				ivs[i].setTag(Classes.MAGE);
 				break;
 			case 5:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.thrall));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.thrall));
 				ivs[i].setTag(Classes.SHAMAN);
 				break;
 			case 6:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.malfurion_stormrage));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.malfurion_stormrage));
 				ivs[i].setTag(Classes.DRUID);
 				break;
 			case 7:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.uther_lightbringer));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.uther_lightbringer));
 				ivs[i].setTag(Classes.PALADIN);
 				break;
 			case 8:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(), R.drawable.rexxar));
+				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
+						R.drawable.rexxar));
 				ivs[i].setTag(Classes.HUNTER);
 				break;
 			}
@@ -471,21 +486,6 @@ public class ArenaFragment extends Fragment {
 					listChoices.add(card);
 				}
 			}
-
-			// Shuffle the list for maximum randomness
-			Collections.shuffle(listChoices);
-
-			// Then pick the first 3 cards, and load their images.
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3,
-					Utils.defaultOptions);
-
 		}
 		/*
 		 * ************ EPIC ************ ~10% chance if either first or last
@@ -502,16 +502,6 @@ public class ArenaFragment extends Fragment {
 					listChoices.add(card);
 				}
 			}
-			Collections.shuffle(listChoices);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3,
-					Utils.defaultOptions);
 		}
 		/*
 		 * ************ RARE ************ ~100% chance if either first or last
@@ -528,16 +518,6 @@ public class ArenaFragment extends Fragment {
 					listChoices.add(card);
 				}
 			}
-			Collections.shuffle(listChoices);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3,
-					Utils.defaultOptions);
 		} else {
 			for (Cards card : cards) {
 				if (((card.getClasss() != null && card.getClasss().intValue() == className
@@ -547,24 +527,20 @@ public class ArenaFragment extends Fragment {
 					listChoices.add(card);
 				}
 			}
-			Collections.shuffle(listChoices);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(0).getImage() + ".png", ivItem1,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(1).getImage() + ".png", ivItem2,
-					Utils.defaultOptions);
-			loader.displayImage("http://54.224.222.135/"
-					+ listChoices.get(2).getImage() + ".png", ivItem3,
-					Utils.defaultOptions);
 		}
+		
+		Collections.shuffle(listChoices);
+		ivItem1.setImageBitmap(ImageCache.get(getActivity(), getResId(0)));
+		ivItem2.setImageBitmap(ImageCache.get(getActivity(), getResId(1)));
+		ivItem3.setImageBitmap(ImageCache.get(getActivity(), getResId(2)));
 
 	}
 
 	private void restoreHeroState(ImageView iv, Classes tag) {
 		switch (tag) {
 		case DRUID:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.malfurion_stormrage));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.malfurion_stormrage));
 			iv.setTag(Classes.DRUID);
 			break;
 		case HUNTER:
@@ -572,19 +548,23 @@ public class ArenaFragment extends Fragment {
 			iv.setTag(Classes.HUNTER);
 			break;
 		case MAGE:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.jaina_proudmoore));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.jaina_proudmoore));
 			iv.setTag(Classes.MAGE);
 			break;
 		case PALADIN:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.uther_lightbringer));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.uther_lightbringer));
 			iv.setTag(Classes.PALADIN);
 			break;
 		case PRIEST:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.anduin_wrynn));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.anduin_wrynn));
 			iv.setTag(Classes.PRIEST);
 			break;
 		case ROGUE:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.valeera_sanguinar));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.valeera_sanguinar));
 			iv.setTag(Classes.ROGUE);
 			break;
 		case SHAMAN:
@@ -596,12 +576,18 @@ public class ArenaFragment extends Fragment {
 			iv.setTag(Classes.WARLOCK);
 			break;
 		case WARRIOR:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.garrosh_hellscream));
+			iv.setImageBitmap(ImageCache.get(getActivity(),
+					R.drawable.garrosh_hellscream));
 			iv.setTag(Classes.WARRIOR);
 			break;
 		default:
 			break;
 		}
+	}
+	
+	private int getResId(int position) {
+		return Utils.getResIdByName(getActivity(), listChoices.get(position)
+				.getImage().toLowerCase(Utils.curLocale));
 	}
 
 }

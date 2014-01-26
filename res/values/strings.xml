@@ -7,6 +7,15 @@
     <string name="title_activity_settings">Settings Activity</string>
     <string name="app_crash">Oops, looks like there was an error. Sending report to developer...</string>
     <string name="crash_dialog_comment_prompt">Please enter any comments you may have about the crash below:</string>
+    <string name="close_drawer">Close Drawer</string>
+    
+    <string-array name="Drawer">
+        <item>Card List</item>
+        <item>Guides</item>
+        <item>News</item>
+        <item>Arena Simulator</item>
+        <item>Deck Builder</item>
+    </string-array>
 
     <string-array name="Transitions">
         <item>Standard</item>

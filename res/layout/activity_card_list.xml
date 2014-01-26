@@ -11,7 +11,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/cardsList"
+        android:layout_below="@+id/spinnerSort"
         android:columnWidth="@dimen/grid_column_width"
         android:gravity="center_horizontal"
         android:horizontalSpacing="2dp"
@@ -28,7 +28,6 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
         android:layout_below="@+id/spinnerSort"
-        android:layout_marginTop="6dp"
         android:background="@drawable/deckbg"
         android:numColumns="auto_fit" >
 
@@ -111,7 +110,7 @@
         android:text="Reverse Sort"
         android:textColor="#000000"
         android:textSize="@dimen/spinner_textview" />
-
+    
     <RelativeLayout
         android:id="@+id/rlPopup"
         android:layout_width="match_parent"
@@ -129,7 +128,7 @@
             android:src="@drawable/press_and_hold" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/tvSomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/ivBackground"
@@ -142,7 +141,5 @@
             android:textSize="20sp" />
         
     </RelativeLayout>
-
-    
 
 </RelativeLayout>

@@ -40,11 +40,11 @@
             android:id="@+id/spinnerNumCards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/textView1"
+            android:layout_below="@+id/tvSomeText"
             android:layout_marginLeft="8dp" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/tvSomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@+id/spinnerNumCards"

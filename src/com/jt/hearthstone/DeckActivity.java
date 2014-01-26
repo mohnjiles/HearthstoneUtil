@@ -100,7 +100,7 @@ public class DeckActivity extends Fragment {
 			loader.init(Utils.config(getActivity()));
 		}
 		setHasOptionsMenu(true);
-		
+
 		// Get corresponding deck
 		cardList = (ArrayList<Cards>) DeckUtils.getCardsList(getActivity(),
 				listDecks.get(position));
@@ -163,7 +163,7 @@ public class DeckActivity extends Fragment {
 			Collections.sort(cardList, new CardComparator(2, false));
 			Collections.sort(cardListUnique, new CardComparator(2, false));
 		}
-		
+
 		adapter = new ImageAdapter(getActivity(), cardList);
 		adapter2 = new DeckListAdapter(getActivity(), cardList);
 
@@ -215,9 +215,9 @@ public class DeckActivity extends Fragment {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		
+
 		refreshDecks();
-		
+
 		if (v.getId() == R.id.lvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardListUnique.get(info.position).getName());
@@ -237,8 +237,13 @@ public class DeckActivity extends Fragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+
+		DeckChanceFragment deckChanceFragment = (DeckChanceFragment) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 3));
+
 		refreshDecks();
-		
+
 		final int bigSp = (int) TypedValue.applyDimension(
 				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
 						.getDisplayMetrics());
@@ -252,7 +257,7 @@ public class DeckActivity extends Fragment {
 					cardList));
 			Log.i("Card Removed", "Card removed, pos: " + pos);
 
-		} else if (item.getGroupId() == Menu.NONE){
+		} else if (item.getGroupId() == Menu.NONE) {
 			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
 				Cards card = it.next();
 				if (card.getName().equals(cardListUnique.get(pos).getName())) {
@@ -265,7 +270,7 @@ public class DeckActivity extends Fragment {
 			Log.i("Card Removed", "Card removed, pos: " + pos);
 
 		}
-		
+
 		// Save the updated deck
 		DeckUtils.saveDeck(getActivity(), listDecks.get(position), cardList);
 		Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
@@ -273,13 +278,14 @@ public class DeckActivity extends Fragment {
 		// Refresh Views with updated data
 		adapter.update(cardList);
 		adapter2.update(cardList);
-		//lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
-		
+		// lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
+
 		// Refresh charts
 		setManaChart(cardList);
 		setPieGraph(cardList);
 
-		
+		deckChanceFragment.updatePercents(cardList, true);
+
 		// Set current card count
 		tvNumCards.setText("" + cardList.size() + " / 30");
 
@@ -296,7 +302,7 @@ public class DeckActivity extends Fragment {
 					.setText("Looks like there's nothing here. Add cards from the left to get started!");
 			ivSwipe.setVisibility(View.VISIBLE);
 		}
-		
+
 		return super.onContextItemSelected(item);
 	}
 
@@ -338,7 +344,8 @@ public class DeckActivity extends Fragment {
 			break;
 
 		case R.id.action_rename:
-			DeckUtils.renameDeck(getActivity(), position, getActivity(), cardList);
+			DeckUtils.renameDeck(getActivity(), position, getActivity(),
+					cardList);
 			break;
 
 		// Remove call cards from current deck
@@ -356,7 +363,8 @@ public class DeckActivity extends Fragment {
 							DeckUtils.saveDeck(getActivity(),
 									listDecks.get(position), cardList);
 							adapter.update(cardList);
-							lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
+							lvDeck.setAdapter(new DeckListAdapter(
+									getActivity(), cardList));
 							tvNumCards
 									.setText("Looks like there's nothing here. Swipe right to get started!");
 						}
@@ -445,7 +453,7 @@ public class DeckActivity extends Fragment {
 			pieGraph.addSlice(slice);
 		}
 	}
-	
+
 	private void refreshDecks() {
 		cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
 				listDecks.get(position));
@@ -455,7 +463,7 @@ public class DeckActivity extends Fragment {
 		} else {
 			cardListUnique = new ArrayList<Cards>();
 		}
-		
+
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
 	}

@@ -35,7 +35,6 @@ import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
@@ -83,16 +82,10 @@ public class CardListActivity extends ActionBarActivity {
 	private TextView tvClassSort;
 
 	private MenuItem searchItem;
-	private List<Cards> deckOne;
-	private List<Cards> deckTwo;
-	private List<Cards> deckThree;
-	private List<Cards> deckFour;
-	private List<Cards> deckFive;
-	private List<Cards> deckSix;
-	private List<Cards> deckSeven;
-	private List<Cards> deckEight;
-	private List<Cards> deckNine;
-	private List<Cards> deckTen;
+	
+	private CustomDrawerLayout mDrawerLayout;
+	private ListView mDrawerList;
+	private String[] mActivityNames;
 
 	private ArrayList<Cards> cardList;
 	private ArrayList<String> deckList;
@@ -128,6 +121,8 @@ public class CardListActivity extends ActionBarActivity {
 		tvClassSort = findById(this, R.id.tvInstructions);
 		tvSort = findById(this, R.id.textView2);
 		tvMechanic = findById(this, R.id.tvCost);
+		mDrawerLayout = findById(this, R.id.drawerLayout);
+		mDrawerList = findById(this, R.id.left_drawer);
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
@@ -166,6 +161,40 @@ public class CardListActivity extends ActionBarActivity {
 				cardList.add(card);
 			}
 		}
+		
+		
+		mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							mDrawerLayout.closeDrawers();
+							break;
+						case 1:
+							startActivity(new Intent(CardListActivity.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							startActivity(new Intent(CardListActivity.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							startActivity(new Intent(CardListActivity.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							startActivity(new Intent(CardListActivity.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
 
 		Collections.sort(cardList, new CardComparator(pos, reverse));
 
@@ -355,6 +384,7 @@ public class CardListActivity extends ActionBarActivity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 
+
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			// When Settings button is clicked, start Settings Activity
@@ -364,7 +394,7 @@ public class CardListActivity extends ActionBarActivity {
 		case android.R.id.home:
 			// When the back button on the ActionBar is pressed, go up one
 			// Activity
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		case R.id.action_switch:
 			// Switches between GridView and ListView visibility

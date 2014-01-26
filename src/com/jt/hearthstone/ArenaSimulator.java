@@ -1,7 +1,10 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
 import java.util.ArrayList;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
@@ -11,13 +14,15 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.jfeinstein.jazzyviewpager.JazzyViewPager;
 import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
@@ -35,6 +40,7 @@ public class ArenaSimulator extends ActionBarActivity {
 	private JazzyViewPager myPager;
 	private TitlePageIndicator titleIndicator;
 	private FragmentAdapter adapter;
+	private DrawerLayout drawerLayout;
 	private ActionBar aBar;
 	private TransitionEffect tf;
 	private SharedPreferences prefs;
@@ -52,6 +58,41 @@ public class ArenaSimulator extends ActionBarActivity {
 
 		myPager = (JazzyViewPager) findViewById(R.id.pager);
 		titleIndicator = (TitlePageIndicator) findViewById(R.id.titles);
+		drawerLayout = findById(this, R.id.drawerLayout);
+		
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(ArenaSimulator.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(ArenaSimulator.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							startActivity(new Intent(ArenaSimulator.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							drawerLayout.closeDrawers();
+							break;
+						case 4:
+							startActivity(new Intent(ArenaSimulator.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
 
 		// Add fragments to ArrayList for our custom FragmentPagerAdapter
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
@@ -131,7 +172,7 @@ public class ArenaSimulator extends ActionBarActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		case R.id.action_restart:
 			restartArena();

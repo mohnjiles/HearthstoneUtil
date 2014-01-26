@@ -3,9 +3,7 @@ package com.jt.hearthstone;
 import java.util.Collections;
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +55,6 @@ public class ImageAdapter extends BaseAdapter {
     	ViewHolder vh;
     	Typeface font = TypefaceCache.get(mContext.getAssets(),
 				"fonts/belwebd.ttf");
-    	url = "http://54.224.222.135/Square/" + cardList.get(position).getImage() + ".png";
     	
     	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
     	// We may eventually need to disable this based on further testing
@@ -89,9 +86,10 @@ public class ImageAdapter extends BaseAdapter {
     	//vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
     	
     	// Load the image for the ImageView
-    	int resID = Utils.getResIdByName(mContext, cardList.get(position).getImage());
-    	String squareUrl = "drawable://" + resID;
-    	imageLoader.displayImage(squareUrl, vh.iv, Utils.defaultOptions);
+    	int resId = Utils.getResIdByName(mContext, cardList.get(position).getImage() + "_square");
+//    	String squareUrl = "drawable://" + resId;
+//    	imageLoader.displayImage(squareUrl, vh.iv, Utils.defaultOptions);
+    	vh.iv.setImageBitmap(ImageCache.get(mContext, resId));
     	
     	return convertView;
     	

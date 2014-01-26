@@ -14,10 +14,14 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.Locale;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.support.v4.app.NavUtils;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -112,6 +116,24 @@ public class Utils {
 		// Set our pojo from the GSON data
 		cards = gson.fromJson(jsonString, Cards[].class);
 		return cards;
+	}
+	
+	static void navigateUp(Activity activity) {
+		Intent upIntent = NavUtils.getParentActivityIntent(activity);
+        if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
+            // This activity is NOT part of NewsDetailActivity.this app's task, so create a new task
+            // when navigating up, with a synthesized back stack.
+            TaskStackBuilder.create(activity)
+                // Add all of NewsDetailActivity.this activity's parents to the back stack
+                .addNextIntentWithParentStack(upIntent)
+                // Navigate up to the closest parent
+                .startActivities();
+        } else {
+            // This activity is part of NewsDetailActivity.this app's task, so simply
+            // navigate up to the logical parent activity.
+            upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            NavUtils.navigateUpTo(activity, upIntent);
+        }
 	}
 	
 	private static void copyFile(String filename) {

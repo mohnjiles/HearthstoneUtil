@@ -44,7 +44,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="16dp"
         android:gravity="center"
         android:text="+9001"
         android:textColor="#000000"

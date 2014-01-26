@@ -1,8 +1,10 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
+import java.io.Serializable;
 import java.util.List;
 
-import android.R.integer;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.util.SparseArray;
@@ -12,9 +14,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import static butterknife.Views.findById;
+public class GuideListAdapter extends BaseAdapter implements Serializable {
 
-public class GuideListAdapter extends BaseAdapter {
+	private static final long serialVersionUID = 1608733535153958604L;
+	
 	private Context mContext;
 	private int count;
 	private List<String> deckNames;
@@ -77,7 +80,6 @@ public class GuideListAdapter extends BaseAdapter {
 		vh.tvRating.setTypeface(font);
 
 		vh.tvDeckName.setText(deckNames.get(position));
-		
 		vh.tvRating.setText(sparseRatings.get(position));
 
 		switch (classes.get(position)) {

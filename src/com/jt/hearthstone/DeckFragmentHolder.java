@@ -1,5 +1,7 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -27,6 +28,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ListView;
 
 import com.jfeinstein.jazzyviewpager.JazzyViewPager;
 import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
@@ -49,6 +52,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	private DeckActivity deckFrag;
 	private SimulatorFragment simFrag;
 	private TitlePageIndicator titles;
+	private DeckChanceFragment deckChanceFrag;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,10 +75,44 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		simFrag = new SimulatorFragment();
 		fragments.add(simFrag);
 
+		deckChanceFrag = new DeckChanceFragment();
+		fragments.add(deckChanceFrag);
+		
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
-		// AsyncTasks async = new AsyncTasks();
-		// GetClassesDeck getDeck = async.new GetClassesDeck(this, position);
-		// getDeck.execute();
+		
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(DeckFragmentHolder.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(DeckFragmentHolder.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							startActivity(new Intent(DeckFragmentHolder.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							startActivity(new Intent(DeckFragmentHolder.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							Utils.navigateUp(DeckFragmentHolder.this);
+							break;
+						}
+					}
+				});
 		
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
 		  
@@ -158,7 +196,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return super.onOptionsItemSelected(item);
 			
 		case R.id.action_settings:
@@ -229,6 +267,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 				return "Deck";
 			case 2:
 				return "Draw Simulator";
+			case 3:
+				return "Chance";
 			}
 			return null;
 		}
@@ -273,7 +313,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	}
 
 	private void setStuff(List<Integer> result) {
-		// myPager.setOffscreenPageLimit(3);
+		
 		myPager.setAdapter(adapter);
 		myPager.setCurrentItem(previousPage);
 		myPager.setOffscreenPageLimit(2);

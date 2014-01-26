@@ -7,7 +7,7 @@
     tools:context=".ArenaFragment" >
     
     <TextView
-        android:id="@+id/textView1"
+        android:id="@+id/tvSomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -21,7 +21,7 @@
         android:id="@+id/ivItem1"
         android:layout_width="@dimen/arena_width"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/tvSomeText"
         android:layout_marginRight="16dp"
         android:layout_toLeftOf="@+id/ivItem2"
         android:layout_centerVertical="true"
@@ -31,7 +31,7 @@
         android:id="@+id/ivItem3"
         android:layout_width="@dimen/arena_width"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/tvSomeText"
         android:layout_marginLeft="16dp"
         android:layout_toRightOf="@+id/ivItem2"
         android:layout_centerVertical="true"
@@ -41,7 +41,7 @@
         android:id="@+id/ivItem2"
         android:layout_width="@dimen/arena_width"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
+        android:layout_below="@+id/tvSomeText"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:src="@drawable/garrosh_hellscream" />

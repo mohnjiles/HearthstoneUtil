@@ -11,17 +11,12 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBarActivity;
-import android.text.Html;
 import android.util.SparseArray;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -30,11 +25,16 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckGuideDetail extends ActionBarActivity {
 
 	private ListView lvDeck;
+	private TextView tvDust;
 	private Cards[] cards;
+	private String dustCost;
 	private List<Cards> deckCards = new ArrayList<Cards>();
 	private Intent intent;
 	private Spinner spinSort;
@@ -47,6 +47,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 		lvDeck = findById(this, R.id.lvDeck);
 		spinSort = findById(this, R.id.spinSort);
+		tvDust = findById(this, R.id.tvSomeText);
 
 		intent = getIntent();
 
@@ -61,6 +62,8 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 		// Get url from last activity
 		url = intent.getStringExtra("url");
+		dustCost = intent.getStringExtra("dust");
+		
 		// Load the deck selected by user in last activity
 		// new FetchDeckCards(this).execute(url);
 
@@ -100,7 +103,43 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 			}
 		});
+		
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(DeckGuideDetail.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							Utils.navigateUp(DeckGuideDetail.this);
+							break;
+						case 2:
+							startActivity(new Intent(DeckGuideDetail.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							startActivity(new Intent(DeckGuideDetail.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							startActivity(new Intent(DeckGuideDetail.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
+		
+		tvDust.setText("Deck Crafting Cost: " + dustCost);
+		tvDust.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
 	}
 
 	@Override
@@ -118,7 +157,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 		case android.R.id.home:
 			// When the back button on the ActionBar is pressed, go up one
 			// Activity
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

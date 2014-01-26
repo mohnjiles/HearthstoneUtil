@@ -16,7 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -28,6 +28,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -46,6 +47,7 @@ public class DeckSelector extends ActionBarActivity {
 	private int position;
 	
 	private Typeface font;
+	private DrawerLayout drawerLayout;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,44 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Decks");
 		gvDecks = findById(this, R.id.gvDecks);
+		drawerLayout = findById(this,R.id.drawerLayout);
+		
+		ListView mDrawerList = findById(this, R.id.left_drawer);
+		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(DeckSelector.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(DeckSelector.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							startActivity(new Intent(DeckSelector.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							startActivity(new Intent(DeckSelector.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							drawerLayout.closeDrawers();
+							break;
+						}
+					}
+				});
+		
+		
+		
 		registerForContextMenu(gvDecks);
 		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(this, "deckclasses");		
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
@@ -128,7 +168,7 @@ public class DeckSelector extends ActionBarActivity {
 			//
 			// http://developer.android.com/design/patterns/navigation.html#up-vs-back
 			//
-			NavUtils.navigateUpFromSameTask(this);
+			Utils.navigateUp(this);
 			return true;
 		case R.id.action_add:
 			// Preparing views

@@ -29,5 +29,6 @@
     <dimen name="arena_text">18sp</dimen>
     <dimen name="card_name_text_size">18sp</dimen>
     <dimen name="card_stats_text_size">18sp</dimen>
+    <dimen name="sliding_size">18sp</dimen>
 
 </resources>

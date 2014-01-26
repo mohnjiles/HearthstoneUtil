@@ -20,16 +20,21 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 
 public class MainActivity extends ActionBarActivity {
 	private Button btnCardList;
@@ -37,6 +42,10 @@ public class MainActivity extends ActionBarActivity {
 	private Button btnDeckBuilder;
 	private Button btnArena;
 	private Button btnNews;
+	private CustomDrawerLayout mDrawerLayout;
+	private ActionBarDrawerToggle mDrawerToggle;
+	private ListView mDrawerList;
+	private String[] mActivityNames;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +60,15 @@ public class MainActivity extends ActionBarActivity {
 		// Set ActionBar Title
 		getSupportActionBar().setTitle("Hearthstone Companion");
 
-		Typeface font = TypefaceCache.get(getAssets(),
-				"fonts/belwebd.ttf");
-		
+		Typeface font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
+
 		btnCardList = findById(this, R.id.btnCardList);
 		btnClasses = findById(this, R.id.btnClasses);
 		btnDeckBuilder = findById(this, R.id.btnDeckBuilder);
 		btnArena = findById(this, R.id.btnArena);
 		btnNews = findById(this, R.id.btnNews);
+		mDrawerLayout = findById(this, R.id.drawerLayout);
+		mDrawerList = findById(this, R.id.left_drawer);
 
 		btnCardList.setTypeface(font);
 		btnClasses.setTypeface(font);
@@ -70,9 +80,67 @@ public class MainActivity extends ActionBarActivity {
 		btnDeckBuilder.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnArena.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnNews.setShadowLayer(1, 1, 1, Color.WHITE);
-		Log.w("Before async", "before async");
+		
+		
+
+		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
+		mDrawerLayout, /* DrawerLayout object */
+		R.drawable.ic_drawer, /* nav drawer icon to replace 'Up' caret */
+		R.string.app_name, /* "open drawer" description */
+		R.string.close_drawer /* "close drawer" description */
+		) {
+
+			/** Called when a drawer has settled in a completely closed state. */
+			public void onDrawerClosed(View view) {
+				getSupportActionBar().setTitle("Hearthstone Companion");
+			}
+
+			/** Called when a drawer has settled in a completely open state. */
+			public void onDrawerOpened(View drawerView) {
+				getSupportActionBar().setTitle("Hearthstone Companion");
+			}
+		};
+		
+		mActivityNames = getResources().getStringArray(R.array.Drawer);
+		mDrawerList.setAdapter(new NavDrawerAdapter(this,
+				R.layout.sliding_list, mActivityNames));
+		mDrawerList
+				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						switch (arg2) {
+						case 0:
+							startActivity(new Intent(MainActivity.this,
+									CardListActivity.class));
+							break;
+						case 1:
+							startActivity(new Intent(MainActivity.this,
+									DeckGuides.class));
+							break;
+						case 2:
+							startActivity(new Intent(MainActivity.this,
+									NewsActivity.class));
+							break;
+						case 3:
+							startActivity(new Intent(MainActivity.this,
+									ArenaSimulator.class));
+							break;
+						case 4:
+							startActivity(new Intent(MainActivity.this,
+									DeckSelector.class));
+							break;
+						}
+					}
+				});
+
+		mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+		getSupportActionBar().setHomeButtonEnabled(true);
+
 		new CheckVersion().execute();
-		Log.w("After async", "after async");
 
 	}
 
@@ -82,9 +150,27 @@ public class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
+	@Override
+	protected void onPostCreate(Bundle savedInstanceState) {
+		super.onPostCreate(savedInstanceState);
+		// Sync the toggle state after onRestoreInstanceState has occurred.
+		mDrawerToggle.syncState();
+	}
+
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		super.onConfigurationChanged(newConfig);
+		mDrawerToggle.onConfigurationChanged(newConfig);
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+
+		if (mDrawerToggle.onOptionsItemSelected(item)) {
+			return true;
+		}
+
 		switch (item.getItemId()) {
 		case R.id.action_settings:
 			startActivity(new Intent(MainActivity.this, SettingsActivity.class));
@@ -102,7 +188,7 @@ public class MainActivity extends ActionBarActivity {
 	public void classesPressed(View view) {
 		startActivity(new Intent(MainActivity.this, DeckGuides.class));
 	}
-	
+
 	public void arenaPressed(View view) {
 		startActivity(new Intent(MainActivity.this, ArenaSimulator.class));
 	}
@@ -110,11 +196,11 @@ public class MainActivity extends ActionBarActivity {
 	public void deckSelectorPressed(View view) {
 		startActivity(new Intent(MainActivity.this, DeckSelector.class));
 	}
-	
+
 	public void newsPressed(View view) {
 		startActivity(new Intent(MainActivity.this, NewsActivity.class));
 	}
-	
+
 	private class CheckVersion extends AsyncTask<Void, Void, String> {
 
 		@Override
@@ -134,13 +220,13 @@ public class MainActivity extends ActionBarActivity {
 				reader = new BufferedReader(new InputStreamReader(httpResponse
 						.getEntity().getContent(), "UTF-8"));
 				version = reader.readLine();
-				
+
 				FileInputStream inStream = openFileInput("version.txt");
 				Writer writer = new StringWriter();
 				char[] buffer = new char[1024];
 				try {
-					Reader readerz = new BufferedReader(new InputStreamReader(inStream,
-							"UTF-8"));
+					Reader readerz = new BufferedReader(new InputStreamReader(
+							inStream, "UTF-8"));
 					int n;
 					while ((n = readerz.read(buffer)) != -1) {
 						writer.write(buffer, 0, n);
@@ -183,8 +269,8 @@ public class MainActivity extends ActionBarActivity {
 				Writer writer = new StringWriter();
 				char[] buffer = new char[1024];
 				try {
-					Reader reader = new BufferedReader(new InputStreamReader(fis,
-							"UTF-8"));
+					Reader reader = new BufferedReader(new InputStreamReader(
+							fis, "UTF-8"));
 					int n;
 					while ((n = reader.read(buffer)) != -1) {
 						writer.write(buffer, 0, n);
@@ -209,29 +295,28 @@ public class MainActivity extends ActionBarActivity {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
-			
+
 			if (!result.equals(version)) {
 				try {
 					OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
 							openFileOutput("version.txt", Context.MODE_PRIVATE));
 					outputStreamWriter.write(result);
-					
+
 					Log.w("Server Version", "Server version: " + result);
 					Log.w("Current Version", "Current Version: " + version);
 					Log.i("updating version.txt", "updating version.txt");
-					
+
 					outputStreamWriter.close();
 				} catch (IOException e) {
 					e.printStackTrace();
-				} 
-				
+				}
+
 				new UpdateJson().execute();
 			}
 		}
-		
 
 	}
-	
+
 	private class UpdateJson extends AsyncTask<Void, Void, Void> {
 
 		@Override
@@ -240,7 +325,8 @@ public class MainActivity extends ActionBarActivity {
 			// Create a new HTTP Client
 			DefaultHttpClient defaultClient = new DefaultHttpClient();
 			// Setup the get request
-			HttpGet httpGetRequest = new HttpGet("http://54.224.222.135/cards.json");
+			HttpGet httpGetRequest = new HttpGet(
+					"http://54.224.222.135/cards.json");
 
 			// Execute the request in the client
 			HttpResponse httpResponse = null;
@@ -265,9 +351,7 @@ public class MainActivity extends ActionBarActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-			
-			
+
 			return null;
 		}
 	}

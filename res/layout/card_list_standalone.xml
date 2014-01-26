@@ -1,135 +1,151 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/app_bg"
-    tools:context=".MainActivity" >
+<com.jt.hearthstone.CustomDrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content" >
 
-    <GridView
-        android:id="@+id/gvDeck"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/cbGenerics"
-        android:columnWidth="@dimen/grid_image_height"
-        android:gravity="center_horizontal"
-        android:horizontalSpacing="2dp"
-        android:numColumns="auto_fit"
-        android:verticalSpacing="2dp" >
+    <RelativeLayout
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/app_bg"
+        tools:context=".MainActivity" >
 
-    </GridView>
+        <GridView
+            android:id="@+id/gvDeck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/cbGenerics"
+            android:columnWidth="@dimen/grid_image_height"
+            android:gravity="center_horizontal"
+            android:horizontalSpacing="2dp"
+            android:numColumns="auto_fit"
+            android:verticalSpacing="2dp" >
+        </GridView>
+
+        <ListView
+            android:id="@+id/cardsList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/cbGenerics"
+            android:background="@drawable/deckbg"
+            android:numColumns="auto_fit" >
+        </ListView>
+
+        <Spinner
+            android:id="@+id/spinClass"
+            style="android:spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="8dp"
+            android:layout_toLeftOf="@+id/imageView1"
+            android:layout_toRightOf="@+id/tvInstructions"
+            android:entries="@array/Classes" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="4dp"
+            android:layout_height="4dp"
+            android:layout_centerHorizontal="true" />
+
+        <Spinner
+            android:id="@+id/spinSort"
+            style="android:spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@+id/spinClass"
+            android:layout_marginRight="16dp"
+            android:layout_toRightOf="@+id/textView2"
+            android:entries="@array/Sort" />
+
+        <TextView
+            android:id="@+id/tvInstructions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/spinClass"
+            android:layout_alignParentLeft="true"
+            android:layout_alignTop="@+id/spinClass"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="4dp"
+            android:gravity="center_vertical"
+            android:text="Class:"
+            android:textColor="#000000" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvInstructions"
+            android:layout_alignLeft="@+id/imageView1"
+            android:layout_alignTop="@+id/spinClass"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="4dp"
+            android:gravity="center_vertical"
+            android:text="Sort:"
+            android:textColor="#000000" />
+
+        <CheckBox
+            android:id="@+id/cbGenerics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/cbReverse"
+            android:layout_below="@+id/spinSort"
+            android:layout_marginTop="30dp"
+            android:text="Neutral Cards"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <CheckBox
+            android:id="@+id/cbReverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_below="@+id/spinSort"
+            android:text="Reverse Sort"
+            android:textColor="#000000"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/cbGenerics"
+            android:layout_alignLeft="@+id/tvInstructions"
+            android:layout_alignTop="@+id/spinnerMechanic"
+            android:layout_marginBottom="16dp"
+            android:gravity="center_vertical"
+            android:text="Mechanic: "
+            android:textColor="#000000" />
+
+        <Spinner
+            android:id="@+id/spinnerMechanic"
+            style="android:spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/cbGenerics"
+            android:layout_alignRight="@+id/spinClass"
+            android:layout_marginBottom="16dp"
+            android:layout_toRightOf="@+id/tvCost"
+            android:entries="@array/Mechanic" />
+    </RelativeLayout>
+
+    <!-- The navigation drawer -->
 
     <ListView
-        android:id="@+id/cardsList"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@+id/cbGenerics"
-        android:background="@drawable/deckbg"
-        android:numColumns="auto_fit" >
+        android:id="@+id/left_drawer"
+        android:layout_width="240dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:background="@drawable/app_bg"
+        android:choiceMode="singleChoice"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0dp" />
 
-    </ListView>
-
-    <Spinner
-        android:id="@+id/spinClass"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="8dp"
-        android:layout_toLeftOf="@+id/imageView1"
-        android:layout_toRightOf="@+id/tvInstructions"
-        android:entries="@array/Classes" />
-
-    <ImageView
-        android:id="@+id/imageView1"
-        android:layout_width="4dp"
-        android:layout_height="4dp"
-        android:layout_centerHorizontal="true" />
-
-    <Spinner
-        android:id="@+id/spinSort"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/spinClass"
-        android:layout_marginRight="16dp"
-        android:layout_toRightOf="@+id/textView2"
-        android:entries="@array/Sort" />
-
-    <TextView
-        android:id="@+id/tvInstructions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinClass"
-        android:layout_alignParentLeft="true"
-        android:layout_alignTop="@+id/spinClass"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="4dp"
-        android:gravity="center_vertical"
-        android:text="Class:"
-        android:textColor="#000000" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/tvInstructions"
-        android:layout_alignLeft="@+id/imageView1"
-        android:layout_alignTop="@+id/spinClass"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="4dp"
-        android:gravity="center_vertical"
-        android:text="Sort:"
-        android:textColor="#000000" />
-
-    <CheckBox
-        android:id="@+id/cbGenerics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/cbReverse"
-        android:layout_below="@+id/spinSort"
-        android:layout_marginTop="30dp"
-        android:text="Neutral Cards"
-        android:textColor="#000000"
-        android:textSize="12sp" />
-
-    <CheckBox
-        android:id="@+id/cbReverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_below="@+id/spinSort"
-        android:text="Reverse Sort"
-        android:textColor="#000000"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/tvCost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/cbGenerics"
-        android:layout_alignLeft="@+id/tvInstructions"
-        android:layout_alignTop="@+id/spinnerMechanic"
-        android:layout_marginBottom="16dp"
-        android:gravity="center_vertical"
-        android:text="Mechanic: "
-        android:textColor="#000000" />
-
-    <Spinner
-        android:id="@+id/spinnerMechanic"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/cbGenerics"
-        android:layout_alignRight="@+id/spinClass"
-        android:layout_marginBottom="16dp"
-        android:layout_toRightOf="@+id/tvCost"
-        android:entries="@array/Mechanic" />
-
-</RelativeLayout>
+</com.jt.hearthstone.CustomDrawerLayout>

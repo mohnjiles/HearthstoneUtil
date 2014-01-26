@@ -130,7 +130,7 @@
             android:src="@drawable/press_and_hold" />
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/tvSomeText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@+id/ivBackground"
