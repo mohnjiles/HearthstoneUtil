@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvDrawer"
+    android:layout_width="fill_parent"
+    android:layout_height="48dip"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:textColor="#000000"
+    android:textSize="@dimen/sliding_size"
+    android:gravity="center_vertical"
+    android:paddingLeft="8dip"
+    android:minHeight="?android:attr/listPreferredItemHeight"
+    android:background="@drawable/another_selector"
+/>

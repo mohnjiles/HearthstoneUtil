@@ -1,0 +1,19 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:hearthstone="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/action_restart"
+        android:icon="@drawable/ic_menu_refresh"
+        android:title="Start over"
+        hearthstone:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_undo"
+        android:icon="@drawable/ic_menu_revert"
+        android:title="Undo"
+        hearthstone:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_rename"
+        android:title="Rename deck"
+        hearthstone:showAsAction="never"/>
+
+</menu>

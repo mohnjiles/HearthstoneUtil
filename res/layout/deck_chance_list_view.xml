@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/relativeList"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp" >
+
+    <!-- ListRow Left sied Thumbnail image -->
+
+    <TextView
+        android:id="@+id/tvDeckName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/thumbnail"
+        android:gravity="left"
+        android:text="Al&apos;Akir the Windlord"
+        android:textColor="#000000"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/tvNumCards"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="8dp"
+        android:text="x 2" />
+
+    <LinearLayout
+        android:id="@+id/thumbnail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="28dp"
+        android:background="#00000000"
+        android:orientation="horizontal"
+        android:padding="2dip" >
+
+        <ImageView
+            android:id="@+id/ivClassImage"
+            android:layout_width="@dimen/card_class_size"
+            android:layout_height="@dimen/card_class_size" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvPercent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignTop="@+id/tvDeckName"
+        android:layout_centerVertical="true"
+        android:text="123" />
+
+</RelativeLayout>
