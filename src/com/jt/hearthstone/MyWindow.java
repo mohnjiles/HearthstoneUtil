@@ -251,11 +251,11 @@ public class MyWindow {
 			});
 
 			if (v.getId() == R.id.lvDeck || v.getId() == R.id.lvArena) {
-				url = "drawable://"
-						+ Utils.getResIdByName(cxt,
-								cardListUnique.get(position).getImage()
-										.toLowerCase(Utils.curLocale));
-				loader.displayImage(url, ivCardImage, Utils.defaultOptions);
+				int resId = Utils.getResIdByName(
+						cxt,
+						cardListUnique.get(position).getImage()
+								.toLowerCase(Utils.curLocale));
+				ivCardImage.setImageResource(resId);
 
 				// Get card name
 				tvCardName.setText(cardListUnique.get(position).getName());
@@ -273,10 +273,9 @@ public class MyWindow {
 				tvCrafted
 						.setText(cardListUnique.get(position).getDescription());
 			} else {
-				url = "drawable://"
-						+ Utils.getResIdByName(cxt, cardList.get(position)
-								.getImage().toLowerCase(Utils.curLocale));
-				loader.displayImage(url, ivCardImage, Utils.defaultOptions);
+				int resId = Utils.getResIdByName(cxt, cardList.get(position)
+						.getImage().toLowerCase(Utils.curLocale));
+				ivCardImage.setImageResource(resId);
 
 				// Get card name
 				tvCardName.setText(cardList.get(position).getName());
@@ -486,7 +485,8 @@ public class MyWindow {
 		final int cardListPos = position;
 
 		int millis = 350;
-		if (DiscCacheUtil.findInCache(url, ImageLoader.getInstance().getDiscCache()) == null) {
+		if (DiscCacheUtil.findInCache(url, ImageLoader.getInstance()
+				.getDiscCache()) == null) {
 			millis = 0;
 		} else {
 			millis = 350;
@@ -503,10 +503,10 @@ public class MyWindow {
 					ivCardImage.setTag("Premium");
 				} else {
 					loader.cancelDisplayTask(ivCardImage);
-					ivCardImage.setImageBitmap(ImageCache.get(
+					ivCardImage.setImageResource(Utils.getResIdByName(
 							cxt,
-							Utils.getResIdByName(cxt, cardList.get(cardListPos)
-									.getImage().toLowerCase(Utils.curLocale))));
+							cardList.get(cardListPos).getImage()
+									.toLowerCase(Utils.curLocale)));
 					ivCardImage.setTag("Standard");
 				}
 

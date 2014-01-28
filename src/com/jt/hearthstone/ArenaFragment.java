@@ -2,6 +2,7 @@ package com.jt.hearthstone;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -15,6 +16,8 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nineoldandroids.animation.AnimatorSet;
+import com.nineoldandroids.animation.ObjectAnimator;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
@@ -32,8 +35,8 @@ public class ArenaFragment extends Fragment {
 	private ListView lvArena;
 	TextView textView;
 	private Cards cards[];
-	public ArrayList<Cards> listChoices = new ArrayList<Cards>();
-	ArrayList<Cards> listDeck = new ArrayList<Cards>();
+	public List<Cards> listChoices = new ArrayList<Cards>();
+	List<Cards> listDeck = new ArrayList<Cards>();
 	ImageLoader loader = ImageLoader.getInstance();
 	private Classes selectedClass;
 	DeckListAdapter adapter;
@@ -89,7 +92,7 @@ public class ArenaFragment extends Fragment {
 		}
 
 		if (listDeck.size() > 0) {
-			outState.putSerializable("listDeck", listDeck);
+			outState.putSerializable("listDeck", (ArrayList<Cards>) listDeck);
 		}
 
 		getActivity().getSupportFragmentManager().putFragment(outState,
@@ -99,6 +102,7 @@ public class ArenaFragment extends Fragment {
 
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -147,7 +151,7 @@ public class ArenaFragment extends Fragment {
 			Cards card1 = (Cards) savedInstanceState.getSerializable("card_1");
 			Cards card2 = (Cards) savedInstanceState.getSerializable("card_2");
 
-			listDeck = (ArrayList<Cards>) savedInstanceState
+			listDeck = (List<Cards>) savedInstanceState
 					.getSerializable("listDeck");
 
 			if (listDeck != null && listDeck.size() >= 30) {
@@ -184,9 +188,12 @@ public class ArenaFragment extends Fragment {
 				int resId_2 = Utils.getResIdByName(getActivity(), card2
 						.getImage().toLowerCase(Utils.curLocale));
 
-				ivItem1.setImageBitmap(ImageCache.get(getActivity(), resId_0));
-				ivItem2.setImageBitmap(ImageCache.get(getActivity(), resId_1));
-				ivItem3.setImageBitmap(ImageCache.get(getActivity(), resId_2));
+				loader.displayImage("drawable://" + resId_0, ivItem1,
+						Utils.defaultOptions);
+				loader.displayImage("drawable://" + resId_1, ivItem2,
+						Utils.defaultOptions);
+				loader.displayImage("drawable://" + resId_2, ivItem3,
+						Utils.defaultOptions);
 
 				listChoices.add(card0);
 				listChoices.add(card1);
@@ -393,48 +400,39 @@ public class ArenaFragment extends Fragment {
 			 */
 			switch (random) {
 			case 0:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.valeera_sanguinar));
+				ivs[i].setImageResource(R.drawable.valeera_sanguinar);
 				ivs[i].setTag(Classes.ROGUE);
 				break;
 			case 1:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.anduin_wrynn));
+				ivs[i].setImageResource(R.drawable.anduin_wrynn);
 				ivs[i].setTag(Classes.PRIEST);
 				break;
 			case 2:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.gul_dan));
+				ivs[i].setImageResource(R.drawable.gul_dan);
 				ivs[i].setTag(Classes.WARLOCK);
 				break;
 			case 3:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.garrosh_hellscream));
+				ivs[i].setImageResource(R.drawable.garrosh_hellscream);
 				ivs[i].setTag(Classes.WARRIOR);
 				break;
 			case 4:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.jaina_proudmoore));
+				ivs[i].setImageResource(R.drawable.jaina_proudmoore);
 				ivs[i].setTag(Classes.MAGE);
 				break;
 			case 5:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.thrall));
+				ivs[i].setImageResource(R.drawable.thrall);
 				ivs[i].setTag(Classes.SHAMAN);
 				break;
 			case 6:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.malfurion_stormrage));
+				ivs[i].setImageResource(R.drawable.malfurion_stormrage);
 				ivs[i].setTag(Classes.DRUID);
 				break;
 			case 7:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.uther_lightbringer));
+				ivs[i].setImageResource(R.drawable.uther_lightbringer);
 				ivs[i].setTag(Classes.PALADIN);
 				break;
 			case 8:
-				ivs[i].setImageBitmap(ImageCache.get(getActivity(),
-						R.drawable.rexxar));
+				ivs[i].setImageResource(R.drawable.rexxar);
 				ivs[i].setTag(Classes.HUNTER);
 				break;
 			}
@@ -528,63 +526,77 @@ public class ArenaFragment extends Fragment {
 				}
 			}
 		}
+
+		AnimatorSet set = new AnimatorSet();
+		set.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 1, 0.5f),
+				ObjectAnimator.ofFloat(ivItem1, "scaleY", 1, 0.5f),
+				ObjectAnimator.ofFloat(ivItem2, "scaleX", 1, 0.5f),
+				ObjectAnimator.ofFloat(ivItem2, "scaleY", 1, 0.5f),
+				ObjectAnimator.ofFloat(ivItem3, "scaleX", 1, 0.5f),
+				ObjectAnimator.ofFloat(ivItem3, "scaleY", 1, 0.5f));
+
+		set.setDuration(125).start();
 		
+		AnimatorSet otherSet = new AnimatorSet();
+		otherSet.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 0.5f, 1),
+				ObjectAnimator.ofFloat(ivItem1, "scaleY", 0.5f, 1),
+				ObjectAnimator.ofFloat(ivItem2, "scaleX", 0.5f, 1),
+				ObjectAnimator.ofFloat(ivItem2, "scaleY", 0.5f, 1),
+				ObjectAnimator.ofFloat(ivItem3, "scaleX", 0.5f, 1),
+				ObjectAnimator.ofFloat(ivItem3, "scaleY", 0.5f, 1));
+		otherSet.setDuration(125).start();
+
 		Collections.shuffle(listChoices);
-		ivItem1.setImageBitmap(ImageCache.get(getActivity(), getResId(0)));
-		ivItem2.setImageBitmap(ImageCache.get(getActivity(), getResId(1)));
-		ivItem3.setImageBitmap(ImageCache.get(getActivity(), getResId(2)));
+
+		ivItem1.setImageResource(getResId(0));
+		ivItem2.setImageResource(getResId(1));
+		ivItem3.setImageResource(getResId(2));
 
 	}
 
 	private void restoreHeroState(ImageView iv, Classes tag) {
 		switch (tag) {
 		case DRUID:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.malfurion_stormrage));
+			iv.setImageResource(R.drawable.malfurion_stormrage);
 			iv.setTag(Classes.DRUID);
 			break;
 		case HUNTER:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.rexxar));
+			iv.setImageResource(R.drawable.rexxar);
 			iv.setTag(Classes.HUNTER);
 			break;
 		case MAGE:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.jaina_proudmoore));
+			iv.setImageResource(R.drawable.jaina_proudmoore);
 			iv.setTag(Classes.MAGE);
 			break;
 		case PALADIN:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.uther_lightbringer));
+			iv.setImageResource(R.drawable.uther_lightbringer);
 			iv.setTag(Classes.PALADIN);
 			break;
 		case PRIEST:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.anduin_wrynn));
+			iv.setImageResource(R.drawable.anduin_wrynn);
 			iv.setTag(Classes.PRIEST);
 			break;
 		case ROGUE:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.valeera_sanguinar));
+			iv.setImageResource(R.drawable.valeera_sanguinar);
 			iv.setTag(Classes.ROGUE);
 			break;
 		case SHAMAN:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.thrall));
+			iv.setImageResource(R.drawable.thrall);
 			iv.setTag(Classes.SHAMAN);
 			break;
 		case WARLOCK:
-			iv.setImageBitmap(ImageCache.get(getActivity(), R.drawable.gul_dan));
+			iv.setImageResource(R.drawable.gul_dan);
 			iv.setTag(Classes.WARLOCK);
 			break;
 		case WARRIOR:
-			iv.setImageBitmap(ImageCache.get(getActivity(),
-					R.drawable.garrosh_hellscream));
+			iv.setImageResource(R.drawable.garrosh_hellscream);
 			iv.setTag(Classes.WARRIOR);
 			break;
 		default:
 			break;
 		}
 	}
-	
+
 	private int getResId(int position) {
 		return Utils.getResIdByName(getActivity(), listChoices.get(position)
 				.getImage().toLowerCase(Utils.curLocale));

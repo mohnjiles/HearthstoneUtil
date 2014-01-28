@@ -386,7 +386,7 @@ public class DeckActivity extends Fragment {
 	public static void setManaChart(List<Cards> cardList) {
 		ArrayList<Bar> points = new ArrayList<Bar>();
 
-		int costs[] = new int[20];
+		int costs[] = new int[8];
 
 		for (Cards card : cardList) {
 			if (card.getCost() != null) {

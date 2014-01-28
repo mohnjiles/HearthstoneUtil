@@ -82,7 +82,7 @@ public class CardListActivity extends ActionBarActivity {
 	private TextView tvClassSort;
 
 	private MenuItem searchItem;
-	
+
 	private CustomDrawerLayout mDrawerLayout;
 	private ListView mDrawerList;
 	private String[] mActivityNames;
@@ -153,16 +153,19 @@ public class CardListActivity extends ActionBarActivity {
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
-				cardList.add(card);
+				if (card.getClasss() == null) {
+					cardList.add(card);
+				}
 			}
 		} else {
 			cardList.clear();
 			for (Cards card : cards) {
-				cardList.add(card);
+				if (card.getClasss() == null) {
+					cardList.add(card);
+				}
 			}
 		}
-		
-		
+
 		mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
 				R.layout.sliding_list, mActivityNames));
@@ -243,7 +246,7 @@ public class CardListActivity extends ActionBarActivity {
 
 						if (mSearchView != null) {
 							query = mSearchView.getQuery().toString()
-									.toLowerCase();
+									.toLowerCase(Utils.curLocale);
 						} else {
 							query = "";
 						}
@@ -257,7 +260,8 @@ public class CardListActivity extends ActionBarActivity {
 								if (card.getClasss() == null
 										&& !mechanic.equals("Any")
 										&& card.getDescription() != null
-										&& card.getName().toLowerCase()
+										&& card.getName()
+												.toLowerCase(Utils.curLocale)
 												.contains(query)
 										&& card.getDescription().contains(
 												mechanic)) {
@@ -266,8 +270,9 @@ public class CardListActivity extends ActionBarActivity {
 								} else {
 									if (card.getClasss() == null
 											&& mechanic.equals("Any")
-											&& card.getName().toLowerCase()
-													.contains(query)) {
+											&& (card.getName().toLowerCase(
+													Utils.curLocale)
+													.contains(query))) {
 										cardList.add(card);
 									}
 								}
@@ -383,7 +388,6 @@ public class CardListActivity extends ActionBarActivity {
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-
 
 		switch (item.getItemId()) {
 		case R.id.action_settings:
@@ -554,7 +558,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		List<Cards> list = DeckUtils.getCardsList(this,
 				deckList.get(menuItemIndex));
-		
+
 		if (list == null) {
 			list = new ArrayList<Cards>();
 		}
@@ -605,51 +609,7 @@ public class CardListActivity extends ActionBarActivity {
 			e.printStackTrace();
 		}
 	}
-
-	private class UpdateJson extends AsyncTask<Void, Void, Void> {
-
-		@Override
-		protected Void doInBackground(Void... params) {
-
-			// Create a new HTTP Client
-			DefaultHttpClient defaultClient = new DefaultHttpClient();
-			// Setup the get request
-			HttpGet httpGetRequest = new HttpGet(
-					"http://54.224.222.135/cards.json");
-
-			// Execute the request in the client
-			HttpResponse httpResponse = null;
-			BufferedReader reader = null;
-
-			try {
-				httpResponse = defaultClient.execute(httpGetRequest);
-				reader = new BufferedReader(new InputStreamReader(httpResponse
-						.getEntity().getContent(), "UTF-8"));
-				String json = reader.readLine();
-				OutputStreamWriter outputStreamWriter = new OutputStreamWriter(
-						openFileOutput("cards.json", Context.MODE_PRIVATE));
-				outputStreamWriter.write(json);
-				outputStreamWriter.close();
-			} catch (ClientProtocolException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-			return null;
-		}
-
-		@Override
-		protected void onPostExecute(Void result) {
-
-		}
-
-	}
-
+	
 	private void copyFile(String filename) {
 		AssetManager assetManager = this.getAssets();
 
@@ -724,12 +684,16 @@ public class CardListActivity extends ActionBarActivity {
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
-				cardList.add(card);
+				if (card.getClasss() == null) {
+					cardList.add(card);
+				}
 			}
 		} else {
 			cardList.clear();
 			for (Cards card : cards) {
-				cardList.add(card);
+				if (card.getClasss() == null) {
+					cardList.add(card);
+				}
 			}
 		}
 	}

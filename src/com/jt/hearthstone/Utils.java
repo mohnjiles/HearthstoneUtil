@@ -33,26 +33,30 @@ public class Utils {
 	private static Context cxt = HearthstoneUtil.getAppContext();
 	static Locale curLocale = cxt.getResources().getConfiguration().locale;
 	static Cards[] cards;
+	final static int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
 	static final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
 			.resetViewBeforeLoading(false).cacheOnDisc(true)
-			.cacheInMemory(false).bitmapConfig(Bitmap.Config.ARGB_8888)
+			.cacheInMemory(true).bitmapConfig(Bitmap.Config.ARGB_8888)
 			.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 
 	static final DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-			.resetViewBeforeLoading(false).cacheInMemory(false)
+			.resetViewBeforeLoading(false).cacheInMemory(true)
 			.cacheOnDisc(true).showStubImage(R.drawable.cards)
 			.bitmapConfig(Bitmap.Config.ARGB_8888)
 			.imageScaleType(ImageScaleType.IN_SAMPLE_INT).build();
 
 	static final ImageLoaderConfiguration config(Context c) {
 		return new ImageLoaderConfiguration.Builder(c)
+				.threadPriority(Thread.MAX_PRIORITY)
 				.discCacheExtraOptions(480, 800, CompressFormat.PNG, 75, null)
 				.threadPoolSize(5).defaultDisplayImageOptions(defaultOptions)
 				.denyCacheImageMultipleSizesInMemory()
+				.memoryCacheExtraOptions(480, 800)
+				.memoryCacheSize(maxMemory / 8)
 				.discCacheSize(100 * 1024 * 1024).writeDebugLogs().build();
 	}
-	
+
 	static final ImageLoaderConfiguration squareConfig(Context c) {
 		return new ImageLoaderConfiguration.Builder(c)
 				.discCacheExtraOptions(120, 120, CompressFormat.PNG, 75, null)
@@ -70,7 +74,7 @@ public class Utils {
 	static String makeFragmentName(int viewId, int index) {
 		return "android:switcher:" + viewId + ":" + index;
 	}
-	
+
 	static Cards[] setupCardList() {
 		Gson gson = new Gson();
 
@@ -117,25 +121,28 @@ public class Utils {
 		cards = gson.fromJson(jsonString, Cards[].class);
 		return cards;
 	}
-	
+
 	static void navigateUp(Activity activity) {
 		Intent upIntent = NavUtils.getParentActivityIntent(activity);
-        if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
-            // This activity is NOT part of NewsDetailActivity.this app's task, so create a new task
-            // when navigating up, with a synthesized back stack.
-            TaskStackBuilder.create(activity)
-                // Add all of NewsDetailActivity.this activity's parents to the back stack
-                .addNextIntentWithParentStack(upIntent)
-                // Navigate up to the closest parent
-                .startActivities();
-        } else {
-            // This activity is part of NewsDetailActivity.this app's task, so simply
-            // navigate up to the logical parent activity.
-            upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            NavUtils.navigateUpTo(activity, upIntent);
-        }
+		if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
+			// This activity is NOT part of NewsDetailActivity.this app's task,
+			// so create a new task
+			// when navigating up, with a synthesized back stack.
+			TaskStackBuilder.create(activity)
+			// Add all of NewsDetailActivity.this activity's parents to the back
+			// stack
+					.addNextIntentWithParentStack(upIntent)
+					// Navigate up to the closest parent
+					.startActivities();
+		} else {
+			// This activity is part of NewsDetailActivity.this app's task, so
+			// simply
+			// navigate up to the logical parent activity.
+			upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+			NavUtils.navigateUpTo(activity, upIntent);
+		}
 	}
-	
+
 	private static void copyFile(String filename) {
 		AssetManager assetManager = cxt.getAssets();
 
@@ -143,8 +150,7 @@ public class Utils {
 		OutputStream out = null;
 		try {
 			in = assetManager.open(filename);
-			String newFileName = cxt.getFilesDir().getPath() + "/"
-					+ filename;
+			String newFileName = cxt.getFilesDir().getPath() + "/" + filename;
 			out = new FileOutputStream(newFileName);
 
 			byte[] buffer = new byte[1024];

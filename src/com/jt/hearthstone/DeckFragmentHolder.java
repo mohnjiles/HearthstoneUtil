@@ -316,7 +316,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		
 		myPager.setAdapter(adapter);
 		myPager.setCurrentItem(previousPage);
-		myPager.setOffscreenPageLimit(2);
+		myPager.setOffscreenPageLimit(3);
 		myPager.setTransitionEffect(tf);
 
 		aBar.setTitle(getIntent().getStringExtra("name"));

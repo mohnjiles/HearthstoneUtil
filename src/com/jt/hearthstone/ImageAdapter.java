@@ -83,13 +83,10 @@ public class ImageAdapter extends BaseAdapter {
 		// Set the Text of the TextView
     	vh.tv.setTypeface(font);
     	vh.tv.setText(cardList.get(position).getName());
-    	//vh.tv.setShadowLayer(1.0f, 1, 1, Color.BLACK);
     	
     	// Load the image for the ImageView
     	int resId = Utils.getResIdByName(mContext, cardList.get(position).getImage() + "_square");
-//    	String squareUrl = "drawable://" + resId;
-//    	imageLoader.displayImage(squareUrl, vh.iv, Utils.defaultOptions);
-    	vh.iv.setImageBitmap(ImageCache.get(mContext, resId));
+    	vh.iv.setImageResource(resId);
     	
     	return convertView;
     	
