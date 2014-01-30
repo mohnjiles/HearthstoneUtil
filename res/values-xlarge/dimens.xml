@@ -5,7 +5,7 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="card_icon">500dp</dimen>
     <dimen name="card_icon_width">375dp</dimen>
-    <dimen name="card_icon_padding_left">-72dp</dimen>
+    <dimen name="card_icon_padding_left">-8dp</dimen>
     <dimen name="card_icon_padding_right">-40dp</dimen>
     <dimen name="card_name_padding">48dp</dimen>
     <dimen name="card_class_size">64dp</dimen>
@@ -17,6 +17,9 @@
     <dimen name="arena_width">300dp</dimen>
     <dimen name="arena_text_margin">16dp</dimen>
     <dimen name="deck_grid_size">276dp</dimen>
+    <dimen name="arena_card_height">400dp</dimen>
+    <dimen name="arena_card_width">280dp</dimen>
+    <dimen name="top_layout_height">240dp</dimen>
 
     <!-- Text Sizes -->
     <dimen name="card_list_textview">18sp</dimen>
@@ -25,5 +28,6 @@
     <dimen name="card_name_text_size">20sp</dimen>
     <dimen name="card_stats_text_size">20sp</dimen>
     <dimen name="sliding_size">20sp</dimen>
+    <dimen name="square_text_size">20sp</dimen>
 
 </resources>

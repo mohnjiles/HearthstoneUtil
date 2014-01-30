@@ -21,7 +21,7 @@
         android:gravity="left"
         android:text="Al&apos;Akir the Windlord"
         android:textColor="#000000"
-        android:textSize="16sp" />
+        android:textSize="@dimen/card_name_text_size" />
 
     <TextView
         android:id="@+id/tvNumCards"
@@ -30,7 +30,8 @@
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
-        android:text="x 2" />
+        android:text="x 2"
+        android:textSize="@dimen/arena_text" />
 
     <LinearLayout
         android:id="@+id/thumbnail"
@@ -56,6 +57,7 @@
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/tvDeckName"
         android:layout_centerVertical="true"
-        android:text="123" />
+        android:text="123"
+        android:textSize="@dimen/arena_text" />
 
 </RelativeLayout>

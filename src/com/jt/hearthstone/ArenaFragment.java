@@ -12,13 +12,13 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.nineoldandroids.animation.AnimatorSet;
 import com.nineoldandroids.animation.ObjectAnimator;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Main Fragment responsible for choosing random hero and cards for the Arena
@@ -37,7 +37,6 @@ public class ArenaFragment extends Fragment {
 	private Cards cards[];
 	public List<Cards> listChoices = new ArrayList<Cards>();
 	List<Cards> listDeck = new ArrayList<Cards>();
-	ImageLoader loader = ImageLoader.getInstance();
 	private Classes selectedClass;
 	DeckListAdapter adapter;
 	ArenaDeckFragment deckFrag;
@@ -63,6 +62,7 @@ public class ArenaFragment extends Fragment {
 		 */
 		setHasOptionsMenu(true);
 
+		
 		return v;
 
 	}
@@ -110,13 +110,6 @@ public class ArenaFragment extends Fragment {
 		deckFrag = (ArenaDeckFragment) getActivity()
 				.getSupportFragmentManager().findFragmentByTag(
 						Utils.makeFragmentName(R.id.pager, 1));
-
-		// Initiate ImageLoader if it's not already initiated.
-		if (loader.isInited() == false) {
-
-			loader.init(Utils.config(getActivity()));
-		}
-		ImageLoader.getInstance().handleSlowNetwork(true);
 
 		/*
 		 * Set the ImageViews to listen to our custom OnClickListener (Handles
@@ -188,12 +181,9 @@ public class ArenaFragment extends Fragment {
 				int resId_2 = Utils.getResIdByName(getActivity(), card2
 						.getImage().toLowerCase(Utils.curLocale));
 
-				loader.displayImage("drawable://" + resId_0, ivItem1,
-						Utils.defaultOptions);
-				loader.displayImage("drawable://" + resId_1, ivItem2,
-						Utils.defaultOptions);
-				loader.displayImage("drawable://" + resId_2, ivItem3,
-						Utils.defaultOptions);
+				ivItem1.setImageResource(resId_0);
+				ivItem2.setImageResource(resId_1);
+				ivItem3.setImageResource(resId_2);
 
 				listChoices.add(card0);
 				listChoices.add(card1);
@@ -388,10 +378,6 @@ public class ArenaFragment extends Fragment {
 				ivs[i].setVisibility(View.VISIBLE);
 			}
 
-			if (loader != null) {
-				loader.cancelDisplayTask(ivs[i]);
-			}
-
 			int random = (int) (Math.random() * 9); // Pick a number 0-8
 
 			/*
@@ -462,13 +448,10 @@ public class ArenaFragment extends Fragment {
 	 * @param className
 	 *            The class of the class-specific cards to include in the random
 	 *            card selection. Takes an <b>element</b> of <code>enum</code>
-	 *            <i>Classes</i> (Example: Classes.WARRIOR)
+	 *            <i>Classes</i> (Example: <code>Classes.WARRIOR</code>)
 	 */
 	private void pickRandomCards(Classes className) {
 		listChoices.clear();
-		loader.cancelDisplayTask(ivItem1);
-		loader.cancelDisplayTask(ivItem2);
-		loader.cancelDisplayTask(ivItem3);
 		double random = Math.random();
 
 		/*
@@ -527,24 +510,22 @@ public class ArenaFragment extends Fragment {
 			}
 		}
 
-		AnimatorSet set = new AnimatorSet();
-		set.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 1, 0.5f),
-				ObjectAnimator.ofFloat(ivItem1, "scaleY", 1, 0.5f),
-				ObjectAnimator.ofFloat(ivItem2, "scaleX", 1, 0.5f),
-				ObjectAnimator.ofFloat(ivItem2, "scaleY", 1, 0.5f),
-				ObjectAnimator.ofFloat(ivItem3, "scaleX", 1, 0.5f),
-				ObjectAnimator.ofFloat(ivItem3, "scaleY", 1, 0.5f));
-
-		set.setDuration(125).start();
+//		AnimatorSet set = new AnimatorSet();
+//		set.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 1, 0.5f),
+//				ObjectAnimator.ofFloat(ivItem1, "scaleY", 1, 0.5f),
+//				ObjectAnimator.ofFloat(ivItem2, "scaleX", 1, 0.5f),
+//				ObjectAnimator.ofFloat(ivItem2, "scaleY", 1, 0.5f),
+//				ObjectAnimator.ofFloat(ivItem3, "scaleX", 1, 0.5f),
+//				ObjectAnimator.ofFloat(ivItem3, "scaleY", 1, 0.5f));
+//
+//		set.setDuration(125).start();
 		
 		AnimatorSet otherSet = new AnimatorSet();
-		otherSet.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 0.5f, 1),
-				ObjectAnimator.ofFloat(ivItem1, "scaleY", 0.5f, 1),
-				ObjectAnimator.ofFloat(ivItem2, "scaleX", 0.5f, 1),
-				ObjectAnimator.ofFloat(ivItem2, "scaleY", 0.5f, 1),
-				ObjectAnimator.ofFloat(ivItem3, "scaleX", 0.5f, 1),
-				ObjectAnimator.ofFloat(ivItem3, "scaleY", 0.5f, 1));
-		otherSet.setDuration(125).start();
+		otherSet.playTogether(ObjectAnimator.ofFloat(ivItem1, "alpha", 0.33f, 1),
+				ObjectAnimator.ofFloat(ivItem2, "alpha", 0.33f, 1),
+				ObjectAnimator.ofFloat(ivItem3, "alpha", 0.33f, 1));
+		otherSet.setInterpolator(new AccelerateDecelerateInterpolator());
+		otherSet.setDuration(150).start();
 
 		Collections.shuffle(listChoices);
 

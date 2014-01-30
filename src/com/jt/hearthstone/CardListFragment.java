@@ -50,7 +50,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -82,7 +81,6 @@ public class CardListFragment extends Fragment {
 	List<Integer> deckClasses = DeckSelector.deckClasses;
 	private List<Cards> deckOne;
 
-	private ImageLoader loader = ImageLoader.getInstance();
 	List<Cards> cardList;
 	private ArrayList<String> deckList;
 	Cards[] cards;
@@ -167,17 +165,6 @@ public class CardListFragment extends Fragment {
 
 		Intent intent = getActivity().getIntent();
 		deckListPos = intent.getIntExtra("position", 0);
-
-		// ImageLoader config for the ImageLoader that gets our card images
-		// denyCacheImage blah blah does what it says. We use this because
-		// I don't know. Maybe to save memory(RAM).
-
-		// Initialize the ImageLoader
-		if (!loader.isInited()) {
-			ImageLoader.getInstance().init(Utils.config(getActivity()));
-		}
-
-		ImageLoader.getInstance().handleSlowNetwork(true);
 
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards

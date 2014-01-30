@@ -22,10 +22,6 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -37,7 +33,6 @@ public class SimulatorFragment extends Fragment {
 	private Spinner spinnerNumCards;
 	private TextView tvStartingSize;
 
-	private ImageLoader loader = ImageLoader.getInstance();
 	private ImageAdapter adapter;
 
 	private List<String> listDecks;
@@ -118,10 +113,6 @@ public class SimulatorFragment extends Fragment {
 			for (int i = 0; i < numCards; i++) {
 				cardsToShow.add(cardList.get(i));
 			}
-		}
-
-		if (!loader.isInited()) {
-			loader.init(ImageLoaderConfiguration.createDefault(getActivity()));
 		}
 
 		adapter = new ImageAdapter(getActivity(), cardsToShow);

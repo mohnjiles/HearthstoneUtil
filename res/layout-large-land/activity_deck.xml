@@ -67,11 +67,12 @@
         android:id="@+id/gvDeck"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/lvDeck"
+        android:layout_toRightOf="@+id/sideLayout"
         android:columnWidth="@dimen/grid_column_width"
         android:horizontalSpacing="2dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="2dp" >
+
     </GridView>
 
     <ImageView

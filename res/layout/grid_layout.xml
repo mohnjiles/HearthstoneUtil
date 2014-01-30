@@ -20,6 +20,6 @@
         android:paddingRight="10dp"
         android:paddingTop="10dp"
         android:textColor="@android:color/white"
-        android:textSize="12sp" />
+        android:textSize="@dimen/square_text_size" />
 
 </RelativeLayout>

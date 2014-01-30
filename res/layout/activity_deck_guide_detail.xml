@@ -39,7 +39,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="8dp"
-            android:text="Deck Crafting Cost:" />
+            android:text="Deck Crafting Cost:"
+            android:textSize="@dimen/arena_text" />
 
         <ImageView
             android:id="@+id/imageView1"

@@ -12,7 +12,6 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StreamCorruptedException;
 import java.io.StringWriter;
@@ -22,18 +21,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -58,8 +51,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
@@ -92,7 +83,6 @@ public class CardListActivity extends ActionBarActivity {
 	private Cards[] cards;
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
-	private ImageLoader loader = ImageLoader.getInstance();
 	private String query;
 
 	private int pos = OnItemSelectedListenerStandalone.position;
@@ -135,18 +125,6 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Set grid invisible, list is default.
 		listCards.setVisibility(View.INVISIBLE);
-
-		// ImageLoader config for the ImageLoader that gets our card images
-		// denyCacheImage blah blah does what it says. We use this because
-		// I don't know. Maybe to save memory(RAM).
-		ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(
-				this).denyCacheImageMultipleSizesInMemory().build();
-
-		// Initialize the ImageLoader
-		if (!loader.isInited()) {
-			loader.init(config);
-		}
-
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();

@@ -11,13 +11,9 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private List<Cards> cardList;
-	private String url;
-	private ImageLoader imageLoader = ImageLoader.getInstance();
 
     public ImageAdapter(Context c, List<Cards> list) {
         mContext = c;
@@ -55,15 +51,6 @@ public class ImageAdapter extends BaseAdapter {
     	ViewHolder vh;
     	Typeface font = TypefaceCache.get(mContext.getAssets(),
 				"fonts/belwebd.ttf");
-    	
-    	// ImageLoader options to save images in Memory so we don't have to re-draw them. 
-    	// We may eventually need to disable this based on further testing
-    	// Not sure if real phones will have enough RAM to hold 500+ images, granted they're 
-    	// only a few KB each.
-    	
-    	if (!imageLoader.isInited()) {
-    		imageLoader.init(Utils.squareConfig(mContext));
-    	}
     	
     	 
     	// If our view (in this case, one item from the gridview) is null, then inflate it.

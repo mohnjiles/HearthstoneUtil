@@ -202,7 +202,6 @@ public class CustomOnItemSelectedListener implements OnItemSelectedListener {
 					&& card.getName().toLowerCase().contains(query)
 					&& !card.getName().equals(classes.getHeroName())) {
 				cardListFrag.cardList.add(card);
-				Log.w("NEUTRAL CARDS", "WE ADD NEUTRAL CARDS HERE");
 			}
 		}
 		Collections.sort(cardListFrag.cardList, new CardComparator(

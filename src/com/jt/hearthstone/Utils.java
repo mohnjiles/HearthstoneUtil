@@ -125,19 +125,18 @@ public class Utils {
 	static void navigateUp(Activity activity) {
 		Intent upIntent = NavUtils.getParentActivityIntent(activity);
 		if (NavUtils.shouldUpRecreateTask(activity, upIntent)) {
-			// This activity is NOT part of NewsDetailActivity.this app's task,
+			// This activity is NOT part of this app's task,
 			// so create a new task
 			// when navigating up, with a synthesized back stack.
 			TaskStackBuilder.create(activity)
-			// Add all of NewsDetailActivity.this activity's parents to the back
+			// Add all of this activity's parents to the back
 			// stack
 					.addNextIntentWithParentStack(upIntent)
 					// Navigate up to the closest parent
 					.startActivities();
 		} else {
-			// This activity is part of NewsDetailActivity.this app's task, so
-			// simply
-			// navigate up to the logical parent activity.
+			// This activity is part of this app's task, so
+			// simply navigate up to the logical parent activity.
 			upIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 			NavUtils.navigateUpTo(activity, upIntent);
 		}

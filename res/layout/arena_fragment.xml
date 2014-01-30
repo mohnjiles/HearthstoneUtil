@@ -19,24 +19,24 @@
 
     <ImageView
         android:id="@+id/ivItem1"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/arena_card_width"
+        android:layout_height="@dimen/arena_card_height"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvSomeText"
         android:src="@drawable/uther_lightbringer" />
 
     <ImageView
         android:id="@+id/ivItem2"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/arena_card_width"
+        android:layout_height="@dimen/arena_card_height"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@+id/ivItem1"
         android:src="@drawable/garrosh_hellscream" />
 
     <ImageView
         android:id="@+id/ivItem3"
-        android:layout_width="140dp"
-        android:layout_height="200dp"
+        android:layout_width="@dimen/arena_card_width"
+        android:layout_height="@dimen/arena_card_height"
         android:layout_below="@+id/ivItem1"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"

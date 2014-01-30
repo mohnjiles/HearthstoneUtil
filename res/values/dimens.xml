@@ -29,8 +29,12 @@
     <dimen name="arena_width">150dp</dimen>
     <dimen name="arena_text_margin">4dp</dimen>
     <dimen name="deck_grid_size">138dp</dimen>
+    <dimen name="arena_card_height">200dp</dimen>
+    <dimen name="arena_card_width">140dp</dimen>
+    <dimen name="top_layout_height">120dp</dimen>
+    <dimen name="news_image_width">100dp</dimen>
+    <dimen name="news_image_height">50dp</dimen>
     
-
     <!-- Text Sizes -->
     <dimen name="card_list_textview">14sp</dimen>
     <dimen name="spinner_textview">14sp</dimen>
@@ -38,5 +42,6 @@
     <dimen name="card_name_text_size">16sp</dimen>
     <dimen name="card_stats_text_size">16sp</dimen>
     <dimen name="sliding_size">16sp</dimen>
+    <dimen name="square_text_size">12sp</dimen>
 
 </resources>

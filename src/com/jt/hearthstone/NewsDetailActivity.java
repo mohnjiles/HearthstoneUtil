@@ -8,9 +8,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -33,6 +35,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 	private String title;
 	private String html;
 
+	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -86,19 +89,27 @@ public class NewsDetailActivity extends ActionBarActivity {
 		if (savedInstanceState != null) {
 
 			html = savedInstanceState.getString("html");
-			
+
 			if (html == null) {
 				new FetchNewsDetail(this).execute();
 			}
-			
+
 			wvDetails.loadData(html, "text/html; charset=UTF-8", null);
+			
 			if (Build.VERSION.SDK_INT > Build.VERSION_CODES.GINGERBREAD_MR1) {
 				wvDetails.setBackgroundColor(Color.argb(1, 0, 0, 0));
 			} else {
 				wvDetails.setBackgroundColor(0x00000000);
 			}
-
 			
+			int screenSize = getResources().getConfiguration().screenLayout
+					& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+			if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH
+					&& screenSize >= Configuration.SCREENLAYOUT_SIZE_LARGE) {
+				wvDetails.getSettings().setTextZoom(150);
+			}
+
 		} else {
 			new FetchNewsDetail(this).execute();
 		}
@@ -110,12 +121,12 @@ public class NewsDetailActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.news_detail, menu);
 		return true;
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		
+
 		outState.putString("html", html);
-		
+
 		super.onSaveInstanceState(outState);
 	}
 

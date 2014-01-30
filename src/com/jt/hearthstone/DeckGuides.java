@@ -279,39 +279,39 @@ public class DeckGuides extends ActionBarActivity {
 				break;
 			case 1:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=2&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
 				break;
 			case 2:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=3&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
 				break;
 			case 3:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=16&sort=-rating");
 				break;
 			case 4:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=5&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=32&sort=-rating");
 				break;
 			case 5:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=6&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=64&sort=-rating");
 				break;
 			case 6:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=7&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=128&sort=-rating");
 				break;
 			case 7:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=256&sort=-rating");
 				break;
 			case 8:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=9&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=512&sort=-rating");
 				break;
 			case 9:
 				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=10&sort=-rating");
+						.execute("http://www.hearthpwn.com/decks?filter-class=1024&sort=-rating");
 				break;
 
 			}

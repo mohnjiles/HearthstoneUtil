@@ -37,7 +37,6 @@ import com.echo.holographlibrary.Bar;
 import com.echo.holographlibrary.BarGraph;
 import com.echo.holographlibrary.PieGraph;
 import com.echo.holographlibrary.PieSlice;
-import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class DeckActivity extends Fragment {
 
@@ -54,7 +53,6 @@ public class DeckActivity extends Fragment {
 
 	List<Cards> cardListUnique;
 	private List<String> listDecks = DeckSelector.listDecks;
-	private ImageLoader loader = ImageLoader.getInstance();
 	private static BarGraph manaChart;
 	private static PieGraph pieGraph;
 
@@ -72,10 +70,6 @@ public class DeckActivity extends Fragment {
 
 		manaChart = findById(V, R.id.manaChart);
 		pieGraph = findById(V, R.id.pieGraph);
-
-		ImageLoader.getInstance().init(Utils.config(getActivity()));
-
-		ImageLoader.getInstance().handleSlowNetwork(true);
 
 		// Get font from Cache
 		font = TypefaceCache
@@ -95,10 +89,6 @@ public class DeckActivity extends Fragment {
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 
-		// ImageLoader init
-		if (!loader.isInited()) {
-			loader.init(Utils.config(getActivity()));
-		}
 		setHasOptionsMenu(true);
 
 		// Get corresponding deck

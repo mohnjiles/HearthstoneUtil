@@ -1,27 +1,10 @@
 package com.jt.hearthstone;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import android.R.integer;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -32,15 +15,10 @@ public class CustomListAdapter extends BaseAdapter {
 	private Context mContext;
 	private List<Cards> cardList; // Get card list from Fragment 
 	private String cardName;
-	private ImageLoader loader = ImageLoader.getInstance();
 
 	public CustomListAdapter(Context c, List<Cards> cardList2) {
 		mContext = c;
 		this.cardList = cardList2;
-	
-		if (!loader.isInited()) {
-			loader.init(Utils.config(mContext));
-		}
 	}
 
 	public int getCount() {
@@ -98,10 +76,7 @@ public class CustomListAdapter extends BaseAdapter {
 		int quality = cardList.get(position).getQuality().intValue();
 
 		vh.ivClassIcon.setImageResource(R.drawable.ic_launcher);
-//		vh.tvCardName.setShadowLayer(0.01f, 1, 0, Color.BLACK);
-//		vh.tvAttack.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-//		vh.tvHealth.setShadowLayer(0.01f, 1, 1, Color.BLACK);
-//		vh.tvManaCost.setShadowLayer(0.01f, 1, 1, Color.BLACK);
+		
 		vh.tvCardName.setTypeface(font);
 		vh.tvAttack.setTypeface(font);
 		vh.tvHealth.setTypeface(font);

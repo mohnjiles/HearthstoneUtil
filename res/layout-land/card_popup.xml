@@ -50,6 +50,7 @@
         android:layout_height="@dimen/card_icon"
         android:layout_alignParentLeft="true"
         android:layout_below="@+id/tvCardName"
+        android:layout_marginLeft="@dimen/card_icon_padding_left"
         android:layout_marginRight="@dimen/card_icon_padding_right"
         android:paddingLeft="@dimen/card_icon_padding_left"
         android:src="@drawable/cards" />

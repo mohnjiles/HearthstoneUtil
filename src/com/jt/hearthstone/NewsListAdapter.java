@@ -1,20 +1,18 @@
 package com.jt.hearthstone;
 
+import static butterknife.Views.findById;
+
 import java.util.List;
 
-import com.nostra13.universalimageloader.core.ImageLoader;
-
-import android.R.integer;
 import android.content.Context;
 import android.graphics.Typeface;
-import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import static butterknife.Views.findById;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 public class NewsListAdapter extends BaseAdapter {
 	private Context mContext;

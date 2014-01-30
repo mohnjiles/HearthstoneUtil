@@ -52,7 +52,7 @@ public class MyWindow {
 			"fonts/belwebd.ttf");
 
 	private static int dipsWidthPortrait_Normal = (int) TypedValue
-			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 300, cxt
+			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 280, cxt
 					.getResources().getDisplayMetrics());
 	private static int dipsHeightPortrait_Normal = (int) TypedValue
 			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 460, cxt
@@ -97,7 +97,7 @@ public class MyWindow {
 			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 750, cxt
 					.getResources().getDisplayMetrics());
 	private static int dipsWidthLandscape_XLarge = (int) TypedValue
-			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 750, cxt
+			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 900, cxt
 					.getResources().getDisplayMetrics());
 	private static int dipsHeightLandscape_XLarge = (int) TypedValue
 			.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 600, cxt
