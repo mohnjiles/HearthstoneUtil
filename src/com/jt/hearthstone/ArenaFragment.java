@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.Bitmap.CompressFormat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -62,7 +65,6 @@ public class ArenaFragment extends Fragment {
 		 */
 		setHasOptionsMenu(true);
 
-		
 		return v;
 
 	}
@@ -126,7 +128,7 @@ public class ArenaFragment extends Fragment {
 		textView.setTypeface(tf);
 
 		// Populate cards array with GSON
-		cards = Utils.setupCardList();
+		cards = Utils.cards;
 
 		if (savedInstanceState != null) {
 
@@ -332,7 +334,8 @@ public class ArenaFragment extends Fragment {
 				listDeck.add(listChoices.get(2));
 			}
 
-			DeckUtils.saveDeck(getActivity(), "arenaDeck", listDeck);
+			new DeckUtils.SaveDeck(getActivity(), "arenaDeck", listDeck)
+					.execute();
 
 			// Update TextView with current deck size
 			deckFrag.tvDeckSize.setText(listDeck.size() + " / 30");
@@ -386,39 +389,30 @@ public class ArenaFragment extends Fragment {
 			 */
 			switch (random) {
 			case 0:
-				ivs[i].setImageResource(R.drawable.valeera_sanguinar);
 				ivs[i].setTag(Classes.ROGUE);
 				break;
 			case 1:
-				ivs[i].setImageResource(R.drawable.anduin_wrynn);
 				ivs[i].setTag(Classes.PRIEST);
 				break;
 			case 2:
-				ivs[i].setImageResource(R.drawable.gul_dan);
 				ivs[i].setTag(Classes.WARLOCK);
 				break;
 			case 3:
-				ivs[i].setImageResource(R.drawable.garrosh_hellscream);
 				ivs[i].setTag(Classes.WARRIOR);
 				break;
 			case 4:
-				ivs[i].setImageResource(R.drawable.jaina_proudmoore);
 				ivs[i].setTag(Classes.MAGE);
 				break;
 			case 5:
-				ivs[i].setImageResource(R.drawable.thrall);
 				ivs[i].setTag(Classes.SHAMAN);
 				break;
 			case 6:
-				ivs[i].setImageResource(R.drawable.malfurion_stormrage);
 				ivs[i].setTag(Classes.DRUID);
 				break;
 			case 7:
-				ivs[i].setImageResource(R.drawable.uther_lightbringer);
 				ivs[i].setTag(Classes.PALADIN);
 				break;
 			case 8:
-				ivs[i].setImageResource(R.drawable.rexxar);
 				ivs[i].setTag(Classes.HUNTER);
 				break;
 			}
@@ -430,6 +424,75 @@ public class ArenaFragment extends Fragment {
 
 			// Recursive call in case of duplicate hero choices
 			pickRandomHero();
+		} else {
+			Bitmap bmp;
+			for (int i = 0; i < 3; i++) {
+				switch ((Classes) ivs[i].getTag()) {
+				case ROGUE:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.valeera_sanguinar), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case PRIEST:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.anduin_wrynn), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case WARLOCK:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.gul_dan), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case WARRIOR:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.garrosh_hellscream), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case MAGE:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.jaina_proudmoore), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case SHAMAN:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.thrall), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case DRUID:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.malfurion_stormrage), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case PALADIN:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.uther_lightbringer), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				case HUNTER:
+					bmp = Bitmap.createScaledBitmap(
+							BitmapFactory.decodeResource(getResources(),
+									R.drawable.rexxar), 280, 400,
+							true);
+					ivs[i].setImageBitmap(bmp);
+					break;
+				}
+			}
 		}
 
 	}
@@ -510,18 +573,19 @@ public class ArenaFragment extends Fragment {
 			}
 		}
 
-//		AnimatorSet set = new AnimatorSet();
-//		set.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 1, 0.5f),
-//				ObjectAnimator.ofFloat(ivItem1, "scaleY", 1, 0.5f),
-//				ObjectAnimator.ofFloat(ivItem2, "scaleX", 1, 0.5f),
-//				ObjectAnimator.ofFloat(ivItem2, "scaleY", 1, 0.5f),
-//				ObjectAnimator.ofFloat(ivItem3, "scaleX", 1, 0.5f),
-//				ObjectAnimator.ofFloat(ivItem3, "scaleY", 1, 0.5f));
-//
-//		set.setDuration(125).start();
-		
+		// AnimatorSet set = new AnimatorSet();
+		// set.playTogether(ObjectAnimator.ofFloat(ivItem1, "scaleX", 1, 0.5f),
+		// ObjectAnimator.ofFloat(ivItem1, "scaleY", 1, 0.5f),
+		// ObjectAnimator.ofFloat(ivItem2, "scaleX", 1, 0.5f),
+		// ObjectAnimator.ofFloat(ivItem2, "scaleY", 1, 0.5f),
+		// ObjectAnimator.ofFloat(ivItem3, "scaleX", 1, 0.5f),
+		// ObjectAnimator.ofFloat(ivItem3, "scaleY", 1, 0.5f));
+		//
+		// set.setDuration(125).start();
+
 		AnimatorSet otherSet = new AnimatorSet();
-		otherSet.playTogether(ObjectAnimator.ofFloat(ivItem1, "alpha", 0.33f, 1),
+		otherSet.playTogether(
+				ObjectAnimator.ofFloat(ivItem1, "alpha", 0.33f, 1),
 				ObjectAnimator.ofFloat(ivItem2, "alpha", 0.33f, 1),
 				ObjectAnimator.ofFloat(ivItem3, "alpha", 0.33f, 1));
 		otherSet.setInterpolator(new AccelerateDecelerateInterpolator());

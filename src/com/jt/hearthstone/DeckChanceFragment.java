@@ -10,10 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
-import de.keyboardsurfer.android.widget.crouton.Crouton;
-import de.keyboardsurfer.android.widget.crouton.Style;
-
-import android.R.integer;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,14 +21,15 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckChanceFragment extends Fragment implements
+public class DeckChanceFragment extends CustomCardFragment implements
 		AdapterView.OnItemClickListener {
 
 	private ListView lvDeck;
-	private List<Cards> deckList;
+	List<Cards> deckList;
 	private List<String> listOfDecks;
 	private DeckChanceAdapter adapter;
 	private List<Double> listPercents = new ArrayList<Double>();
@@ -40,8 +37,6 @@ public class DeckChanceFragment extends Fragment implements
 	List<Cards> deckListUnique;
 	private Intent intent;
 	private List<Cards> prevCards = new ArrayList<Cards>();
-
-	private int timesPressed = 0;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -64,18 +59,8 @@ public class DeckChanceFragment extends Fragment implements
 
 		Intent intent = getActivity().getIntent();
 		listOfDecks = intent.getStringArrayListExtra("listDecks");
-		deckList = DeckUtils.getCardsList(getActivity(),
-				listOfDecks.get(intent.getIntExtra("position", 0)));
-
-		deckListUnique = new ArrayList<Cards>(
-				new LinkedHashSet<Cards>(deckList));
-
-		updatePercents(deckList, false);
-
-		adapter = new DeckChanceAdapter(getActivity(), deckList, listPercents);
-
-		lvDeck.setAdapter(adapter);
-		lvDeck.setOnItemClickListener(this);
+		new DeckUtils.GetCardsList(getActivity(), this, 1337)
+				.execute(listOfDecks.get(intent.getIntExtra("position", 0)));
 
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -103,18 +88,19 @@ public class DeckChanceFragment extends Fragment implements
 				prevCards.remove(prevCards.size() - 1);
 				updatePercents(deckList, true);
 			} else {
-				Crouton.makeText(getActivity(), "Cannot undo any further", Style.ALERT).show();
+				Crouton.makeText(getActivity(), "Cannot undo any further",
+						Style.ALERT).show();
 			}
 			break;
 		case R.id.action_restart:
-			
+
 			prevCards.clear();
-			
-			deckList = DeckUtils.getCardsList(getActivity(),
-					listOfDecks.get(intent.getIntExtra("position", 0)));
-			
+
+			new DeckUtils.GetCardsList(getActivity(), this, R.id.action_restart)
+					.execute(listOfDecks.get(intent.getIntExtra("position", 0)));
+
 			updatePercents(deckList, true);
-			
+
 			break;
 		case R.id.action_rename:
 			DeckUtils.renameDeck(getActivity(),
@@ -163,7 +149,6 @@ public class DeckChanceFragment extends Fragment implements
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		timesPressed = 0;
 
 		for (Iterator<Cards> it = deckList.iterator(); it.hasNext();) {
 			Cards card = it.next();
@@ -179,5 +164,18 @@ public class DeckChanceFragment extends Fragment implements
 		}
 		updatePercents(deckList, true);
 
+	}
+
+	@Override
+	protected void setCardList(List<Cards> cardList, int tag) {
+		this.deckList = cardList;
+		deckListUnique = new ArrayList<Cards>(
+				new LinkedHashSet<Cards>(deckList));
+
+		adapter = new DeckChanceAdapter(getActivity(), deckList, listPercents);
+		lvDeck.setAdapter(adapter);
+		lvDeck.setOnItemClickListener(this);
+
+		updatePercents(cardList, true);
 	}
 }

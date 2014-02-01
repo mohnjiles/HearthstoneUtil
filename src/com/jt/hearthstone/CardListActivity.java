@@ -507,8 +507,8 @@ public class CardListActivity extends ActionBarActivity {
 									e1.printStackTrace();
 								}
 								ArrayList<Cards> newDeck = new ArrayList<Cards>();
-								DeckUtils.saveDeck(CardListActivity.this,
-										nameBox.getText().toString(), newDeck);
+								new DeckUtils.SaveDeck(CardListActivity.this,
+										nameBox.getText().toString(), newDeck).execute();
 								addCards();
 							}
 						});
@@ -550,7 +550,7 @@ public class CardListActivity extends ActionBarActivity {
 		}
 
 		list.add(cardList.get(position));
-		DeckUtils.saveDeck(this, deckList.get(menuItemIndex), list);
+		new DeckUtils.SaveDeck(this, deckList.get(menuItemIndex), list).execute();
 	}
 
 	private void getDeckList() {
@@ -615,49 +615,7 @@ public class CardListActivity extends ActionBarActivity {
 	}
 
 	private void setupCardList() {
-		Gson gson = new Gson();
-
-		FileInputStream fis = null;
-		try {
-			fis = openFileInput("cards.json");
-		} catch (FileNotFoundException e1) {
-			copyFile("cards.json");
-			try {
-				fis = openFileInput("cards.json");
-			} catch (FileNotFoundException e) {
-				Log.wtf("How is this possible?", "cards.json broke");
-				e.printStackTrace();
-			}
-			e1.printStackTrace();
-		}
-		Writer writer = new StringWriter();
-		char[] buffer = new char[1024];
-		try {
-			Reader reader = new BufferedReader(new InputStreamReader(fis,
-					"UTF-8"));
-			int n;
-			while ((n = reader.read(buffer)) != -1) {
-				writer.write(buffer, 0, n);
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				fis.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// The json String from the file
-		String jsonString = writer.toString();
-
-		// Set our pojo from the GSON data
-		cards = gson.fromJson(jsonString, Cards[].class);
+		cards = Utils.cards;
 		// Load default card list
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();

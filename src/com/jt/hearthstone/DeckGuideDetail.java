@@ -52,7 +52,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 		intent = getIntent();
 
 		// Get an array of every card
-		cards = Utils.setupCardList();
+		cards = Utils.cards;
 
 		// Set back button on ActionBar
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);

@@ -20,6 +20,7 @@ import android.content.Intent;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
+import android.os.AsyncTask;
 import android.support.v4.app.NavUtils;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
@@ -32,7 +33,7 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public class Utils {
 	private static Context cxt = HearthstoneUtil.getAppContext();
 	static Locale curLocale = cxt.getResources().getConfiguration().locale;
-	static Cards[] cards;
+	static Cards[] cards = setupCardList();
 	final static int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
 	static final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
@@ -76,49 +77,7 @@ public class Utils {
 	}
 
 	static Cards[] setupCardList() {
-		Gson gson = new Gson();
-
-		FileInputStream fis = null;
-		try {
-			fis = cxt.openFileInput("cards.json");
-		} catch (FileNotFoundException e1) {
-			copyFile("cards.json");
-			try {
-				fis = cxt.openFileInput("cards.json");
-			} catch (FileNotFoundException e) {
-				Log.wtf("How is this possible?", "cards.json broke");
-				e.printStackTrace();
-			}
-			e1.printStackTrace();
-		}
-		Writer writer = new StringWriter();
-		char[] buffer = new char[1024];
-		try {
-			Reader reader = new BufferedReader(new InputStreamReader(fis,
-					"UTF-8"));
-			int n;
-			while ((n = reader.read(buffer)) != -1) {
-				writer.write(buffer, 0, n);
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				fis.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// The json String from the file
-		String jsonString = writer.toString();
-
-		// Set our pojo from the GSON data
-		cards = gson.fromJson(jsonString, Cards[].class);
+		new SetupCardList().execute();
 		return cards;
 	}
 
@@ -166,6 +125,62 @@ public class Utils {
 			Log.e("tag", e.getMessage());
 		}
 
+	}
+	
+	static class SetupCardList extends AsyncTask<Void, Void, Cards[]> {
+		@Override
+		protected Cards[] doInBackground(Void... params) {
+			Gson gson = new Gson();
+
+			FileInputStream fis = null;
+			try {
+				fis = cxt.openFileInput("cards.json");
+			} catch (FileNotFoundException e1) {
+				copyFile("cards.json");
+				try {
+					fis = cxt.openFileInput("cards.json");
+				} catch (FileNotFoundException e) {
+					Log.wtf("How is this possible?", "cards.json broke");
+					e.printStackTrace();
+				}
+				e1.printStackTrace();
+			}
+			Writer writer = new StringWriter();
+			char[] buffer = new char[1024];
+			try {
+				Reader reader = new BufferedReader(new InputStreamReader(fis,
+						"UTF-8"));
+				int n;
+				while ((n = reader.read(buffer)) != -1) {
+					writer.write(buffer, 0, n);
+				}
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} finally {
+				try {
+					fis.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			// The json String from the file
+			String jsonString = writer.toString();
+
+			// Set our pojo from the GSON data
+			Utils.cards = gson.fromJson(jsonString, Cards[].class);
+			return cards;
+		}
+		
+		@Override
+		protected void onPostExecute(Cards[] result) {
+			// TODO Auto-generated method stub
+			super.onPostExecute(result);
+		}
 	}
 
 }

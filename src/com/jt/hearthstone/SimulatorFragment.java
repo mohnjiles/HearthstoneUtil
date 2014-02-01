@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,7 +24,7 @@ import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class SimulatorFragment extends Fragment {
+public class SimulatorFragment extends CustomCardFragment {
 
 	private GridView gvCards;
 	private Button btnRedraw;
@@ -56,15 +55,16 @@ public class SimulatorFragment extends Fragment {
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
 		tvStartingSize = findById(V, R.id.tvSomeText);
-		
+
 		position = getActivity().getIntent().getIntExtra("position", 0);
-		listDecks = getActivity().getIntent().getStringArrayListExtra("listDecks");
-		
+		listDecks = getActivity().getIntent().getStringArrayListExtra(
+				"listDecks");
+
 		setHasOptionsMenu(true);
 
 		return V;
 	}
-	
+
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		inflater.inflate(R.menu.simulator, menu);
@@ -75,30 +75,26 @@ public class SimulatorFragment extends Fragment {
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
 		case R.id.action_rename:
-			DeckUtils.renameDeck(getActivity(), position, getActivity(), cardList);
+			DeckUtils.renameDeck(getActivity(), position, getActivity(),
+					cardList);
 			break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
 		font = TypefaceCache
 				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
-		
+
 		MyWindow.setContext(getActivity());
 
 		btnRedraw.setTypeface(font);
 		btnDrawAnother.setTypeface(font);
 		tvStartingSize.setTypeface(font);
-
-		Intent intent = getActivity().getIntent();
-		final int position = intent.getIntExtra("position", 0);
-
-		cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
-				listDecks.get(position));
+		
 		if (spinnerNumCards.getSelectedItem() != null) {
 			numCards = Integer.parseInt(spinnerNumCards.getSelectedItem()
 					.toString());
@@ -108,6 +104,23 @@ public class SimulatorFragment extends Fragment {
 		if (cardsToShow.size() > 0) {
 			cardsToShow.clear();
 		}
+		
+		new DeckUtils.GetCardsList(getActivity(), this, 0).execute(listDecks.get(position));
+		
+
+		String[] cardsToDraw = getResources().getStringArray(
+				R.array.CardsToDraw);
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
+				R.layout.spinner_row, R.id.name, cardsToDraw);
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		spinnerNumCards.setAdapter(spinAdapter);
+	}
+
+	@Override
+	protected void setCardList(final List<Cards> cardList, int tag) {
+		this.cardList = cardList;
+		
 		Collections.shuffle(cardList);
 		if (cardList.size() > numCards - 1) {
 			for (int i = 0; i < numCards; i++) {
@@ -129,8 +142,6 @@ public class SimulatorFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
-						listDecks.get(position));
 				Collections.shuffle(cardList);
 
 				cardsToShow.clear();
@@ -174,13 +185,5 @@ public class SimulatorFragment extends Fragment {
 				}
 			}
 		});
-
-		String[] cardsToDraw = getResources().getStringArray(
-				R.array.CardsToDraw);
-		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
-				R.layout.spinner_row, R.id.name, cardsToDraw);
-		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-
-		spinnerNumCards.setAdapter(spinAdapter);
 	}
 }

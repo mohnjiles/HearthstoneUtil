@@ -15,7 +15,7 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.os.Handler;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -37,8 +38,12 @@ import com.echo.holographlibrary.Bar;
 import com.echo.holographlibrary.BarGraph;
 import com.echo.holographlibrary.PieGraph;
 import com.echo.holographlibrary.PieSlice;
+import com.nineoldandroids.animation.ObjectAnimator;
 
-public class DeckActivity extends Fragment {
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
+
+public class DeckActivity extends CustomCardFragment {
 
 	ListView lvDeck;
 	GridView gvDeck;
@@ -57,9 +62,11 @@ public class DeckActivity extends Fragment {
 	private static PieGraph pieGraph;
 
 	private int position;
-	private int pos;
 	private boolean isGrid = true;
 	private Typeface font;
+
+	private int cardPos;
+	private AdapterView<?> parentAdapterView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,19 +99,8 @@ public class DeckActivity extends Fragment {
 		setHasOptionsMenu(true);
 
 		// Get corresponding deck
-		cardList = (ArrayList<Cards>) DeckUtils.getCardsList(getActivity(),
-				listDecks.get(position));
-		if (cardList != null) {
-			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
-					cardList));
-		} else {
-			cardListUnique = new ArrayList<Cards>();
-		}
-
-		// Hide graphic to make room for List
-		if (cardList != null && cardList.size() != 0) {
-			ivSwipe.setVisibility(View.GONE);
-		}
+		new DeckUtils.GetCardsList(getActivity(), this, 999).execute(listDecks
+				.get(position));
 
 		// Set typeface
 		tvNumCards.setTypeface(font);
@@ -119,46 +115,10 @@ public class DeckActivity extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		// Get text sizes in sp
-		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				10, getActivity().getResources().getDisplayMetrics());
-		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				14, getActivity().getResources().getDisplayMetrics());
-
-		// Get screen size
-		int screenSize = getActivity().getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-
-		if (cardList != null) {
-			if (cardList.size() == 0
-					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-				tvNumCards.setTextSize(bigSp);
-				tvNumCards
-						.setText("Looks like there's nothing here. Swipe right to get started!");
-				ivSwipe.setVisibility(View.VISIBLE);
-			} else if (cardList.size() == 0
-					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-				tvNumCards.setTextSize(bigSp);
-				tvNumCards
-						.setText("Looks like there's nothing here. Add cards from the left to get started!");
-				ivSwipe.setVisibility(View.VISIBLE);
-			} else {
-				tvNumCards.setTextSize(sp);
-				tvNumCards.setText("" + cardList.size() + " / 30");
-				ivSwipe.setVisibility(View.GONE);
-			}
-		}
-
 		if (cardList != null) {
 			Collections.sort(cardList, new CardComparator(2, false));
 			Collections.sort(cardListUnique, new CardComparator(2, false));
 		}
-
-		adapter = new ImageAdapter(getActivity(), cardList);
-		adapter2 = new DeckListAdapter(getActivity(), cardList);
-
-		gvDeck.setAdapter(adapter);
-		lvDeck.setAdapter(adapter2);
 
 		// Change GridView / ListView visibility
 
@@ -176,23 +136,51 @@ public class DeckActivity extends Fragment {
 
 		MyWindow.setContext(getActivity());
 
-		// Set GridView and ListView to show PopupWindow when clicked
+		// Set GridView and ListView to remove card when clicked
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				refreshDecks();
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+			public void onItemClick(final AdapterView<?> parent, final View v,
+					final int position, long id) {
+
+				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 1.0f,
+						0.0f);
+				anim.setDuration(100).start();
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						cardPos = position;
+						parentAdapterView = parent;
+						refreshDecks();
+						ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
+								"alpha", 0.0f, 1.0f);
+						animTwo.setDuration(100).start();
+					}
+				}, 100);
+
 			}
 		});
 		lvDeck.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				refreshDecks();
-				MyWindow.initiatePopupWindow(cardListUnique, position, parent);
+			public void onItemClick(final AdapterView<?> parent, final View v,
+					final int position, long id) {
+				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 1.0f,
+						0.0f);
+				anim.setDuration(100).start();
+
+				Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+
+					@Override
+					public void run() {
+						removeCard(parent, position);
+						ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
+								"alpha", 0.0f, 1.0f);
+						animTwo.setDuration(100).start();
+					}
+				}, 100);
 			}
 		});
-		setManaChart(cardList);
-		setPieGraph(cardList);
 	}
 
 	@Override
@@ -206,91 +194,25 @@ public class DeckActivity extends Fragment {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 
-		refreshDecks();
-
 		if (v.getId() == R.id.lvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardListUnique.get(info.position).getName());
-			pos = info.position;
-			String menuItems = "Remove card \""
-					+ cardListUnique.get(info.position).getName() + "\"";
-			menu.add(Menu.NONE, 0, 0, menuItems);
+			menu.add(Menu.NONE, 0, 0, "Show details");
 		} else {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
-			pos = info.position;
-			String menuItems = "Remove card \""
-					+ cardList.get(info.position).getName() + "\"";
-			menu.add(Menu.FIRST, 0, 0, menuItems);
+			menu.add(Menu.FIRST, 0, 0, "Show details");
 		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
 
-		DeckChanceFragment deckChanceFragment = (DeckChanceFragment) getActivity()
-				.getSupportFragmentManager().findFragmentByTag(
-						Utils.makeFragmentName(R.id.pager, 3));
-
-		refreshDecks();
-
-		final int bigSp = (int) TypedValue.applyDimension(
-				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
-						.getDisplayMetrics());
-		int screenSize = getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
-
-		// Remove selected card from the deck
-		if (item.getGroupId() == Menu.FIRST) {
-			cardList.remove(pos);
-			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
-					cardList));
-			Log.i("Card Removed", "Card removed, pos: " + pos);
-
-		} else if (item.getGroupId() == Menu.NONE) {
-			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
-				Cards card = it.next();
-				if (card.getName().equals(cardListUnique.get(pos).getName())) {
-					it.remove();
-					break;
-				}
-			}
-			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
-					cardList));
-			Log.i("Card Removed", "Card removed, pos: " + pos);
-
-		}
-
-		// Save the updated deck
-		DeckUtils.saveDeck(getActivity(), listDecks.get(position), cardList);
-		Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
-
-		// Refresh Views with updated data
-		adapter.update(cardList);
-		adapter2.update(cardList);
-		// lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
-
-		// Refresh charts
-		setManaChart(cardList);
-		setPieGraph(cardList);
-
-		deckChanceFragment.updatePercents(cardList, true);
-
-		// Set current card count
-		tvNumCards.setText("" + cardList.size() + " / 30");
-
-		if (cardList.size() == 0
-				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			tvNumCards.setTextSize(bigSp);
-			tvNumCards
-					.setText("Looks like there's nothing here. Swipe right to get started!");
-			ivSwipe.setVisibility(View.VISIBLE);
-		} else if (cardList.size() == 0
-				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-			tvNumCards.setTextSize(bigSp);
-			tvNumCards
-					.setText("Looks like there's nothing here. Add cards from the left to get started!");
-			ivSwipe.setVisibility(View.VISIBLE);
+		if (item.getGroupId() == Menu.FIRST || item.getGroupId() == Menu.NONE) {
+			MyWindow.initiatePopupWindow(cardList, info.position,
+					info.targetView);
 		}
 
 		return super.onContextItemSelected(item);
@@ -350,8 +272,8 @@ public class DeckActivity extends Fragment {
 						public void onClick(DialogInterface dialog, int which) {
 							cardListUnique.clear();
 							cardList.clear();
-							DeckUtils.saveDeck(getActivity(),
-									listDecks.get(position), cardList);
+							new DeckUtils.SaveDeck(getActivity(), listDecks
+									.get(position), cardList).execute();
 							adapter.update(cardList);
 							lvDeck.setAdapter(new DeckListAdapter(
 									getActivity(), cardList));
@@ -374,36 +296,38 @@ public class DeckActivity extends Fragment {
 	}
 
 	public static void setManaChart(List<Cards> cardList) {
-		ArrayList<Bar> points = new ArrayList<Bar>();
+		if (cardList.size() > 0) {
+			ArrayList<Bar> points = new ArrayList<Bar>();
 
-		int costs[] = new int[8];
+			int costs[] = new int[8];
 
-		for (Cards card : cardList) {
-			if (card.getCost() != null) {
-				if (card.getCost().intValue() > 7) {
-					costs[7]++;
-				} else {
-					costs[card.getCost().intValue()]++;
+			for (Cards card : cardList) {
+				if (card.getCost() != null) {
+					if (card.getCost().intValue() > 7) {
+						costs[7]++;
+					} else {
+						costs[card.getCost().intValue()]++;
+					}
 				}
 			}
-		}
 
-		for (int i = 0; i < 8; i++) {
-			Bar dBar = new Bar();
+			for (int i = 0; i < 8; i++) {
+				Bar dBar = new Bar();
 
-			if (i != 7) {
-				dBar.setName("" + i);
-			} else {
-				dBar.setName("7+");
+				if (i != 7) {
+					dBar.setName("" + i);
+				} else {
+					dBar.setName("7+");
+				}
+				dBar.setColor(Color.rgb(255, 68, 68));
+				dBar.setValue(costs[i]);
+				dBar.setShowAsFloat(false);
+				points.add(dBar);
 			}
-			dBar.setColor(Color.rgb(255, 68, 68));
-			dBar.setValue(costs[i]);
-			dBar.setShowAsFloat(false);
-			points.add(dBar);
+			manaChart.setShowBarText(false);
+			manaChart.setTextSize(15);
+			manaChart.setBars(points);
 		}
-		manaChart.setShowBarText(false);
-		manaChart.setTextSize(15);
-		manaChart.setBars(points);
 	}
 
 	public static void setPieGraph(List<Cards> cardList) {
@@ -445,8 +369,97 @@ public class DeckActivity extends Fragment {
 	}
 
 	private void refreshDecks() {
-		cardList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
-				listDecks.get(position));
+		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute(listDecks
+				.get(position));
+
+	}
+
+	private void removeCard(View v, int pos) {
+		DeckChanceFragment deckChanceFragment = (DeckChanceFragment) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 3));
+
+		CardListFragment cardListFragment = (CardListFragment) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 0));
+
+		final int bigSp = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_SP, 14, getResources()
+						.getDisplayMetrics());
+		int screenSize = getResources().getConfiguration().screenLayout
+				& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		// Remove selected card from the deck
+		if (v.getId() == R.id.gvDeck) {
+			Crouton.cancelAllCroutons();
+			Crouton.makeText(getActivity(),
+					"Card removed: " + cardList.get(pos).getName(),
+					Style.CONFIRM).show();
+
+			cardList.remove(pos);
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
+			Log.i("Card Removed", "Card removed, pos: " + pos);
+
+		} else {
+			Crouton.cancelAllCroutons();
+			Crouton.makeText(getActivity(),
+					"Card removed: " + cardListUnique.get(pos).getName(),
+					Style.CONFIRM).show();
+
+			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
+				Cards card = it.next();
+				if (card.getName().equals(cardListUnique.get(pos).getName())) {
+					it.remove();
+					break;
+				}
+			}
+			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
+					cardList));
+			Log.i("Card Removed", "Card removed, pos: " + pos);
+
+		}
+
+		// Save the updated deck
+		new DeckUtils.SaveDeck(getActivity(), listDecks.get(position), cardList)
+				.execute();
+		Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
+
+		// Refresh Views with updated data
+		adapter.update(cardList);
+		adapter2.update(cardList);
+		// lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
+
+		// Refresh charts
+		setManaChart(cardList);
+		setPieGraph(cardList);
+
+		deckChanceFragment.updatePercents(cardList, true);
+
+		// Set current card count
+		tvNumCards.setText("" + cardList.size() + " / 30");
+
+		if (cardList.size() == 0
+				&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			tvNumCards.setTextSize(bigSp);
+			tvNumCards
+					.setText("Looks like there's nothing here. Swipe right to get started!");
+			ivSwipe.setVisibility(View.VISIBLE);
+		} else if (cardList.size() == 0
+				&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			tvNumCards.setTextSize(bigSp);
+			tvNumCards
+					.setText("Looks like there's nothing here. Add cards from the left to get started!");
+			ivSwipe.setVisibility(View.VISIBLE);
+		}
+
+		deckChanceFragment.deckList = cardList;
+		cardListFragment.cardsList = cardList;
+	}
+
+	@Override
+	protected void setCardList(List<Cards> cardList, int tag) {
+		this.cardList = cardList;
 		if (cardList != null) {
 			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
 					cardList));
@@ -456,5 +469,60 @@ public class DeckActivity extends Fragment {
 
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
+
+		switch (tag) {
+		case 999:
+			// Hide graphic to make room for List
+			if (cardList != null && cardList.size() != 0) {
+				ivSwipe.setVisibility(View.GONE);
+			}
+
+			int sp = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_SP, 10, getActivity()
+							.getResources().getDisplayMetrics());
+			int bigSp = (int) TypedValue.applyDimension(
+					TypedValue.COMPLEX_UNIT_SP, 14, getActivity()
+							.getResources().getDisplayMetrics());
+
+			if (cardList != null) {
+				// Get screen size
+				int screenSize = getActivity().getResources()
+						.getConfiguration().screenLayout
+						& Configuration.SCREENLAYOUT_SIZE_MASK;
+
+				if (cardList.size() == 0
+						&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+					tvNumCards.setTextSize(bigSp);
+					tvNumCards
+							.setText("Looks like there's nothing here. Swipe right to get started!");
+					ivSwipe.setVisibility(View.VISIBLE);
+				} else if (cardList.size() == 0
+						&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+					tvNumCards.setTextSize(bigSp);
+					tvNumCards
+							.setText("Looks like there's nothing here. Add cards from the left to get started!");
+					ivSwipe.setVisibility(View.VISIBLE);
+				} else {
+					tvNumCards.setTextSize(sp);
+					tvNumCards.setText("" + cardList.size() + " / 30");
+					ivSwipe.setVisibility(View.GONE);
+				}
+			}
+
+			adapter = new ImageAdapter(getActivity(), cardList);
+			adapter2 = new DeckListAdapter(getActivity(), cardList);
+
+			gvDeck.setAdapter(adapter);
+			lvDeck.setAdapter(adapter2);
+
+			setManaChart(cardList);
+			setPieGraph(cardList);
+
+			break;
+		case 1337:
+			removeCard(parentAdapterView, cardPos);
+			adapter.update(cardList);
+			adapter2.update(cardList);
+		}
 	}
 }

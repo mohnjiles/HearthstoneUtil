@@ -19,7 +19,8 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:paddingTop="8dp"
-            android:text="0 / 30" />
+            android:text="0 / 30"
+            android:textSize="@dimen/arena_text" />
 
         <ImageView
             android:id="@+id/ivMiddle"

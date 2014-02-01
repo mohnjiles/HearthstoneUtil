@@ -10,6 +10,8 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.protocol.ExecutionContext;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -216,9 +218,10 @@ public class DeckSelector extends ActionBarActivity {
 							dialog.dismiss();
 							listDecks.add(nameBox.getText().toString());
 							deckClasses.add(spinner.getSelectedItemPosition());
-							DeckUtils.saveDeck(DeckSelector.this, "decklist", listDecks);
+							new DeckUtils.SaveDeck(DeckSelector.this, "decklist", listDecks).execute();
 							/*************** save corresponding class number **********/
-							DeckUtils.saveDeck(DeckSelector.this, "deckclasses", deckClasses);
+							new DeckUtils.SaveDeck(DeckSelector.this, "deckclasses", deckClasses).execute();
+							new DeckUtils.SaveDeck(DeckSelector.this, nameBox.getText().toString(), new ArrayList<Cards>()).execute();
 							adapter.notifyDataSetChanged();
 							gvDecks.setAdapter(adapter);
 						}
@@ -256,10 +259,10 @@ public class DeckSelector extends ActionBarActivity {
 		
 		this.deleteFile(listDecks.get(position));
 		deckClasses.remove(position);
-		DeckUtils.saveDeck(this, "deckclasses", deckClasses);
+		new DeckUtils.SaveDeck(this, "deckclasses", deckClasses).execute();
 
 		listDecks.remove(position);
-		DeckUtils.saveDeck(this, "decklist", listDecks);
+		new DeckUtils.SaveDeck(this, "decklist", listDecks).execute();
 		adapter.notifyDataSetChanged();
 		gvDecks.setAdapter(adapter);
 		return super.onContextItemSelected(item);

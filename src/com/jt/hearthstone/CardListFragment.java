@@ -41,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.CheckBox;
 import android.widget.GridView;
@@ -50,11 +51,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.nineoldandroids.animation.ObjectAnimator;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class CardListFragment extends Fragment {
+public class CardListFragment extends CustomCardFragment {
 
 	Spinner spinner;
 	Spinner spinnerSort;
@@ -79,14 +81,14 @@ public class CardListFragment extends Fragment {
 	private MenuItem listSwitcher;
 	private SharedPreferences prefs;
 	List<Integer> deckClasses = DeckSelector.deckClasses;
-	private List<Cards> deckOne;
+	private List<String> listDecks = DeckSelector.listDecks;
+	List<Cards> cardsList;
 
 	List<Cards> cardList;
 	private ArrayList<String> deckList;
-	Cards[] cards;
+	Cards[] cards = Utils.cards;
 
 	private boolean isGrid = true;
-	private int position;
 
 	private Typeface font;
 
@@ -172,6 +174,9 @@ public class CardListFragment extends Fragment {
 
 		// Get deck list from file
 		getDeckList();
+		
+		new DeckUtils.GetCardsList(getActivity(), this,
+				999).execute(listDecks.get(intent.getIntExtra("position", 0)));
 
 		MyWindow.setContext(getActivity());
 
@@ -179,13 +184,20 @@ public class CardListFragment extends Fragment {
 		grid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+
+				addCards(position);
+				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 0.5f,
+						1.0f);
+				anim.setDuration(500).start();
 			}
 		});
 		listCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				addCards(position);
+				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 0.5f,
+						1.0f);
+				anim.setDuration(500).start();
 			}
 		});
 
@@ -255,12 +267,7 @@ public class CardListFragment extends Fragment {
 			break;
 
 		case R.id.action_rename:
-			if (deckOne == null) {
-				deckOne = (List<Cards>) DeckUtils.getCardsList(getActivity(),
-						deckList.get(deckListPos));
-			}
-			DeckUtils.renameDeck(getActivity(), deckListPos, getActivity(),
-					deckOne);
+			new DeckUtils.GetCardsList(getActivity(), this, R.id.action_rename).execute(deckList.get(deckListPos));
 			break;
 		case R.id.action_switch:
 			if (isGrid) {
@@ -289,17 +296,18 @@ public class CardListFragment extends Fragment {
 		if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
-			position = info.position;
-			menu.add(1337, 0, 0, "Add to deck \"" + deckList.get(deckListPos)
-					+ "\"");
+			menu.add(1337, 0, 0, "Show details");
 		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
 		if (item.getGroupId() == 1337) {
-			addCards(position);
+			MyWindow.initiatePopupWindow(cardList, info.position,
+					info.targetView);
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -311,9 +319,6 @@ public class CardListFragment extends Fragment {
 						Utils.makeFragmentName(R.id.pager, 3));
 
 		Crouton.cancelAllCroutons();
-
-		List<Cards> cardsList = (List<Cards>) DeckUtils.getCardsList(
-				getActivity(), deckList.get(deckListPos));
 
 		if (cardsList.size() < 30) {
 			cardsList.add(cardList.get(position));
@@ -330,7 +335,8 @@ public class CardListFragment extends Fragment {
 		DeckActivity.setManaChart(cardsList);
 		DeckActivity.setPieGraph(cardsList);
 
-		DeckUtils.saveDeck(getActivity(), deckList.get(deckListPos), cardsList);
+		new DeckUtils.SaveDeck(getActivity(), deckList.get(deckListPos),
+				cardsList).execute();
 
 		// Get text sizes in sp
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
@@ -366,16 +372,11 @@ public class CardListFragment extends Fragment {
 			Collections.sort(cardsList, new CardComparator(2, false));
 		}
 
-		cardsList = (List<Cards>) DeckUtils.getCardsList(getActivity(),
-				deckList.get(deckListPos));
 		deckFrag.adapter.update(cardsList);
 		deckFrag.adapter2.update(cardsList);
-		// deckFrag.gvDeck.setAdapter(new ImageAdapter(getActivity(),
-		// cardsList));
-		// deckFrag.lvDeck.setAdapter(new DeckListAdapter(getActivity(),
-		// cardsList));
-		
+
 		deckChanceFragment.updatePercents(cardsList, true);
+		deckChanceFragment.deckList = cardsList;
 
 	}
 
@@ -416,50 +417,6 @@ public class CardListFragment extends Fragment {
 	}
 
 	private void setupCardList() {
-		Gson gson = new Gson();
-
-		FileInputStream fis = null;
-		try {
-			fis = getActivity().openFileInput("cards.json");
-		} catch (FileNotFoundException e1) {
-			copyFile("cards.json");
-			try {
-				fis = getActivity().openFileInput("cards.json");
-			} catch (FileNotFoundException e) {
-				Log.wtf("How is this possible?", "cards.json broke");
-				e.printStackTrace();
-			}
-			e1.printStackTrace();
-		}
-		Writer writer = new StringWriter();
-		char[] buffer = new char[1024];
-		try {
-			Reader reader = new BufferedReader(new InputStreamReader(fis,
-					"UTF-8"));
-			int n;
-			while ((n = reader.read(buffer)) != -1) {
-				writer.write(buffer, 0, n);
-			}
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} finally {
-			try {
-				fis.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		// The json String from the file
-		String jsonString = writer.toString();
-
-		// Set our pojo from the GSON data
-		cards = gson.fromJson(jsonString, Cards[].class);
-		// Load default card list
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
@@ -634,4 +591,22 @@ public class CardListFragment extends Fragment {
 		}
 
 	}
+
+	@Override
+	protected void setCardList(List<Cards> cardList, int tag) {
+		Log.w("setCardList", "setCardList");
+		this.cardsList = cardList;
+
+		switch (tag) {
+		case R.id.action_rename:
+			DeckUtils.renameDeck(getActivity(), deckListPos, getActivity(),
+					cardList);
+			break;
+		default:
+			break;
+		}
+
+	}
+	
+	
 }

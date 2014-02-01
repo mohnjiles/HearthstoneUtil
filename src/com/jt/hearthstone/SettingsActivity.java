@@ -17,12 +17,16 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SettingsActivity extends PreferenceActivity {
 
+	private List<String> deckList;
+	
 	@SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setTitle("Hearthstone Companion Settings");
 		addPreferencesFromResource(R.xml.settings);
+		
+		new DeckUtils.GetStringList(this, null, 0, null, null).execute("decklist");
 
 		CheckBoxPreference mCheckBoxPref = (CheckBoxPreference) findPreference("first_time");
 		PreferenceCategory mCategory = (PreferenceCategory) findPreference("search_category");
@@ -70,8 +74,7 @@ public class SettingsActivity extends PreferenceActivity {
 
 			@Override
 			public boolean onPreferenceClick(Preference preference) {
-				List<String> deckList = (List<String>) DeckUtils.getStringList(
-						SettingsActivity.this, "decklist");
+				
 				List<Integer> classesDeck = (List<Integer>) DeckUtils
 						.getIntegerDeck(SettingsActivity.this, "deckclasses");
 				if (deckList.size() > 0) {
@@ -79,8 +82,8 @@ public class SettingsActivity extends PreferenceActivity {
 					Crouton.makeText(SettingsActivity.this,
 							"Deck List cleared.", Style.INFO).show();
 					Log.i("deckList.clear()", "Deck list cleared");
-					DeckUtils.saveDeck(SettingsActivity.this, "decklist",
-							deckList);
+					new DeckUtils.SaveDeck(SettingsActivity.this, "decklist",
+							deckList).execute();
 					Log.i("Deck saved", "Deck List Saved");
 				}
 				if (classesDeck.size() > 0) {
@@ -88,8 +91,7 @@ public class SettingsActivity extends PreferenceActivity {
 					Crouton.makeText(SettingsActivity.this,
 							"Deck Classes cleared.", Style.INFO).show();
 					Log.i("deckClasses.clear()", "Deck Classes cleared.");
-					DeckUtils.saveDeck(SettingsActivity.this, "deckclasses",
-							classesDeck);
+					new DeckUtils.SaveDeck(SettingsActivity.this, "deckclasses", classesDeck).execute();
 					Log.i("Deck saved", "Deck Classes Saved");
 				}
 
@@ -97,5 +99,7 @@ public class SettingsActivity extends PreferenceActivity {
 			}
 		});
 	}
+	
+	
 
 }

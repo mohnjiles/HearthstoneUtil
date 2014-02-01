@@ -35,7 +35,7 @@ import com.echo.holographlibrary.PieSlice;
  * @author JT
  * 
  */
-public class ArenaDeckFragment extends Fragment {
+public class ArenaDeckFragment extends CustomCardFragment {
 
 	GridView gvDeck;
 	ListView lvArena;
@@ -47,8 +47,8 @@ public class ArenaDeckFragment extends Fragment {
 	ImageAdapter gridAdapter;
 	DeckListAdapter listAdapter;
 
-	private ArrayList<Cards> cardList;
-	private ArrayList<Cards> cardListUnique;
+	private List<Cards> cardList;
+	private List<Cards> cardListUnique;
 	
 	private boolean isGrid = true;
 
@@ -78,13 +78,6 @@ public class ArenaDeckFragment extends Fragment {
 		super.onActivityCreated(savedInstanceState);
 
 		refreshList();
-		
-		// Set up adapters for ListView & GridView
-		gridAdapter = new ImageAdapter(getActivity(), cardList);
-		listAdapter = new DeckListAdapter(getActivity(), cardList);
-		
-		lvArena.setAdapter(listAdapter);
-		gvDeck.setAdapter(gridAdapter);
 		
 		tvDeckSize.setTypeface(TypefaceCache.get(getActivity().getAssets(),
 				"fonts/belwebd.ttf"));
@@ -187,7 +180,7 @@ public class ArenaDeckFragment extends Fragment {
 		}
 	}
 
-	public void update(ArrayList<Cards> cardList) {
+	public void update(List<Cards> cardList) {
 		gridAdapter.update(cardList);
 		listAdapter.update(cardList);
 		tvDeckSize.setText(cardList.size() + " / 30");
@@ -268,10 +261,23 @@ public class ArenaDeckFragment extends Fragment {
 	}
 	
 	private void refreshList() {
-		cardList = (ArrayList<Cards>) DeckUtils.getCardsList(getActivity(), "arenaDeck");
+		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
+	}
+
+	@Override
+	protected void setCardList(List<Cards> cardList, int tag) {
+		this.cardList = cardList;
 		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
+		
+		// Set up adapters for ListView & GridView
+		gridAdapter = new ImageAdapter(getActivity(), cardList);
+		listAdapter = new DeckListAdapter(getActivity(), cardList);
+		
+		lvArena.setAdapter(listAdapter);
+		gvDeck.setAdapter(gridAdapter);
 	}
+
 
 }
