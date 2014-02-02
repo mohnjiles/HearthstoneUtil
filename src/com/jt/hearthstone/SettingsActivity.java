@@ -26,7 +26,7 @@ public class SettingsActivity extends PreferenceActivity {
 		setTitle("Hearthstone Companion Settings");
 		addPreferencesFromResource(R.xml.settings);
 		
-		new DeckUtils.GetStringList(this, null, 0, null, null).execute("decklist");
+		new DeckUtils.GetStringList(this, "", 0, null, null).execute("decklist");
 
 		CheckBoxPreference mCheckBoxPref = (CheckBoxPreference) findPreference("first_time");
 		PreferenceCategory mCategory = (PreferenceCategory) findPreference("search_category");
