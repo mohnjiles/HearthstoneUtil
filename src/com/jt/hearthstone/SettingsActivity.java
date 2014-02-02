@@ -77,6 +77,7 @@ public class SettingsActivity extends PreferenceActivity {
 				
 				List<Integer> classesDeck = (List<Integer>) DeckUtils
 						.getIntegerDeck(SettingsActivity.this, "deckclasses");
+				deckList = DeckUtils.listDecks;
 				if (deckList.size() > 0) {
 					deckList.clear();
 					Crouton.makeText(SettingsActivity.this,

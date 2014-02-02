@@ -77,9 +77,9 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		deckChanceFrag = new DeckChanceFragment();
 		fragments.add(deckChanceFrag);
-		
+
 		adapter = new FragmentAdapter(getSupportFragmentManager(), fragments);
-		
+
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
@@ -113,39 +113,51 @@ public class DeckFragmentHolder extends ActionBarActivity {
 						}
 					}
 				});
-		
+
 		prefs = PreferenceManager.getDefaultSharedPreferences(this);
-		  
-		if (prefs.getString("transition_effect", "Stack").equals("Accordion")) {
+
+		if (prefs.getString("transition_effect", "Standard")
+				.equals("Accordion")) {
 			tf = TransitionEffect.Accordion;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Cube Out")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Cube Out")) {
 			tf = TransitionEffect.CubeOut;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Cube In")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Cube In")) {
 			tf = TransitionEffect.CubeIn;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Flip Horizontal")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Flip Horizontal")) {
 			tf = TransitionEffect.FlipHorizontal;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Flip Vertical")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Flip Vertical")) {
 			tf = TransitionEffect.FlipVertical;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Rotate Down")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Rotate Down")) {
 			tf = TransitionEffect.RotateDown;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Rotate Up")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Rotate Up")) {
 			tf = TransitionEffect.RotateUp;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Stack")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Stack")) {
 			tf = TransitionEffect.Stack;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Standard")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Standard")) {
 			tf = TransitionEffect.Standard;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Tablet")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Tablet")) {
 			tf = TransitionEffect.Tablet;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Zoom In")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Zoom In")) {
 			tf = TransitionEffect.ZoomIn;
-		} else if (prefs.getString("transition_effect", "Stack").equals("Zoom Out")) {
+		} else if (prefs.getString("transition_effect", "Standard").equals(
+				"Zoom Out")) {
 			tf = TransitionEffect.ZoomOut;
 		} else {
 			tf = TransitionEffect.Standard;
 		}
 
 		setStuff(getCards());
-		
+
 		titles.setViewPager(myPager);
 		titles.setTextColor(Color.BLACK);
 		titles.setSelectedColor(Color.BLACK);
@@ -198,7 +210,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			//
 			Utils.navigateUp(this);
 			return super.onOptionsItemSelected(item);
-			
+
 		case R.id.action_settings:
 			startActivity(new Intent(DeckFragmentHolder.this,
 					SettingsActivity.class));
@@ -220,12 +232,12 @@ public class DeckFragmentHolder extends ActionBarActivity {
 			localFragmentArray = loadFragment;
 			mManager = fm;
 		}
-		
+
 		@Override
 		public Object instantiateItem(ViewGroup container, final int position) {
-		    Object obj = super.instantiateItem(container, position);
-		    myPager.setObjectForPosition(obj, position);
-		    return obj;
+			Object obj = super.instantiateItem(container, position);
+			myPager.setObjectForPosition(obj, position);
+			return obj;
 		}
 
 		@Override
@@ -313,7 +325,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	}
 
 	private void setStuff(List<Integer> result) {
-		
+
 		myPager.setAdapter(adapter);
 		myPager.setCurrentItem(previousPage);
 		myPager.setOffscreenPageLimit(3);

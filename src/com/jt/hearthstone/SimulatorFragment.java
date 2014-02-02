@@ -8,7 +8,6 @@ import java.util.List;
 
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -94,7 +93,7 @@ public class SimulatorFragment extends CustomCardFragment {
 		btnRedraw.setTypeface(font);
 		btnDrawAnother.setTypeface(font);
 		tvStartingSize.setTypeface(font);
-		
+
 		if (spinnerNumCards.getSelectedItem() != null) {
 			numCards = Integer.parseInt(spinnerNumCards.getSelectedItem()
 					.toString());
@@ -105,39 +104,10 @@ public class SimulatorFragment extends CustomCardFragment {
 			cardsToShow.clear();
 		}
 		
-		new DeckUtils.GetCardsList(getActivity(), this, 0).execute(listDecks.get(position));
+		final DeckActivity deckActivity = (DeckActivity) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 1));
 		
-
-		String[] cardsToDraw = getResources().getStringArray(
-				R.array.CardsToDraw);
-		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
-				R.layout.spinner_row, R.id.name, cardsToDraw);
-		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-
-		spinnerNumCards.setAdapter(spinAdapter);
-	}
-
-	@Override
-	protected void setCardList(final List<Cards> cardList, int tag) {
-		this.cardList = cardList;
-		
-		Collections.shuffle(cardList);
-		if (cardList.size() > numCards - 1) {
-			for (int i = 0; i < numCards; i++) {
-				cardsToShow.add(cardList.get(i));
-			}
-		}
-
-		adapter = new ImageAdapter(getActivity(), cardsToShow);
-		gvCards.setAdapter(adapter);
-
-		gvCards.setOnItemClickListener(new OnItemClickListener() {
-			public void onItemClick(AdapterView<?> parent, View v,
-					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
-			}
-		});
-
 		btnRedraw.setOnClickListener(new View.OnClickListener() {
 
 			@Override
@@ -145,7 +115,7 @@ public class SimulatorFragment extends CustomCardFragment {
 				Collections.shuffle(cardList);
 
 				cardsToShow.clear();
-
+				cardList = deckActivity.cardList;
 				int numToShow;
 
 				if (spinnerNumCards.getSelectedItem() != null) {
@@ -161,6 +131,7 @@ public class SimulatorFragment extends CustomCardFragment {
 					}
 					gvCards.setAdapter(adapter);
 				} else {
+					Crouton.cancelAllCroutons();
 					Crouton.makeText(getActivity(),
 							"Not enough cards in the deck.", Style.ALERT)
 							.show();
@@ -172,17 +143,50 @@ public class SimulatorFragment extends CustomCardFragment {
 
 			@Override
 			public void onClick(View v) {
-				// cardList = Utils.getDeck(getActivity(),
-				// listDecks.get(position));
 				if (cardsToShow.size() < cardList.size()) {
+					cardList = deckActivity.cardList;
 					cardsToShow.add(cardList.get(cardsToShow.size()));
 					int index = gvCards.getLastVisiblePosition();
 					gvCards.setAdapter(adapter);
 					gvCards.setSelection(index + 1);
 				} else {
+					Crouton.cancelAllCroutons();
 					Crouton.makeText(getActivity(), "No more cards.",
 							Style.ALERT).show();
 				}
+			}
+		});
+
+		new DeckUtils.GetCardsList(getActivity(), this, 0).execute(listDecks
+				.get(position));
+
+		String[] cardsToDraw = getResources().getStringArray(
+				R.array.CardsToDraw);
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
+				R.layout.spinner_row, R.id.name, cardsToDraw);
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+
+		spinnerNumCards.setAdapter(spinAdapter);
+	}
+
+	@Override
+	protected void setCardList(final List<Cards> cardList, int tag) {
+		this.cardList = cardList;
+
+		Collections.shuffle(cardList);
+		if (cardList.size() > numCards - 1) {
+			for (int i = 0; i < numCards; i++) {
+				cardsToShow.add(cardList.get(i));
+			}
+		}
+
+		adapter = new ImageAdapter(getActivity(), cardsToShow);
+		gvCards.setAdapter(adapter);
+
+		gvCards.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> parent, View v,
+					int position, long id) {
+				MyWindow.initiatePopupWindow(cardList, position, parent);
 			}
 		});
 	}
