@@ -43,6 +43,7 @@ public class DeckGuideAdapter extends BaseAdapter {
 	static class ViewHolder {
 		TextView tvDeckName = null;
 		TextView tvNumCards = null;
+		TextView tvMana = null;
 		ImageView ivClass = null;
 	}
 
@@ -61,6 +62,7 @@ public class DeckGuideAdapter extends BaseAdapter {
 			vh = new ViewHolder();
 			vh.tvDeckName = findById(convertView, R.id.tvDeckName);
 			vh.tvNumCards = findById(convertView, R.id.tvNumCards);
+			vh.tvMana = findById(convertView, R.id.tvMana);
 			vh.ivClass = findById(convertView, R.id.ivClassImage);
 			
 			convertView.setTag(vh);
@@ -75,9 +77,11 @@ public class DeckGuideAdapter extends BaseAdapter {
 
 		vh.tvDeckName.setTypeface(font);
 		vh.tvNumCards.setTypeface(font);
+		vh.tvMana.setTypeface(font);
 
 		vh.tvDeckName.setText(cardList.get(position).getName());
 		vh.tvNumCards.setText(numTimes);
+		vh.tvMana.setText(cardList.get(position).getCost().toString());
 
 		switch (cardList.get(position).getQuality().intValue()) {
 		case 0:

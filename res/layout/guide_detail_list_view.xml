@@ -48,4 +48,25 @@
             android:layout_height="@dimen/card_class_size" />
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/ivItem2"
+        android:layout_width="@dimen/card_stats_image_size"
+        android:layout_height="@dimen/card_stats_image_size"
+        android:layout_alignTop="@+id/tvMana"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/tvMana"
+        android:src="@drawable/mana_crystal" />
+
+    <TextView
+        android:id="@+id/tvMana"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/tvDeckName"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="30"
+        android:textColor="#FFFFFF"
+        android:textSize="@dimen/card_stats_text_size" />
+
 </RelativeLayout>

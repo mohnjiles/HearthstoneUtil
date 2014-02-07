@@ -10,8 +10,6 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.http.protocol.ExecutionContext;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -28,6 +26,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -38,16 +37,15 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class DeckSelector extends ActionBarActivity {
 
-
 	static List<String> listDecks = new ArrayList<String>();
 	static List<Integer> deckClasses;
 	static ProgressDialog dialog;
-	
+
 	private GridView gvDecks;
-	
+
 	private DecksAdapter adapter;
 	private int position;
-	
+
 	private Typeface font;
 	private DrawerLayout drawerLayout;
 
@@ -59,8 +57,8 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Decks");
 		gvDecks = findById(this, R.id.gvDecks);
-		drawerLayout = findById(this,R.id.drawerLayout);
-		
+		drawerLayout = findById(this, R.id.drawerLayout);
+
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
@@ -94,11 +92,10 @@ public class DeckSelector extends ActionBarActivity {
 						}
 					}
 				});
-		
-		
-		
+
 		registerForContextMenu(gvDecks);
-		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(this, "deckclasses");		
+		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(this,
+				"deckclasses");
 		font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
 
 		InputStream instream = null;
@@ -143,7 +140,8 @@ public class DeckSelector extends ActionBarActivity {
 				Intent intent = new Intent(DeckSelector.this,
 						DeckFragmentHolder.class);
 				intent.putExtra("position", arg2);
-				intent.putStringArrayListExtra("listDecks", (ArrayList<String>) listDecks);
+				intent.putStringArrayListExtra("listDecks",
+						(ArrayList<String>) listDecks);
 				intent.putExtra("name", listDecks.get(arg2));
 				startActivity(intent);
 			}
@@ -183,11 +181,10 @@ public class DeckSelector extends ActionBarActivity {
 					.findViewById(R.id.etDeckName);
 			final Spinner spinner = (Spinner) layout
 					.findViewById(R.id.spinClass);
-			final TextView tvOne = (TextView) layout
-					.findViewById(R.id.tvCost);
+			final TextView tvOne = (TextView) layout.findViewById(R.id.tvCost);
 			final TextView tvTwo = (TextView) layout
 					.findViewById(R.id.tvNumCards);
-			
+
 			tvOne.setTypeface(font);
 			tvTwo.setTypeface(font);
 
@@ -202,30 +199,7 @@ public class DeckSelector extends ActionBarActivity {
 			spinner.setAdapter(spinAdapter);
 			builder.setView(layout);
 			builder.setPositiveButton("Save",
-					new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							
-							for (String deckName : listDecks) {
-								if (deckName.equals(nameBox.getText().toString())) {
-									Crouton.makeText(DeckSelector.this,
-											"Deck with that name already exists",
-											Style.ALERT).show();
-									return;
-								}
-							}
-							
-							dialog.dismiss();
-							listDecks.add(nameBox.getText().toString());
-							deckClasses.add(spinner.getSelectedItemPosition());
-							new DeckUtils.SaveDeck(DeckSelector.this, "decklist", listDecks).execute();
-							/*************** save corresponding class number **********/
-							new DeckUtils.SaveDeck(DeckSelector.this, "deckclasses", deckClasses).execute();
-							new DeckUtils.SaveDeck(DeckSelector.this, nameBox.getText().toString(), new ArrayList<Cards>()).execute();
-							adapter.notifyDataSetChanged();
-							gvDecks.setAdapter(adapter);
-						}
-					});
+					null);
 			builder.setNegativeButton("Cancel",
 					new DialogInterface.OnClickListener() {
 						@Override
@@ -233,7 +207,58 @@ public class DeckSelector extends ActionBarActivity {
 							dialog.dismiss();
 						}
 					});
-			AlertDialog dialog = builder.create();
+			final AlertDialog dialog = builder.create();
+			
+			dialog.setOnShowListener(new DialogInterface.OnShowListener() {
+				
+				@Override
+				public void onShow(DialogInterface d) {
+					
+
+					Button btnSave = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+					btnSave.setOnClickListener(new View.OnClickListener() {
+						@Override
+						public void onClick(View view) {
+
+							for (String deckName : listDecks) {
+								if (deckName.equals(nameBox.getText()
+										.toString())) {
+									Crouton.makeText(
+											DeckSelector.this,
+											"Deck with that name already exists",
+											Style.ALERT).show();
+									return;
+								}
+							}
+
+							if (nameBox.getText().toString() == null
+									|| nameBox.getText().toString().equals("")) {
+								Crouton.makeText(DeckSelector.this,
+										"You must provide a name for the deck",
+										Style.ALERT).show();
+								return;
+							}
+							
+							dialog.dismiss();
+							
+							listDecks.add(nameBox.getText().toString());
+							deckClasses.add(spinner.getSelectedItemPosition());
+							new DeckUtils.SaveDeck(DeckSelector.this,
+									"decklist", listDecks).execute();
+							/*************** save corresponding class number **********/
+							new DeckUtils.SaveDeck(DeckSelector.this,
+									"deckclasses", deckClasses).execute();
+							new DeckUtils.SaveDeck(DeckSelector.this, nameBox
+									.getText().toString(),
+									new ArrayList<Cards>()).execute();
+							adapter.notifyDataSetChanged();
+							gvDecks.setAdapter(adapter);
+						}
+					});
+					
+				}
+			});
+			
 			dialog.show();
 			return true;
 		}
@@ -256,7 +281,7 @@ public class DeckSelector extends ActionBarActivity {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		
+
 		this.deleteFile(listDecks.get(position));
 		deckClasses.remove(position);
 		new DeckUtils.SaveDeck(this, "deckclasses", deckClasses).execute();

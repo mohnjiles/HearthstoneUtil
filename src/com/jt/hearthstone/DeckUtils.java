@@ -66,45 +66,45 @@ public class DeckUtils {
 	}
 
 	@SuppressWarnings("unchecked")
-//	static List<String> getStringList(Context context, String deckName) {
-//		InputStream instream = null;
-//		List<String> list = null;
-//		try {
-//			instream = context.openFileInput(deckName);
-//		} catch (FileNotFoundException e) {
-//			list = new ArrayList<String>();
-//			e.printStackTrace();
-//		}
-//
-//		try {
-//			if (instream != null) {
-//				ObjectInputStream objStream = new ObjectInputStream(instream);
-//				try {
-//					list = (List<String>) objStream.readObject();
-//					if (instream != null) {
-//						instream.close();
-//					}
-//					if (objStream != null) {
-//						objStream.close();
-//					}
-//
-//				} catch (ClassNotFoundException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//			}
-//		} catch (StreamCorruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return list;
-	
-//	}
+	static List<String> getStringList(Context context, String deckName) {
+		InputStream instream = null;
+		List<String> list = null;
+		try {
+			instream = context.openFileInput(deckName);
+		} catch (FileNotFoundException e) {
+			list = new ArrayList<String>();
+			e.printStackTrace();
+		}
 
-//	@SuppressWarnings("unchecked")
+		try {
+			if (instream != null) {
+				ObjectInputStream objStream = new ObjectInputStream(instream);
+				try {
+					list = (List<String>) objStream.readObject();
+					if (instream != null) {
+						instream.close();
+					}
+					if (objStream != null) {
+						objStream.close();
+					}
+
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		} catch (StreamCorruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	
+	}
+
+	@SuppressWarnings("unchecked")
 	static List<Integer> getIntegerDeck(Context context, String deckName) {
 		InputStream instream = null;
 		List<Integer> list = null;

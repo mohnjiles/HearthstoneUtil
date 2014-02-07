@@ -20,11 +20,13 @@ import org.apache.http.impl.client.DefaultHttpClient;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -139,6 +141,16 @@ public class MainActivity extends ActionBarActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
+		
+		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+		boolean isfirstTime = prefs.getBoolean("first_time_drawer", true);
+		
+		if (isfirstTime) {
+			mDrawerLayout.openDrawer(mDrawerList);
+			SharedPreferences.Editor editor = prefs.edit();
+            editor.putBoolean("first_time_drawer", false);
+            editor.commit();
+		}
 
 		new CheckVersion().execute();
 

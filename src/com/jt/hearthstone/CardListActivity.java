@@ -125,24 +125,10 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Set grid invisible, list is default.
 		listCards.setVisibility(View.INVISIBLE);
+		
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
-		if (cardList == null) {
-			cardList = new ArrayList<Cards>();
-			for (Cards card : cards) {
-				if (card.getClasss() == null) {
-					cardList.add(card);
-				}
-			}
-		} else {
-			cardList.clear();
-			for (Cards card : cards) {
-				if (card.getClasss() == null) {
-					cardList.add(card);
-				}
-			}
-		}
 
 		mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
@@ -266,8 +252,6 @@ public class CardListActivity extends ActionBarActivity {
 
 							// Otherwise, user is unchecking the box, so remove
 							// all generic cards.
-							// Why haven't I been using more ArrayLists in my
-							// other app?????
 						} else {
 							for (Cards card : cards) {
 								if (card.getClasss() == null
@@ -508,8 +492,9 @@ public class CardListActivity extends ActionBarActivity {
 								}
 								ArrayList<Cards> newDeck = new ArrayList<Cards>();
 								new DeckUtils.SaveDeck(CardListActivity.this,
-										nameBox.getText().toString(), newDeck).execute();
-								addCards();
+										nameBox.getText().toString(), newDeck)
+										.execute();
+								addCards(nameBox.getText().toString());
 							}
 						});
 				builder.setNegativeButton("Cancel",
@@ -525,17 +510,16 @@ public class CardListActivity extends ActionBarActivity {
 
 				return true;
 			} else {
-				addCards();
+				addCards(deckList.get(menuItemIndex));
 				return true;
 			}
 		}
 		return true;
 	}
 
-	private void addCards() {
+	private void addCards(String deckName) {
 
-		List<Cards> list = DeckUtils.getCardsList(this,
-				deckList.get(menuItemIndex));
+		List<Cards> list = DeckUtils.getCardsList(this, deckName);
 
 		if (list == null) {
 			list = new ArrayList<Cards>();
@@ -550,7 +534,8 @@ public class CardListActivity extends ActionBarActivity {
 		}
 
 		list.add(cardList.get(position));
-		new DeckUtils.SaveDeck(this, deckList.get(menuItemIndex), list).execute();
+		new DeckUtils.SaveDeck(this, deckList.get(menuItemIndex), list)
+				.execute();
 	}
 
 	private void getDeckList() {
@@ -586,32 +571,6 @@ public class CardListActivity extends ActionBarActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-	}
-	
-	private void copyFile(String filename) {
-		AssetManager assetManager = this.getAssets();
-
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			in = assetManager.open(filename);
-			String newFileName = this.getFilesDir().getPath() + "/" + filename;
-			out = new FileOutputStream(newFileName);
-
-			byte[] buffer = new byte[1024];
-			int read;
-			while ((read = in.read(buffer)) != -1) {
-				out.write(buffer, 0, read);
-			}
-			in.close();
-			in = null;
-			out.flush();
-			out.close();
-			out = null;
-		} catch (Exception e) {
-			Log.e("tag", e.getMessage());
-		}
-
 	}
 
 	private void setupCardList() {

@@ -39,6 +39,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 	private Intent intent;
 	private Spinner spinSort;
 	private String url;
+	SparseArray<String> soSparse = new SparseArray<String>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -63,7 +64,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 		// Get url from last activity
 		url = intent.getStringExtra("url");
 		dustCost = intent.getStringExtra("dust");
-		
+
 		// Load the deck selected by user in last activity
 		// new FetchDeckCards(this).execute(url);
 
@@ -103,7 +104,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 			}
 		});
-		
+
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
@@ -137,7 +138,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 						}
 					}
 				});
-		
+
 		tvDust.setText("Deck Crafting Cost: " + dustCost);
 		tvDust.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
 	}
@@ -159,6 +160,73 @@ public class DeckGuideDetail extends ActionBarActivity {
 			// Activity
 			Utils.navigateUp(this);
 			return true;
+		case R.id.action_save:
+			List<String> deckList = DeckUtils.getStringList(this, "decklist");
+			List<Integer> classesList = DeckUtils.getIntegerDeck(this,
+					"deckclasses");
+			List<Cards> tempList = new ArrayList<Cards>();
+
+			int i = 0;
+
+			for (Cards card : deckCards) {
+
+				String numTimes = new StringBuilder(soSparse.get(i)).reverse()
+						.toString();
+				numTimes = numTimes.replace(" ", "").replace("×", "");
+
+				if (Integer.parseInt(numTimes) == 2) {
+					tempList.add(card);
+				}
+
+				i++;
+			}
+
+			for (Cards card : deckCards) {
+				if (card.getClasss() != null) {
+					switch (card.getClasss().intValue()) {
+					case 1:
+						classesList.add(8);
+						break;
+					case 2:
+						classesList.add(3);
+						break;
+					case 3:
+						classesList.add(1);
+						break;
+					case 4:
+						classesList.add(5);
+						break;
+					case 5:
+						classesList.add(4);
+						break;
+					case 7:
+						classesList.add(6);
+						break;
+					case 8:
+						classesList.add(2);
+						break;
+					case 9:
+						classesList.add(7);
+						break;
+					case 11:
+						classesList.add(0);
+						break;
+					}
+					break;
+				}
+
+			}
+
+			deckCards.addAll(tempList);
+
+			deckList.add(intent.getStringExtra("deckName"));
+
+			new DeckUtils.SaveDeck(this, intent.getStringExtra("deckName"),
+					deckCards).execute();
+			new DeckUtils.SaveDeck(this, "decklist", deckList).execute();
+			new DeckUtils.SaveDeck(this, "deckclasses", classesList).execute();
+
+			Crouton.makeText(this, "Deck saved", Style.CONFIRM).show();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -204,7 +272,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 		@Override
 		protected void onPostExecute(Document result) {
-			SparseArray<String> soSparse = new SparseArray<String>();
+			soSparse.clear();
 			if (dialog != null) {
 				dialog.cancel();
 			}

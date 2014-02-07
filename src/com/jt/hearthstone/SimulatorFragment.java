@@ -186,7 +186,7 @@ public class SimulatorFragment extends CustomCardFragment {
 		gvCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(cardsToShow, position, parent);
 			}
 		});
 	}
