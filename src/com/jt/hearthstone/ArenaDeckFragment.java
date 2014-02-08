@@ -263,6 +263,10 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	private void refreshList() {
 		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
 	}
+	
+	private void popupWindow() {
+		new DeckUtils.GetCardsList(getActivity(), this, 123).execute("arenaDeck");
+	}
 
 	@Override
 	protected void setCardList(List<Cards> cardList, int tag) {
@@ -272,11 +276,23 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		Collections.sort(cardListUnique, new CardComparator(2, false));
 		
 		// Set up adapters for ListView & GridView
-		gridAdapter = new ImageAdapter(getActivity(), cardList);
-		listAdapter = new DeckListAdapter(getActivity(), cardList);
+		if (gridAdapter == null) {
+			gridAdapter = new ImageAdapter(getActivity(), cardList);
+			gvDeck.setAdapter(gridAdapter);
+		} else {
+			gridAdapter.update(cardList);
+		}
+		if (listAdapter == null) {
+			listAdapter = new DeckListAdapter(getActivity(), cardList);
+			lvArena.setAdapter(listAdapter);
+		} else {
+			listAdapter.update(cardList);
+		}
 		
-		lvArena.setAdapter(listAdapter);
-		gvDeck.setAdapter(gridAdapter);
+		if (tag != null && tag == 123) {
+			// TODO: PopupWindow after async
+		}
+		
 	}
 
 
