@@ -306,7 +306,8 @@ public class CardListFragment extends CustomCardFragment {
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
 		if (item.getGroupId() == 1337) {
-			MyWindow.initiatePopupWindow(cardList, info.position,
+			MyWindow.setCardList(cardList);
+			MyWindow.initiatePopupWindow(info.position,
 					info.targetView);
 		}
 		return super.onContextItemSelected(item);

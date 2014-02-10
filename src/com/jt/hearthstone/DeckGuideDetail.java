@@ -307,7 +307,8 @@ public class DeckGuideDetail extends ActionBarActivity {
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
-						MyWindow.initiatePopupWindow(deckCards, arg2, arg0);
+						MyWindow.setCardList(deckCards);
+						MyWindow.initiatePopupWindow(arg2, arg0);
 
 					}
 				});

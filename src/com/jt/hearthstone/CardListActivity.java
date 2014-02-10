@@ -181,13 +181,15 @@ public class CardListActivity extends ActionBarActivity {
 		grid.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				MyWindow.setCardList(cardList);
+				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
 		listCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				MyWindow.setCardList(cardList);
+				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
 

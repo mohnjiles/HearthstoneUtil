@@ -31,6 +31,7 @@ public class MyWindow {
 	private static Context cxt = HearthstoneUtil.getAppContext();
 
 	private static ImageLoader loader = ImageLoader.getInstance();
+	private static List<Cards> cardList;
 
 	private static PopupWindow pWindow;
 	private static TextView tvCardName;
@@ -160,7 +161,7 @@ public class MyWindow {
 		tvDisenchantGold.setTypeface(font);
 	}
 
-	static void initiatePopupWindow(List<Cards> cardListt, int position, View v) {
+	static void initiatePopupWindow(int position, View v) {
 
 		if (!loader.isInited()) {
 			loader.init(Utils.config(cxt));
@@ -172,7 +173,6 @@ public class MyWindow {
 		int type = 0;
 		String url;
 
-		final List<Cards> cardList = cardListt;
 		final ArrayList<Cards> cardListUnique = new ArrayList<Cards>(
 				new LinkedHashSet<Cards>(cardList));
 
@@ -512,6 +512,14 @@ public class MyWindow {
 
 			}
 		}, millis);
+	}
+
+	public static List<Cards> getCardList() {
+		return cardList;
+	}
+
+	public static void setCardList(List<Cards> cardList) {
+		MyWindow.cardList = cardList;
 	}
 
 }

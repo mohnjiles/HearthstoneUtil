@@ -7,7 +7,6 @@ import java.util.List;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.graphics.Bitmap.CompressFormat;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBar;
@@ -341,11 +340,12 @@ public class ArenaFragment extends Fragment {
 			deckFrag.tvDeckSize.setText(listDeck.size() + " / 30");
 			// Update ListView adapter with new info
 			Collections.sort(listDeck, new CardComparator(2, false));
-			adapter = new DeckListAdapter(HearthstoneUtil.getAppContext(),
-					listDeck);
-			lvArena.setAdapter(adapter);
-			deckFrag.gvDeck.setAdapter(new ImageAdapter(HearthstoneUtil
-					.getAppContext(), listDeck));
+//			adapter = new DeckListAdapter(HearthstoneUtil.getAppContext(),
+//					listDeck);
+			deckFrag.update(listDeck);
+//			lvArena.setAdapter(adapter);
+//			deckFrag.gvDeck.setAdapter(new ImageAdapter(HearthstoneUtil
+//					.getAppContext(), listDeck));
 
 			// Up until we get to 30 cards, get the next 3 random cards
 			if (listDeck.size() < 30) {

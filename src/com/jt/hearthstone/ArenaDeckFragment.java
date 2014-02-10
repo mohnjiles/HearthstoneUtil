@@ -10,7 +10,6 @@ import java.util.List;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -47,7 +46,6 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	ImageAdapter gridAdapter;
 	DeckListAdapter listAdapter;
 
-	private List<Cards> cardList;
 	private List<Cards> cardListUnique;
 	
 	private boolean isGrid = true;
@@ -86,19 +84,17 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		 * ********** START PopupWindow stuff **********
 		 */
 		MyWindow.setContext(getActivity());
-
+		
 		lvArena.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				refreshList();
-				MyWindow.initiatePopupWindow(cardListUnique, position, parent);
+				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
 		gvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				refreshList();
-				MyWindow.initiatePopupWindow(cardList, position, parent);
+				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
 		
@@ -123,10 +119,7 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		super.onViewStateRestored(savedInstanceState);
-		refreshList();
-		if (cardList != null) {
-			update(cardList);
-		}
+		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
 	}
 
 	@Override
@@ -186,6 +179,7 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		tvDeckSize.setText(cardList.size() + " / 30");
 		setManaChart(cardList);
 		setPieGraph(cardList);
+		MyWindow.setCardList(cardList);
 
 	}
 
@@ -263,14 +257,10 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	private void refreshList() {
 		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
 	}
-	
-	private void popupWindow() {
-		new DeckUtils.GetCardsList(getActivity(), this, 123).execute("arenaDeck");
-	}
+
 
 	@Override
-	protected void setCardList(List<Cards> cardList, int tag) {
-		this.cardList = cardList;
+	protected void setCardList(final List<Cards> cardList, int tag) {
 		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
@@ -289,8 +279,14 @@ public class ArenaDeckFragment extends CustomCardFragment {
 			listAdapter.update(cardList);
 		}
 		
-		if (tag != null && tag == 123) {
+		if (tag != 0 && tag == 123) {
 			// TODO: PopupWindow after async
+		} else if (tag != 0 && tag == 42) {
+			if (cardList != null) {
+				update(cardList);
+			}
+		} else if (tag != 0 && tag == 1337) {
+			
 		}
 		
 	}

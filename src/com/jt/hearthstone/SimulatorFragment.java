@@ -112,10 +112,11 @@ public class SimulatorFragment extends CustomCardFragment {
 
 			@Override
 			public void onClick(View v) {
-				Collections.shuffle(cardList);
-
+				
 				cardsToShow.clear();
-				cardList = deckActivity.cardList;
+				cardList.clear();
+				cardList.addAll(deckActivity.cardList);
+				Collections.shuffle(cardList);
 				int numToShow;
 
 				if (spinnerNumCards.getSelectedItem() != null) {
@@ -125,7 +126,7 @@ public class SimulatorFragment extends CustomCardFragment {
 					numToShow = 4;
 				}
 
-				if (cardList.size() > numToShow - 1) {
+				if (cardList.size() - 1 > numToShow) {
 					for (int i = 0; i < numToShow; i++) {
 						cardsToShow.add(cardList.get(i));
 					}
@@ -144,7 +145,6 @@ public class SimulatorFragment extends CustomCardFragment {
 			@Override
 			public void onClick(View v) {
 				if (cardsToShow.size() < cardList.size()) {
-					cardList = deckActivity.cardList;
 					cardsToShow.add(cardList.get(cardsToShow.size()));
 					int index = gvCards.getLastVisiblePosition();
 					gvCards.setAdapter(adapter);
@@ -186,7 +186,8 @@ public class SimulatorFragment extends CustomCardFragment {
 		gvCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				MyWindow.initiatePopupWindow(cardsToShow, position, parent);
+				MyWindow.setCardList(cardsToShow);
+				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
 	}

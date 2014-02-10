@@ -211,8 +211,8 @@ public class DeckActivity extends CustomCardFragment {
 				.getMenuInfo();
 
 		if (item.getGroupId() == Menu.FIRST || item.getGroupId() == Menu.NONE) {
-			MyWindow.initiatePopupWindow(cardList, info.position,
-					info.targetView);
+			MyWindow.setCardList(cardList);
+			MyWindow.initiatePopupWindow(info.position, info.targetView);
 		}
 
 		return super.onContextItemSelected(item);
