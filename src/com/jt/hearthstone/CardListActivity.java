@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -125,7 +126,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		// Set grid invisible, list is default.
 		listCards.setVisibility(View.INVISIBLE);
-		
+
 		// Get our JSON for GSON from the cards.json file in our "raw" directory
 		// and use it to set up the list of cards
 		setupCardList();
@@ -193,8 +194,6 @@ public class CardListActivity extends ActionBarActivity {
 			}
 		});
 
-		// Set the spinner (drop down selector) to listen to our custom listener
-
 		// Sort the card list with our own custom Comparator
 		// -- this sorts by Mana Cost
 
@@ -233,24 +232,15 @@ public class CardListActivity extends ActionBarActivity {
 												mechanic)) {
 
 									cardList.add(card);
-								} else {
-									if (card.getClasss() == null
-											&& mechanic.equals("Any")
-											&& (card.getName().toLowerCase(
-													Utils.curLocale)
-													.contains(query))) {
-										cardList.add(card);
-									}
+
+								} else if (card.getClasss() == null
+										&& mechanic.equals("Any")
+										&& (card.getName().toLowerCase(
+												Utils.curLocale)
+												.contains(query))) {
+									cardList.add(card);
 								}
 							}
-
-							Collections.sort(cardList, new CardComparator(
-									spinnerSort.getSelectedItemPosition(),
-									cbReverse.isChecked()));
-							adapter.notifyDataSetChanged();
-							adapter2.notifyDataSetChanged();
-							grid.setAdapter(adapter);
-							listCards.setAdapter(adapter2);
 
 							// Otherwise, user is unchecking the box, so remove
 							// all generic cards.
@@ -262,14 +252,15 @@ public class CardListActivity extends ActionBarActivity {
 									cardList.remove(card);
 								}
 							}
-							Collections.sort(cardList, new CardComparator(
-									spinnerSort.getSelectedItemPosition(),
-									cbReverse.isChecked()));
-							adapter.notifyDataSetChanged();
-							adapter2.notifyDataSetChanged();
-							grid.setAdapter(adapter);
-							listCards.setAdapter(adapter2);
+
 						}
+
+						Collections.sort(cardList, new CardComparator(
+								spinnerSort.getSelectedItemPosition(),
+								cbReverse.isChecked()));
+						adapter.update(cardList);
+						adapter2.notifyDataSetChanged();
+						listCards.setAdapter(adapter2);
 					}
 
 				});
@@ -396,19 +387,15 @@ public class CardListActivity extends ActionBarActivity {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
-
-			if (deckList == null || deckList.size() == 0) {
-				menuItems = new String[1];
-			} else {
-				menuItems = new String[deckList.size()];
-			}
+			
 			menu.add(Menu.NONE, 0, 0, "Add to new deck");
-			int j = 0;
 
-			if (deckList != null) {
-				while (j < deckList.size()) {
-					menuItems[j] = "Add to \"" + deckList.get(j) + "\"";
-					j++;
+			if (deckList != null && deckList.size() != 0) {
+				
+				menuItems = new String[deckList.size()];
+				
+				for (int i = 0; i < deckList.size(); i++) {
+					menuItems[i] = "Add to \"" + deckList.get(i) + "\"";
 				}
 
 				for (int i = 0; i < menuItems.length; i++) {
@@ -423,100 +410,85 @@ public class CardListActivity extends ActionBarActivity {
 		menuItemIndex = item.getItemId();
 		final List<Integer> deckClasses = (List<Integer>) DeckUtils
 				.getIntegerDeck(this, "deckclasses");
-		switch (menuItemIndex) {
-		case 0:
-			if (item.getTitle().equals("Add to new deck")) {
-				LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-				View layout = inflater.inflate(R.layout.dialog_layout,
-						(ViewGroup) findViewById(R.id.linearLayout));
-				// layout_root should be the name of the "top-level" layout node
-				// in the dialog_layout.xml file.
-				final EditText nameBox = (EditText) layout
-						.findViewById(R.id.etDeckName);
-				final Spinner spinnerClass = (Spinner) layout
-						.findViewById(R.id.spinClass);
+		if (!item.getTitle().equals("") && item.getTitle().equals("Add to new deck")) {
+			LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+			View layout = inflater.inflate(R.layout.dialog_layout,
+					(ViewGroup) findViewById(R.id.linearLayout));
+			// layout_root should be the name of the "top-level" layout node
+			// in the dialog_layout.xml file.
+			final EditText nameBox = (EditText) layout
+					.findViewById(R.id.etDeckName);
+			final Spinner spinnerClass = (Spinner) layout
+					.findViewById(R.id.spinClass);
 
-				// Building dialog
-				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				String[] classes = getResources().getStringArray(
-						R.array.ClassesWithoutAny);
-				CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
-						R.layout.spinner_row, R.id.name, classes);
-				spinAdapter
-						.setDropDownViewResource(R.layout.spinner_dropdown_row);
-				spinnerClass.setAdapter(spinAdapter);
-				builder.setView(layout);
-				builder.setPositiveButton("Save",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								dialog.dismiss();
-								if (deckList == null) {
-									deckList = new ArrayList<String>();
-								}
-								deckList.add(nameBox.getText().toString());
-								deckClasses.add(spinnerClass
-										.getSelectedItemPosition());
-								FileOutputStream fos = null;
-								try {
-									fos = openFileOutput("decklist",
-											Context.MODE_PRIVATE);
-								} catch (FileNotFoundException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								ObjectOutputStream oos;
-								try {
-									oos = new ObjectOutputStream(fos);
-									oos.writeObject(deckList);
-									oos.close();
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								/*************** save corresponding class number **********/
-								try {
-									fos = openFileOutput("deckclasses",
-											Context.MODE_PRIVATE);
-								} catch (FileNotFoundException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-
-								try {
-									oos = new ObjectOutputStream(fos);
-									oos.writeObject(deckClasses);
-									oos.close();
-								} catch (IOException e1) {
-									// TODO Auto-generated catch block
-									e1.printStackTrace();
-								}
-								ArrayList<Cards> newDeck = new ArrayList<Cards>();
-								new DeckUtils.SaveDeck(CardListActivity.this,
-										nameBox.getText().toString(), newDeck)
-										.execute();
-								addCards(nameBox.getText().toString());
+			// Building dialog
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			String[] classes = getResources().getStringArray(
+					R.array.ClassesWithoutAny);
+			CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
+					R.layout.spinner_row, R.id.name, classes);
+			spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+			spinnerClass.setAdapter(spinAdapter);
+			builder.setView(layout);
+			builder.setPositiveButton("Save",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							if (deckList == null) {
+								deckList = new ArrayList<String>();
 							}
-						});
-				builder.setNegativeButton("Cancel",
-						new DialogInterface.OnClickListener() {
-							@Override
-							public void onClick(DialogInterface dialog,
-									int which) {
-								dialog.dismiss();
+							deckList.add(nameBox.getText().toString());
+							deckClasses.add(spinnerClass
+									.getSelectedItemPosition());
+							FileOutputStream fos = null;
+							try {
+								fos = openFileOutput("decklist",
+										Context.MODE_PRIVATE);
+							} catch (FileNotFoundException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
 							}
-						});
-				AlertDialog dialog = builder.create();
-				dialog.show();
+							ObjectOutputStream oos;
+							try {
+								oos = new ObjectOutputStream(fos);
+								oos.writeObject(deckList);
+								oos.close();
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+							/*************** save corresponding class number **********/
 
-				return true;
-			} else {
-				addCards(deckList.get(menuItemIndex));
-				return true;
-			}
+							try {
+								fos = openFileOutput("deckclasses",
+										Context.MODE_PRIVATE);
+
+								oos = new ObjectOutputStream(fos);
+								oos.writeObject(deckClasses);
+								oos.close();
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							addCards(nameBox.getText().toString());
+						}
+					});
+			builder.setNegativeButton("Cancel",
+					new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					});
+			AlertDialog dialog = builder.create();
+			dialog.show();
+
+			return true;
+		} else {
+			addCards(deckList.get(menuItemIndex));
+			return true;
 		}
-		return true;
 	}
 
 	private void addCards(String deckName) {
@@ -525,6 +497,7 @@ public class CardListActivity extends ActionBarActivity {
 
 		if (list == null) {
 			list = new ArrayList<Cards>();
+			Log.w("CardListActivity", "addCards made a new ArrayList");
 		}
 
 		if (list.size() == 30) {
@@ -532,12 +505,14 @@ public class CardListActivity extends ActionBarActivity {
 					this,
 					"Cannot add card. Deck \"" + deckList.get(menuItemIndex)
 							+ "\" is full.", Style.ALERT).show();
+			Log.w("CardListActivity", "addCards can't add that card");
 			return;
 		}
 
 		list.add(cardList.get(position));
-		new DeckUtils.SaveDeck(this, deckList.get(menuItemIndex), list)
-				.execute();
+		Log.w("CardListActivity", "addCards added a card");
+		new DeckUtils.SaveDeck(this, deckName, list).execute();
+		Log.w("CardListActivity", "addCards might've saved the deck");
 	}
 
 	private void getDeckList() {

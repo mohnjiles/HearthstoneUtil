@@ -46,6 +46,8 @@ public class SimulatorFragment extends CustomCardFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
+		super.setClassName("SimulatorFragment");
+		
 		View V = inflater
 				.inflate(R.layout.simulator_fragment, container, false);
 

@@ -96,6 +96,8 @@ public class CardListFragment extends CustomCardFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
+		
+		super.setClassName("CardListFragment");
 
 		font = TypefaceCache
 				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
@@ -318,6 +320,9 @@ public class CardListFragment extends CustomCardFragment {
 		DeckChanceFragment deckChanceFragment = (DeckChanceFragment) getActivity()
 				.getSupportFragmentManager().findFragmentByTag(
 						Utils.makeFragmentName(R.id.pager, 3));
+		DeckActivity deckActivity = (DeckActivity) getActivity()
+				.getSupportFragmentManager().findFragmentByTag(
+						Utils.makeFragmentName(R.id.pager, 1));
 
 		Crouton.cancelAllCroutons();
 
@@ -333,8 +338,8 @@ public class CardListFragment extends CustomCardFragment {
 					.show();
 		}
 
-		DeckActivity.setManaChart(cardsList);
-		DeckActivity.setPieGraph(cardsList);
+		deckActivity.setManaChart(cardsList);
+		deckActivity.setPieGraph(cardsList);
 
 		new DeckUtils.SaveDeck(getActivity(), deckList.get(deckListPos),
 				cardsList).execute();

@@ -56,6 +56,8 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		super.setClassName("ArenaDeckFragment");
 
 		View v = inflater.inflate(R.layout.arena_deck_fragment, container,
 				false);

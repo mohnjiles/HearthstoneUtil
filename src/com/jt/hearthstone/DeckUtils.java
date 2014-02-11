@@ -26,7 +26,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class DeckUtils {
 
 	static List<String> listDecks = new ArrayList<String>();
-	
+
 	@SuppressWarnings("unchecked")
 	static List<Cards> getCardsList(Context context, String deckName) {
 		InputStream instream = null;
@@ -101,7 +101,7 @@ public class DeckUtils {
 			e.printStackTrace();
 		}
 		return list;
-	
+
 	}
 
 	@SuppressWarnings("unchecked")
@@ -144,7 +144,8 @@ public class DeckUtils {
 
 	static void renameDeck(final Context cxt, final int position,
 			final FragmentActivity fragmentActivity, final List<Cards> cardList) {
-		new GetStringList(cxt, "renameDeck", position, fragmentActivity, cardList).execute("decklist");
+		new GetStringList(cxt, "renameDeck", position, fragmentActivity,
+				cardList).execute("decklist");
 	}
 
 	static class SaveDeck extends AsyncTask<Void, Void, Void> {
@@ -188,7 +189,8 @@ public class DeckUtils {
 		private Context context;
 		private int tag;
 
-		public GetCardsList(Context context, CustomCardFragment fragment, int tag) {
+		public GetCardsList(Context context, CustomCardFragment fragment,
+				int tag) {
 			this.context = context;
 			this.fragment = fragment;
 			this.tag = tag;
@@ -198,44 +200,35 @@ public class DeckUtils {
 		protected List<Cards> doInBackground(String... params) {
 			InputStream instream = null;
 			List<Cards> list = null;
-			try {
-				instream = context.openFileInput(params[0]);
-			} catch (FileNotFoundException e) {
-				list = new ArrayList<Cards>();
-				e.printStackTrace();
-			}
 
 			try {
+				instream = context.openFileInput(params[0]);
+
 				if (instream != null) {
 					ObjectInputStream objStream = new ObjectInputStream(
 							instream);
-					try {
-						list = (List<Cards>) objStream.readObject();
-						if (instream != null) {
-							instream.close();
-						}
-						if (objStream != null) {
-							objStream.close();
-						}
 
-					} catch (ClassNotFoundException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					list = (List<Cards>) objStream.readObject();
+					instream.close();
+					
+					if (objStream != null) {
+						objStream.close();
 					}
+
 				}
-			} catch (StreamCorruptedException e) {
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			} catch (IOException e) {
+			} catch (ClassNotFoundException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			return list;
 		}
-		
+
 		@Override
 		protected void onPreExecute() {
-			Log.w("GetCardsList", "GetCardsList started");
+			Log.w("GetCardsList", "GetCardsList started in fragment \"" + fragment.getClassName() + "\"");
 			super.onPreExecute();
 		}
 
@@ -246,15 +239,15 @@ public class DeckUtils {
 			super.onPostExecute(result);
 		}
 	}
-	
+
 	static class GetStringList extends AsyncTask<Object, Void, List<String>> {
-		
+
 		private Context context;
 		private Object tag;
 		private int position;
 		private FragmentActivity fragmentActivity;
 		private List<Cards> cardList;
-		
+
 		public GetStringList(Context context, Object tag, int position,
 				FragmentActivity fragmentActivity, List<Cards> cardList) {
 			this.context = context;
@@ -263,7 +256,7 @@ public class DeckUtils {
 			this.fragmentActivity = fragmentActivity;
 			this.cardList = cardList;
 		}
-		
+
 		@Override
 		protected List<String> doInBackground(Object... params) {
 			InputStream instream = null;
@@ -277,7 +270,8 @@ public class DeckUtils {
 
 			try {
 				if (instream != null) {
-					ObjectInputStream objStream = new ObjectInputStream(instream);
+					ObjectInputStream objStream = new ObjectInputStream(
+							instream);
 					try {
 						list = (List<String>) objStream.readObject();
 						if (instream != null) {
@@ -301,11 +295,11 @@ public class DeckUtils {
 			}
 			return list;
 		}
-		
+
 		@Override
 		protected void onPostExecute(List<String> result) {
 			DeckUtils.listDecks = result;
-			
+
 			if (tag.toString().equals("renameDeck")) {
 				LayoutInflater inflater = (LayoutInflater) context
 						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -320,39 +314,46 @@ public class DeckUtils {
 				builderz.setPositiveButton("Save",
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							public void onClick(DialogInterface dialog,
+									int which) {
 
 								dialog.dismiss();
 
 								for (String deckName : listDecks) {
-									if (deckName.equals(nameBox.getText().toString())) {
-										Crouton.makeText(fragmentActivity,
+									if (deckName.equals(nameBox.getText()
+											.toString())) {
+										Crouton.makeText(
+												fragmentActivity,
 												"Deck with that name already exists",
 												Style.ALERT).show();
 										return;
 									}
 								}
 
-								((ActionBarActivity) context).getSupportActionBar()
-										.setTitle(nameBox.getText().toString());
+								((ActionBarActivity) context)
+										.getSupportActionBar().setTitle(
+												nameBox.getText().toString());
 
-								listDecks.set(position, nameBox.getText().toString());
-								new SaveDeck(context, listDecks.get(position), cardList)
+								listDecks.set(position, nameBox.getText()
+										.toString());
+								new SaveDeck(context, listDecks.get(position),
+										cardList).execute();
+								new SaveDeck(context, "decklist", listDecks)
 										.execute();
-								new SaveDeck(context, "decklist", listDecks).execute();
 							}
 						});
 				builderz.setNegativeButton("Cancel",
 						new DialogInterface.OnClickListener() {
 							@Override
-							public void onClick(DialogInterface dialog, int which) {
+							public void onClick(DialogInterface dialog,
+									int which) {
 								dialog.dismiss();
 							}
 						});
 				AlertDialog dialogz = builderz.create();
 				dialogz.show();
 			}
-			
+
 			super.onPostExecute(result);
 		}
 	}

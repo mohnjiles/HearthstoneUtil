@@ -41,6 +41,8 @@ public class DeckChanceFragment extends CustomCardFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+		
+		super.setClassName("DeckChanceFragment");
 
 		View v = inflater.inflate(R.layout.deck_chance_fragment, container,
 				false);

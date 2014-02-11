@@ -47,6 +47,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	static int previousPage = 1;
 	TransitionEffect tf;
 	private SharedPreferences prefs;
+	
+	private boolean isQuickEditMode = false;
 
 	private CardListFragment cardListFrag;
 	private DeckActivity deckFrag;
@@ -193,6 +195,7 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 
 		getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
+		
 		return true;
 	}
 

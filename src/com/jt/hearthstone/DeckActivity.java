@@ -11,11 +11,13 @@ import java.util.List;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.ContextMenu;
@@ -58,19 +60,26 @@ public class DeckActivity extends CustomCardFragment {
 
 	List<Cards> cardListUnique;
 	private List<String> listDecks = DeckSelector.listDecks;
-	private static BarGraph manaChart;
-	private static PieGraph pieGraph;
+	private BarGraph manaChart;
+	private PieGraph pieGraph;
+	
+	private View gridOrListView;
 
 	private int position;
 	private boolean isGrid = true;
 	private Typeface font;
 
 	private int cardPos;
-	private AdapterView<?> parentAdapterView;
+	private View parentAdapterView;
+
+	private boolean isQuickEditMode;
+	private SharedPreferences prefs;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
+		super.setClassName("DeckActivity");
 
 		// Inflate view
 		View V = inflater.inflate(R.layout.activity_deck, container, false);
@@ -96,6 +105,7 @@ public class DeckActivity extends CustomCardFragment {
 		registerForContextMenu(lvDeck);
 		registerForContextMenu(gvDeck);
 
+		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
 		setHasOptionsMenu(true);
 
 		// Get corresponding deck
@@ -107,6 +117,8 @@ public class DeckActivity extends CustomCardFragment {
 
 		deckClasses = (List<Integer>) DeckUtils.getIntegerDeck(getActivity(),
 				"deckclasses");
+
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
 
 		return V;
 	}
@@ -141,44 +153,60 @@ public class DeckActivity extends CustomCardFragment {
 			public void onItemClick(final AdapterView<?> parent, final View v,
 					final int position, long id) {
 
-				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 1.0f,
-						0.0f);
-				anim.setDuration(100).start();
+				isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
 
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
+				if (isQuickEditMode) {
 
-					@Override
-					public void run() {
-						cardPos = position;
-						parentAdapterView = parent;
-						refreshDecks();
-						ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
-								"alpha", 0.0f, 1.0f);
-						animTwo.setDuration(100).start();
-					}
-				}, 100);
+					ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha",
+							1.0f, 0.0f);
+					anim.setDuration(100).start();
 
+					Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+
+						@Override
+						public void run() {
+							cardPos = position;
+							parentAdapterView = parent;
+							refreshDecks();
+							ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
+									"alpha", 0.0f, 1.0f);
+							animTwo.setDuration(100).start();
+						}
+					}, 100);
+
+				} else {
+					MyWindow.setCardList(cardList);
+					MyWindow.initiatePopupWindow(position, parent);
+				}
 			}
 		});
 		lvDeck.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(final AdapterView<?> parent, final View v,
 					final int position, long id) {
-				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 1.0f,
-						0.0f);
-				anim.setDuration(100).start();
 
-				Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
+				isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
 
-					@Override
-					public void run() {
-						removeCard(parent, position);
-						ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
-								"alpha", 0.0f, 1.0f);
-						animTwo.setDuration(100).start();
-					}
-				}, 100);
+				if (isQuickEditMode) {
+					ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha",
+							1.0f, 0.0f);
+					anim.setDuration(100).start();
+
+					Handler handler = new Handler();
+					handler.postDelayed(new Runnable() {
+
+						@Override
+						public void run() {
+							removeCard(parent, position);
+							ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
+									"alpha", 0.0f, 1.0f);
+							animTwo.setDuration(100).start();
+						}
+					}, 100);
+				} else {
+					MyWindow.setCardList(cardList);
+					MyWindow.initiatePopupWindow(position, parent);
+				}
 			}
 		});
 	}
@@ -193,26 +221,49 @@ public class DeckActivity extends CustomCardFragment {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		
+		gridOrListView = v;
+		
+		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+		
 		if (v.getId() == R.id.lvDeck) {
-			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-			menu.setHeaderTitle(cardListUnique.get(info.position).getName());
-			menu.add(Menu.NONE, 0, 0, "Show details");
+			if (isQuickEditMode) {
+				menu.setHeaderTitle(cardListUnique.get(info.position).getName());
+				menu.add(Menu.NONE, 0, 0, "Show details");
+			} else {
+				menu.setHeaderTitle(cardListUnique.get(info.position).getName());
+				menu.add(Menu.NONE, 0, 0, "Remove card \""
+						+ cardListUnique.get(info.position).getName() + "\"");
+			}
 		} else {
-			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-			menu.setHeaderTitle(cardList.get(info.position).getName());
-			menu.add(Menu.FIRST, 0, 0, "Show details");
+			if (isQuickEditMode) {
+				menu.setHeaderTitle(cardList.get(info.position).getName());
+				menu.add(Menu.FIRST, 0, 0, "Show details");
+			} else {
+				menu.setHeaderTitle(cardList.get(info.position).getName());
+				menu.add(Menu.FIRST, 0, 0,
+						"Remove card \""
+								+ cardList.get(info.position).getName() + "\"");
+			}
 		}
 	}
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-
-		if (item.getGroupId() == Menu.FIRST || item.getGroupId() == Menu.NONE) {
-			MyWindow.setCardList(cardList);
-			MyWindow.initiatePopupWindow(info.position, info.targetView);
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		if (isQuickEditMode) {
+			if (item.getGroupId() == Menu.FIRST
+					|| item.getGroupId() == Menu.NONE) {
+				MyWindow.setCardList(cardList);
+				MyWindow.initiatePopupWindow(info.position, info.targetView);
+			}
+		} else {
+			cardPos = info.position;
+			parentAdapterView = gridOrListView;
+			refreshDecks();
+			
 		}
 
 		return super.onContextItemSelected(item);
@@ -223,6 +274,7 @@ public class DeckActivity extends CustomCardFragment {
 		inflater.inflate(R.menu.deck, menu);
 
 		MenuItem listSwitcher = menu.findItem(R.id.action_switch);
+		MenuItem quickEditMode = menu.findItem(R.id.action_toggle_quick_mode);
 
 		if (isGrid) {
 			listSwitcher.setTitle("Switch to list view");
@@ -230,6 +282,14 @@ public class DeckActivity extends CustomCardFragment {
 		} else {
 			listSwitcher.setTitle("Switch to grid view");
 			listSwitcher.setIcon(R.drawable.collections_view_as_grid);
+		}
+		
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+		
+		if (isQuickEditMode) {
+			quickEditMode.setTitle("Disable quick deck editing");
+		} else {
+			quickEditMode.setTitle("Enable quick deck editing");
 		}
 		super.onCreateOptionsMenu(menu, inflater);
 	}
@@ -253,6 +313,20 @@ public class DeckActivity extends CustomCardFragment {
 				item.setIcon(R.drawable.collections_view_as_list);
 				item.setTitle("Switch to list view");
 			}
+			break;
+
+		case R.id.action_toggle_quick_mode:
+
+			isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+			
+			if (isQuickEditMode) {
+				item.setTitle("Disable quick deck editing");
+				prefs.edit().putBoolean("isQuickEditMode", false).commit();
+			} else {
+				item.setTitle("Enable quick deck editing");
+				prefs.edit().putBoolean("isQuickEditMode", true).commit();
+			}
+
 			break;
 
 		case R.id.action_rename:
@@ -292,10 +366,11 @@ public class DeckActivity extends CustomCardFragment {
 			dialog = builder.create();
 			dialog.show();
 		}
+
 		return super.onOptionsItemSelected(item);
 	}
 
-	public static void setManaChart(List<Cards> cardList) {
+	public void setManaChart(List<Cards> cardList) {
 		if (cardList.size() > 0) {
 			ArrayList<Bar> points = new ArrayList<Bar>();
 
@@ -330,7 +405,7 @@ public class DeckActivity extends CustomCardFragment {
 		}
 	}
 
-	public static void setPieGraph(List<Cards> cardList) {
+	public void setPieGraph(List<Cards> cardList) {
 
 		int minions = 0;
 		int abilities = 0;

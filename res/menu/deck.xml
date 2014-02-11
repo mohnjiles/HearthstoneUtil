@@ -1,20 +1,23 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:hearthstone="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_clear"
-        hearthstone:showAsAction="ifRoom"
+        android:icon="@drawable/ic_menu_clear_playlist"
         android:title="Clear Deck"
-        android:icon="@drawable/ic_menu_clear_playlist" />
-    
-	<item android:id="@+id/action_switch"
-        android:title="Switch to grid view"
+        hearthstone:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_switch"
         android:icon="@drawable/collections_view_as_grid"
-        hearthstone:showAsAction="ifRoom" />
-	
-	<item android:id="@+id/action_rename"
+        android:title="Switch to grid view"
+        hearthstone:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/action_rename"
         android:title="Rename deck"
-        hearthstone:showAsAction="never" />
-	
+        hearthstone:showAsAction="never"/>
+    <item
+        android:id="@+id/action_toggle_quick_mode"
+        android:title="Enable quick deck editing"
+        hearthstone:showAsAction="never"/>
 
 </menu>
