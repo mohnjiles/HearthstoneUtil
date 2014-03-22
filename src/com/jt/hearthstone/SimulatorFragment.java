@@ -2,6 +2,9 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
+import icepick.Icepick;
+import icepick.Icicle;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -25,29 +28,32 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class SimulatorFragment extends CustomCardFragment {
 
-	private GridView gvCards;
-	private Button btnRedraw;
-	private Button btnDrawAnother;
-	private Spinner spinnerNumCards;
-	private TextView tvStartingSize;
+	@Icicle private GridView gvCards;
+	@Icicle private Button btnRedraw;
+	@Icicle private Button btnDrawAnother;
+	@Icicle private Spinner spinnerNumCards;
+	@Icicle private TextView tvStartingSize;
 
-	private ImageAdapter adapter;
+	@Icicle ImageAdapter adapter;
 
 	private List<String> listDecks;
+	@Icicle
 	private List<Cards> cardList;
+	@Icicle
 	private List<Cards> cardsToShow = new ArrayList<Cards>();
 
-	private int numCards;
-	private int position;
+	@Icicle private int numCards;
+	@Icicle private int position;
 
-	private Typeface font;
+	@Icicle private Typeface font;
+	@Icicle private DeckActivity deckActivity;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		super.setClassName("SimulatorFragment");
-		
+
 		View V = inflater
 				.inflate(R.layout.simulator_fragment, container, false);
 
@@ -62,6 +68,9 @@ public class SimulatorFragment extends CustomCardFragment {
 				"listDecks");
 
 		setHasOptionsMenu(true);
+
+		deckActivity = (DeckActivity) getActivity().getSupportFragmentManager()
+				.findFragmentByTag(Utils.makeFragmentName(R.id.pager, 1));
 
 		return V;
 	}
@@ -87,6 +96,8 @@ public class SimulatorFragment extends CustomCardFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+		Icepick.restoreInstanceState(getActivity(), savedInstanceState);
+		
 		font = TypefaceCache
 				.get(getActivity().getAssets(), "fonts/belwebd.ttf");
 
@@ -105,16 +116,12 @@ public class SimulatorFragment extends CustomCardFragment {
 		if (cardsToShow.size() > 0) {
 			cardsToShow.clear();
 		}
-		
-		final DeckActivity deckActivity = (DeckActivity) getActivity()
-				.getSupportFragmentManager().findFragmentByTag(
-						Utils.makeFragmentName(R.id.pager, 1));
-		
+
 		btnRedraw.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				
+
 				cardsToShow.clear();
 				cardList.clear();
 				cardList.addAll(deckActivity.cardList);
@@ -128,7 +135,7 @@ public class SimulatorFragment extends CustomCardFragment {
 					numToShow = 4;
 				}
 
-				if (cardList.size() - 1 > numToShow) {
+				if (cardList.size() >= numToShow) {
 					for (int i = 0; i < numToShow; i++) {
 						cardsToShow.add(cardList.get(i));
 					}
@@ -144,6 +151,7 @@ public class SimulatorFragment extends CustomCardFragment {
 		});
 		btnDrawAnother.setOnClickListener(new View.OnClickListener() {
 
+			
 			@Override
 			public void onClick(View v) {
 				if (cardsToShow.size() < cardList.size()) {
@@ -172,8 +180,23 @@ public class SimulatorFragment extends CustomCardFragment {
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		Icepick.saveInstanceState(getActivity(), outState);
+
+	}
+
+	@Override
 	protected void setCardList(final List<Cards> cardList, int tag) {
 		this.cardList = cardList;
+
+		if (this.cardList != null) {
+			this.cardList.clear();
+		} else {
+			this.cardList = new ArrayList<Cards>();
+		}
+
+		this.cardList.addAll(cardList);
 
 		Collections.shuffle(cardList);
 		if (cardList.size() > numCards - 1) {

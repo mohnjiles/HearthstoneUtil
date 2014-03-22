@@ -164,17 +164,14 @@ public class DeckUtils {
 		protected Void doInBackground(Void... params) {
 			// TODO Auto-generated method stub
 			FileOutputStream fos = null;
+			ObjectOutputStream oos;
+
 			try {
 				fos = context.openFileOutput(deckName, Context.MODE_PRIVATE);
-			} catch (FileNotFoundException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			ObjectOutputStream oos;
-			try {
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(object);
 				oos.close();
+				fos.close();
 			} catch (IOException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -210,7 +207,7 @@ public class DeckUtils {
 
 					list = (List<Cards>) objStream.readObject();
 					instream.close();
-					
+
 					if (objStream != null) {
 						objStream.close();
 					}
@@ -228,13 +225,17 @@ public class DeckUtils {
 
 		@Override
 		protected void onPreExecute() {
-			Log.w("GetCardsList", "GetCardsList started in fragment \"" + fragment.getClassName() + "\"");
+			Log.w("GetCardsList", "GetCardsList started in fragment \""
+					+ fragment.getClassName() + "\"");
 			super.onPreExecute();
 		}
 
 		@Override
 		protected void onPostExecute(List<Cards> result) {
-			Log.w("GetCardsList", "GetCardsList finished" + result.toString());
+			if (result != null) {
+				Log.w("GetCardsList",
+						"GetCardsList finished" + result.toString());
+			}
 			fragment.setCardList(result, tag);
 			super.onPostExecute(result);
 		}

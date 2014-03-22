@@ -34,20 +34,17 @@
             android:defaultValue="true"
             android:key="first_time_drawer" />
     </PreferenceCategory>
-    
     <PreferenceCategory
         android:key="about_category"
         android:title="About" >
-        
-        <Preference 
+        <Preference
             android:key="licenses"
             android:summary="License details for open source software"
-            android:title="Open source licenses"/>
+            android:title="Open source licenses" />
         <Preference
             android:key="version"
             android:summary="Version: "
             android:title="Build version" />
-        
     </PreferenceCategory>
 
 </PreferenceScreen>

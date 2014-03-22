@@ -39,15 +39,16 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	GridView gvDeck;
 	ListView lvArena;
 	TextView tvDeckSize;
-	
+
 	private PieGraph pieGraph;
 	private BarGraph manaChart;
-	
+
 	ImageAdapter gridAdapter;
 	DeckListAdapter listAdapter;
 
+	private List<Cards> cardList = new ArrayList<Cards>();
 	private List<Cards> cardListUnique;
-	
+
 	private boolean isGrid = true;
 
 	/**
@@ -56,7 +57,7 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+
 		super.setClassName("ArenaDeckFragment");
 
 		View v = inflater.inflate(R.layout.arena_deck_fragment, container,
@@ -78,7 +79,7 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		super.onActivityCreated(savedInstanceState);
 
 		refreshList();
-		
+
 		tvDeckSize.setTypeface(TypefaceCache.get(getActivity().getAssets(),
 				"fonts/belwebd.ttf"));
 
@@ -86,7 +87,7 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		 * ********** START PopupWindow stuff **********
 		 */
 		MyWindow.setContext(getActivity());
-		
+
 		lvArena.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
@@ -99,15 +100,18 @@ public class ArenaDeckFragment extends CustomCardFragment {
 				MyWindow.initiatePopupWindow(position, parent);
 			}
 		});
-		
+
 		/*
 		 * ********** END PopupWindow stuff **********
 		 */
 
 		if (savedInstanceState != null) {
 			this.isGrid = savedInstanceState.getBoolean("isGrid");
+			cardList = (List<Cards>) savedInstanceState
+					.getSerializable("cardList");
+			tvDeckSize.setText(cardList.size() + " / 30");
 		}
-		
+
 		if (isGrid) {
 			lvArena.setVisibility(View.GONE);
 			gvDeck.setVisibility(View.VISIBLE);
@@ -121,13 +125,15 @@ public class ArenaDeckFragment extends CustomCardFragment {
 	@Override
 	public void onViewStateRestored(Bundle savedInstanceState) {
 		super.onViewStateRestored(savedInstanceState);
-		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
+		new DeckUtils.GetCardsList(getActivity(), this, 1337)
+				.execute("arenaDeck");
 	}
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putBoolean("isGrid", isGrid);
+		outState.putSerializable("cardList", (ArrayList<Cards>) cardList);
 	}
 
 	@Override
@@ -255,18 +261,25 @@ public class ArenaDeckFragment extends CustomCardFragment {
 			pieGraph.addSlice(slice);
 		}
 	}
-	
-	private void refreshList() {
-		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute("arenaDeck");
-	}
 
+	private void refreshList() {
+		new DeckUtils.GetCardsList(getActivity(), this, 1337)
+				.execute("arenaDeck");
+	}
 
 	@Override
 	protected void setCardList(final List<Cards> cardList, int tag) {
-		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+		cardListUnique = new ArrayList<Cards>(
+				new LinkedHashSet<Cards>(cardList));
 		Collections.sort(cardList, new CardComparator(2, false));
 		Collections.sort(cardListUnique, new CardComparator(2, false));
-		
+
+		this.cardList.clear();
+		this.cardList.addAll(cardList);
+
+		setManaChart(cardList);
+		setPieGraph(cardList);
+
 		// Set up adapters for ListView & GridView
 		if (gridAdapter == null) {
 			gridAdapter = new ImageAdapter(getActivity(), cardList);
@@ -280,18 +293,16 @@ public class ArenaDeckFragment extends CustomCardFragment {
 		} else {
 			listAdapter.update(cardList);
 		}
-		
-		if (tag != 0 && tag == 123) {
-			// TODO: PopupWindow after async
-		} else if (tag != 0 && tag == 42) {
+
+		if (tag != 0 && tag == 42) {
 			if (cardList != null) {
 				update(cardList);
 			}
 		} else if (tag != 0 && tag == 1337) {
-			
+			if (cardList != null) {
+				tvDeckSize.setText(cardList.size() + " / 30");
+			}
 		}
-		
+
 	}
-
-
 }

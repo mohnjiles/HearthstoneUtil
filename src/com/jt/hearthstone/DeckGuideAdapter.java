@@ -44,6 +44,8 @@ public class DeckGuideAdapter extends BaseAdapter {
 		TextView tvDeckName = null;
 		TextView tvNumCards = null;
 		TextView tvMana = null;
+		TextView tvAttack = null;
+		TextView tvHealth = null;
 		ImageView ivClass = null;
 	}
 
@@ -63,8 +65,10 @@ public class DeckGuideAdapter extends BaseAdapter {
 			vh.tvDeckName = findById(convertView, R.id.tvDeckName);
 			vh.tvNumCards = findById(convertView, R.id.tvNumCards);
 			vh.tvMana = findById(convertView, R.id.tvMana);
+			vh.tvAttack = findById(convertView, R.id.tvAttack);
+			vh.tvHealth = findById(convertView, R.id.tvHealth);
 			vh.ivClass = findById(convertView, R.id.ivClassImage);
-			
+
 			convertView.setTag(vh);
 
 		} else {
@@ -78,10 +82,22 @@ public class DeckGuideAdapter extends BaseAdapter {
 		vh.tvDeckName.setTypeface(font);
 		vh.tvNumCards.setTypeface(font);
 		vh.tvMana.setTypeface(font);
+		vh.tvHealth.setTypeface(font);
+		vh.tvAttack.setTypeface(font);
 
 		vh.tvDeckName.setText(cardList.get(position).getName());
 		vh.tvNumCards.setText(numTimes);
 		vh.tvMana.setText(cardList.get(position).getCost().toString());
+		if (cardList.get(position).getHealth() != null) {
+			vh.tvHealth.setText(cardList.get(position).getHealth().toString());
+		} else {
+			vh.tvHealth.setText("0");
+		}
+		if (cardList.get(position).getAttack() != null) {
+			vh.tvAttack.setText(cardList.get(position).getAttack().toString());
+		} else {
+			vh.tvAttack.setText("0");
+		}
 
 		switch (cardList.get(position).getQuality().intValue()) {
 		case 0:

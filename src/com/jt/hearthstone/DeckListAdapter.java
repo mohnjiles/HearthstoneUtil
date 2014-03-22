@@ -59,8 +59,8 @@ public class DeckListAdapter extends BaseAdapter {
 	}
 	
 	public void update(List<Cards> cardList) {
-		cardListUnique = new ArrayList<Cards>(
-				new LinkedHashSet<Cards>(cardList));
+		cardListUnique.clear();
+		cardListUnique.addAll(new LinkedHashSet<Cards>(cardList));
 
 		cardCounts.clear();
 		for (Cards card : cardList) {

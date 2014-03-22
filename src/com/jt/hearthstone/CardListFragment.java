@@ -2,32 +2,20 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.io.Reader;
 import java.io.StreamCorruptedException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
-import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.v4.app.Fragment;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
@@ -50,7 +38,6 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.google.gson.Gson;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -58,7 +45,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 
 public class CardListFragment extends CustomCardFragment {
 
-	Spinner spinner;
+	Spinner spinnerMana;
 	Spinner spinnerSort;
 	Spinner spinnerMechanic;
 	ListView listCards;
@@ -76,6 +63,7 @@ public class CardListFragment extends CustomCardFragment {
 
 	private TextView tvMechanic;
 	private TextView tvSort;
+	private TextView tvMana;
 	private RelativeLayout rlPopup;
 	MenuItem searchItem;
 	private MenuItem listSwitcher;
@@ -89,6 +77,7 @@ public class CardListFragment extends CustomCardFragment {
 	Cards[] cards = Utils.cards;
 
 	private boolean isGrid = true;
+	private boolean isQuickEditMode = false;
 
 	private Typeface font;
 
@@ -96,7 +85,7 @@ public class CardListFragment extends CustomCardFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
-		
+
 		super.setClassName("CardListFragment");
 
 		font = TypefaceCache
@@ -110,15 +99,17 @@ public class CardListFragment extends CustomCardFragment {
 		listCards = findById(V, R.id.cardsList);
 		includeNeutralCards = findById(V, R.id.cbGenerics);
 		cbReverse = findById(V, R.id.cbReverse);
-		spinner = findById(V, R.id.spinClass);
 		spinnerSort = findById(V, R.id.spinnerSort);
 		spinnerMechanic = findById(V, R.id.spinnerMechanic);
+		spinnerMana = findById(V, R.id.spinnerMana);
 		rlPopup = findById(V, R.id.rlPopup);
 		tvMechanic = findById(V, R.id.tvCost);
 		tvSort = findById(V, R.id.textView2);
+		tvMana = findById(V, R.id.tvMana);
 
 		tvMechanic.setTypeface(font);
 		tvSort.setTypeface(font);
+		tvMana.setTypeface(font);
 		cbReverse.setTypeface(font);
 		includeNeutralCards.setTypeface(font);
 
@@ -141,6 +132,8 @@ public class CardListFragment extends CustomCardFragment {
 		// Check to see if it's users first time
 		// If so, we show the overlay layout
 		prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+
 		boolean firstTime = prefs.getBoolean("first_time", true);
 		if (firstTime) {
 			rlPopup.setOnClickListener(new View.OnClickListener() {
@@ -176,9 +169,9 @@ public class CardListFragment extends CustomCardFragment {
 
 		// Get deck list from file
 		getDeckList();
-		
-		new DeckUtils.GetCardsList(getActivity(), this,
-				999).execute(listDecks.get(intent.getIntExtra("position", 0)));
+
+		new DeckUtils.GetCardsList(getActivity(), this, 999).execute(listDecks
+				.get(intent.getIntExtra("position", 0)));
 
 		MyWindow.setContext(getActivity());
 
@@ -187,19 +180,32 @@ public class CardListFragment extends CustomCardFragment {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
 
-				addCards(position);
-				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 0.5f,
-						1.0f);
-				anim.setDuration(500).start();
+				isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+				if (isQuickEditMode) {
+					addCards(position);
+					ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha",
+							0.5f, 1.0f);
+					anim.setDuration(500).start();
+				} else {
+					MyWindow.setCardList(cardList);
+					MyWindow.initiatePopupWindow(position, parent);
+				}
 			}
 		});
 		listCards.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> parent, View v,
 					int position, long id) {
-				addCards(position);
-				ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha", 0.5f,
-						1.0f);
-				anim.setDuration(500).start();
+
+				isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+				if (isQuickEditMode) {
+					addCards(position);
+					ObjectAnimator anim = ObjectAnimator.ofFloat(v, "alpha",
+							0.5f, 1.0f);
+					anim.setDuration(500).start();
+				} else {
+					MyWindow.setCardList(cardList);
+					MyWindow.initiatePopupWindow(position, parent);
+				}
 			}
 		});
 
@@ -216,6 +222,8 @@ public class CardListFragment extends CustomCardFragment {
 		String[] mechanicNames = getResources()
 				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
+		String[] sortMana = getResources().getStringArray(R.array.ManaCost);
+		
 		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
 				R.layout.spinner_row, R.id.name, sortNames);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
@@ -223,15 +231,21 @@ public class CardListFragment extends CustomCardFragment {
 		CustomArrayAdapter spinSortAdapter = new CustomArrayAdapter(
 				getActivity(), R.layout.spinner_row, R.id.name, mechanicNames);
 		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+		
+		CustomArrayAdapter spinManaAdapter = new CustomArrayAdapter(
+				getActivity(), R.layout.spinner_row, R.id.name, sortMana);
+		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 
 		spinnerSort.setAdapter(spinAdapter);
 		spinnerMechanic.setAdapter(spinSortAdapter);
+		spinnerMana.setAdapter(spinManaAdapter);
 
 		CustomOnItemSelectedListener listener = new CustomOnItemSelectedListener(
 				getActivity());
 
 		spinnerSort.setOnItemSelectedListener(listener);
 		spinnerMechanic.setOnItemSelectedListener(listener);
+		spinnerMana.setOnItemSelectedListener(listener);
 
 	}
 
@@ -269,7 +283,8 @@ public class CardListFragment extends CustomCardFragment {
 			break;
 
 		case R.id.action_rename:
-			new DeckUtils.GetCardsList(getActivity(), this, R.id.action_rename).execute(deckList.get(deckListPos));
+			new DeckUtils.GetCardsList(getActivity(), this, R.id.action_rename)
+					.execute(deckList.get(deckListPos));
 			break;
 		case R.id.action_switch:
 			if (isGrid) {
@@ -295,10 +310,19 @@ public class CardListFragment extends CustomCardFragment {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 
-		if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
-			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
+
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+
+		if (isQuickEditMode) {
+			if (v.getId() == R.id.cardsList || v.getId() == R.id.gvDeck) {
+				menu.setHeaderTitle(cardList.get(info.position).getName());
+				menu.add(1337, 0, 0, "Show details");
+			}
+		} else {
+
 			menu.setHeaderTitle(cardList.get(info.position).getName());
-			menu.add(1337, 0, 0, "Show details");
+			menu.add(1337, 0, 0, "Add to deck");
 		}
 	}
 
@@ -307,10 +331,17 @@ public class CardListFragment extends CustomCardFragment {
 
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
 				.getMenuInfo();
-		if (item.getGroupId() == 1337) {
-			MyWindow.setCardList(cardList);
-			MyWindow.initiatePopupWindow(info.position,
-					info.targetView);
+
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+		if (isQuickEditMode) {
+			if (item.getGroupId() == 1337) {
+				MyWindow.setCardList(cardList);
+				MyWindow.initiatePopupWindow(info.position, info.targetView);
+			}
+		} else {
+			if (item.getGroupId() == 1337) {
+				addCards(info.position);
+			}
 		}
 		return super.onContextItemSelected(item);
 	}
@@ -331,7 +362,7 @@ public class CardListFragment extends CustomCardFragment {
 
 			Crouton.makeText(getActivity(),
 					"Card added: " + cardList.get(position).getName(),
-					Style.CONFIRM).show();
+					Style.INFO).show();
 		} else {
 			Crouton.makeText(getActivity(),
 					"Cannot have more than 30 cards in the deck", Style.ALERT)
@@ -346,26 +377,15 @@ public class CardListFragment extends CustomCardFragment {
 
 		// Get text sizes in sp
 		int sp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				10, getActivity().getResources().getDisplayMetrics());
+				12, getActivity().getResources().getDisplayMetrics());
 		int bigSp = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP,
-				14, getActivity().getResources().getDisplayMetrics());
-
-		// Get screen size
-		int screenSize = getActivity().getResources().getConfiguration().screenLayout
-				& Configuration.SCREENLAYOUT_SIZE_MASK;
+				16, getActivity().getResources().getDisplayMetrics());
 
 		if (cardsList != null) {
-			if (cardsList.size() == 0
-					&& screenSize <= Configuration.SCREENLAYOUT_SIZE_NORMAL) {
+			if (cardsList.size() == 0) {
 				deckFrag.tvNumCards.setTextSize(bigSp);
 				deckFrag.tvNumCards
 						.setText("Looks like there's nothing here. Swipe right to get started!");
-				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
-			} else if (cardsList.size() == 0
-					&& screenSize > Configuration.SCREENLAYOUT_SIZE_NORMAL) {
-				deckFrag.tvNumCards.setTextSize(bigSp);
-				deckFrag.tvNumCards
-						.setText("Looks like there's nothing here. Add cards from the left to get started!");
 				deckFrag.ivSwipe.setVisibility(View.VISIBLE);
 			} else {
 				deckFrag.tvNumCards.setTextSize(sp);
@@ -380,9 +400,14 @@ public class CardListFragment extends CustomCardFragment {
 
 		deckFrag.adapter.update(cardsList);
 		deckFrag.adapter2.update(cardsList);
+		deckFrag.cardList.clear();
+		deckFrag.cardList.addAll(cardsList);
+		deckFrag.refreshDecks();
 
+		
+		deckChanceFragment.deckList.clear();
+		deckChanceFragment.deckList.addAll(cardsList);
 		deckChanceFragment.updatePercents(cardsList, true);
-		deckChanceFragment.deckList = cardsList;
 
 	}
 
@@ -571,37 +596,15 @@ public class CardListFragment extends CustomCardFragment {
 		listCards.setAdapter(adapter2);
 	}
 
-	private void copyFile(String filename) {
-		AssetManager assetManager = getActivity().getAssets();
-
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			in = assetManager.open(filename);
-			String newFileName = getActivity().getFilesDir().getPath() + "/"
-					+ filename;
-			out = new FileOutputStream(newFileName);
-
-			byte[] buffer = new byte[1024];
-			int read;
-			while ((read = in.read(buffer)) != -1) {
-				out.write(buffer, 0, read);
-			}
-			in.close();
-			in = null;
-			out.flush();
-			out.close();
-			out = null;
-		} catch (Exception e) {
-			Log.e("tag", e.getMessage());
-		}
-
-	}
-
 	@Override
 	protected void setCardList(List<Cards> cardList, int tag) {
 		Log.w("setCardList", "setCardList");
-		this.cardsList = cardList;
+		if (this.cardsList != null) {
+			this.cardsList.clear();
+		} else {
+			this.cardsList = new ArrayList<Cards>();
+		}
+		this.cardsList.addAll(cardList);
 
 		switch (tag) {
 		case R.id.action_rename:
@@ -613,6 +616,5 @@ public class CardListFragment extends CustomCardFragment {
 		}
 
 	}
-	
-	
+
 }

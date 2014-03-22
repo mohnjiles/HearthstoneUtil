@@ -3,8 +3,10 @@ package com.jt.hearthstone;
 import java.util.Collections;
 import java.util.List;
 
+import android.R.integer;
 import android.support.v4.app.FragmentActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Spinner;
@@ -33,20 +35,64 @@ public class CustomOnCheckedChangeListener implements OnCheckedChangeListener {
 
 		switch (buttonView.getId()) {
 		case R.id.cbGenerics:
+
+			String manaText = cardListFrag.spinnerMana.getSelectedItem()
+					.toString();
+			int manaCost;
+
+			if (!manaText.equals("All") && !manaText.equals("7+")) {
+				manaCost = Integer.parseInt(manaText);
+			} else {
+				manaCost = 7;
+			}
+
 			if (isChecked) {
 				String mechanic = cardListFrag.spinnerMechanic
 						.getSelectedItem().toString();
 				for (Cards card : cardListFrag.cards) {
-					if (card.getClasss() == null
-							&& card.getName().toLowerCase().contains(query)
-							&& !mechanic.equals("Any")
-							&& card.getDescription() != null
-							&& card.getDescription().contains(mechanic)) {
 
-						cardListFrag.cardList.add(card);
-					} else {
-						if (card.getClasss() == null && mechanic.equals("Any")
+					if (manaText.equals("All")) {
+						if (card.getClasss() == null
+								&& card.getName().toLowerCase(Utils.curLocale)
+										.contains(query)
+								&& !mechanic.equals("Any")
+								&& card.getDescription() != null
+								&& card.getDescription().contains(mechanic)) {
+
+							cardListFrag.cardList.add(card);
+						} else if (card.getClasss() == null
+								&& mechanic.equals("Any")
 								&& card.getName().toLowerCase().contains(query)) {
+							cardListFrag.cardList.add(card);
+						}
+					} else if (manaCost >= 0 && manaCost < 7) {
+						if (card.getClasss() == null
+								&& card.getName().toLowerCase().contains(query)
+								&& !mechanic.equals("Any")
+								&& card.getDescription() != null
+								&& card.getDescription().contains(mechanic)
+								&& card.getCost().intValue() == manaCost) {
+
+							cardListFrag.cardList.add(card);
+						} else if (card.getClasss() == null
+								&& mechanic.equals("Any")
+								&& card.getName().toLowerCase().contains(query)
+								&& card.getCost().intValue() == manaCost) {
+							cardListFrag.cardList.add(card);
+						}
+					} else if (manaText.equals("7+")) {
+						if (card.getClasss() == null
+								&& card.getName().toLowerCase().contains(query)
+								&& !mechanic.equals("Any")
+								&& card.getDescription() != null
+								&& card.getDescription().contains(mechanic)
+								&& card.getCost().intValue() >= 7) {
+
+							cardListFrag.cardList.add(card);
+						} else if (card.getClasss() == null
+								&& mechanic.equals("Any")
+								&& card.getName().toLowerCase().contains(query)
+								&& card.getCost().intValue() >= 7) {
 							cardListFrag.cardList.add(card);
 						}
 					}

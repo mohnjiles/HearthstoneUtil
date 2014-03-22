@@ -1,6 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent" >
 
     <GridView
         android:id="@+id/gvDeck"
@@ -15,7 +15,6 @@
         android:horizontalSpacing="2dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="2dp" >
-
     </GridView>
 
     <ImageView
@@ -33,84 +32,109 @@
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/sideLayout"
         android:numColumns="auto_fit" >
-
     </ListView>
-    
-<RelativeLayout
-    android:id="@+id/sideLayout"
-    android:layout_width="200dp"
-    android:layout_height="wrap_content"
-    android:layout_alignParentBottom="true"
-    android:layout_alignParentTop="true"
-    android:background="@drawable/sidebg" >
 
-    <Spinner
-        android:id="@+id/spinnerSort"
-        style="android:spinnerStyle"
-        android:layout_width="@dimen/spinner_size"
+    <RelativeLayout
+        android:id="@+id/sideLayout"
+        android:layout_width="@dimen/side_layout_width"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_toRightOf="@+id/textView2"
-        android:entries="@array/Sort" />
-
-    <TextView
-        android:id="@+id/tvCost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerMechanic"
-        android:layout_alignLeft="@+id/textView2"
-        android:layout_alignTop="@+id/spinnerMechanic"
-        android:gravity="center_vertical"
-        android:text="Mechanic: "
-        android:textColor="#000000"
-        android:textSize="@dimen/card_name_text_size" />
-
-    <Spinner
-        android:id="@+id/spinnerMechanic"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/spinnerSort"
-        android:layout_marginRight="8dp"
-        android:layout_toRightOf="@+id/tvCost"
-        android:entries="@array/Mechanic" />
-
-    <CheckBox
-        android:id="@+id/cbReverse"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/tvCost"
-        android:layout_below="@+id/tvCost"
-        android:layout_marginTop="8dp"
-        android:text="Reverse Sort"
-        android:textColor="#000000"
-        android:textSize="@dimen/card_stats_text_size" />
-
-    <CheckBox
-        android:id="@+id/cbGenerics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/cbReverse"
-        android:layout_below="@+id/cbReverse"
-        android:layout_marginTop="8dp"
-        android:text="Neutral Cards"
-        android:textColor="#000000"
-        android:textSize="@dimen/card_stats_text_size" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerSort"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginTop="8dp"
-        android:gravity="center_vertical"
-        android:text="Sort:"
-        android:textColor="#000000"
-        android:textSize="@dimen/card_name_text_size" />
+        android:background="@drawable/sidebg" >
+
+        <Spinner
+            android:id="@+id/spinnerMana"
+            style="android:spinnerStyle"
+            android:layout_width="@dimen/spinner_size"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/tvMana"
+            android:entries="@array/ManaCost" />
+
+        <TextView
+            android:id="@+id/tvMana"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/spinnerMana"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_alignTop="@+id/spinnerMana"
+            android:gravity="center_vertical"
+            android:text="Mana:"
+            android:textColor="#000000"
+            android:textSize="@dimen/card_name_text_size" />
+
+        <Spinner
+            android:id="@+id/spinnerSort"
+            style="android:spinnerStyle"
+            android:layout_width="@dimen/spinner_size"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spinnerMana"
+            android:layout_marginBottom="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/textView2"
+            android:entries="@array/Sort" />
+
+        <TextView
+            android:id="@+id/tvCost"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/spinnerMechanic"
+            android:layout_alignLeft="@+id/textView2"
+            android:layout_alignTop="@+id/spinnerMechanic"
+            android:gravity="center_vertical"
+            android:text="Mechanic: "
+            android:textColor="#000000"
+            android:textSize="@dimen/card_name_text_size" />
+
+        <Spinner
+            android:id="@+id/spinnerMechanic"
+            style="android:spinnerStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/spinnerSort"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_toRightOf="@+id/tvCost"
+            android:entries="@array/Mechanic" />
+
+        <CheckBox
+            android:id="@+id/cbReverse"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/tvCost"
+            android:layout_below="@+id/tvCost"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Reverse Sort"
+            android:textColor="#000000"
+            android:textSize="@dimen/card_stats_text_size" />
+
+        <CheckBox
+            android:id="@+id/cbGenerics"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/cbReverse"
+            android:layout_below="@+id/cbReverse"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:text="Neutral Cards"
+            android:textColor="#000000"
+            android:textSize="@dimen/card_stats_text_size" />
+
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/spinnerSort"
+            android:layout_alignTop="@+id/spinnerSort"
+            android:layout_marginLeft="8dp"
+            android:gravity="center_vertical"
+            android:text="Sort:"
+            android:textColor="#000000"
+            android:textSize="@dimen/card_name_text_size" />
     </RelativeLayout>
 
     <RelativeLayout

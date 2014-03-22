@@ -103,7 +103,7 @@
                 android:layout_below="@+id/cbGenerics"
                 android:text="Reverse Sort"
                 android:textColor="#000000"
-                android:textSize="12sp" />
+                android:textSize="@dimen/card_stats_text_size" />
 
             <Spinner
                 android:id="@+id/spinSort"
@@ -123,7 +123,7 @@
                 android:layout_below="@+id/textView2"
                 android:text="Neutral Cards"
                 android:textColor="#000000"
-                android:textSize="12sp" />
+                android:textSize="@dimen/card_stats_text_size" />
 
             <Spinner
                 android:id="@+id/spinClass"

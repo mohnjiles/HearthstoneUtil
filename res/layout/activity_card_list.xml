@@ -11,13 +11,12 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/spinnerSort"
+        android:layout_below="@+id/cbGenerics"
         android:columnWidth="@dimen/grid_column_width"
         android:gravity="center_horizontal"
         android:horizontalSpacing="2dp"
         android:numColumns="auto_fit"
         android:verticalSpacing="2dp" >
-
     </GridView>
 
     <ListView
@@ -27,90 +26,114 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentRight="true"
-        android:layout_below="@+id/spinnerSort"
+        android:layout_alignTop="@+id/gvDeck"
         android:background="@drawable/deckbg"
         android:numColumns="auto_fit" >
-
     </ListView>
+
+    <HorizontalScrollView
+        android:id="@+id/mrScrolls"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:scrollbars="none" >
+
+        <LinearLayout
+            android:id="@+id/scrollLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                android:id="@+id/tvMana"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="4dp"
+                android:gravity="center_vertical"
+                android:text="Mana:"
+                android:textColor="#000000" />
+
+            <Spinner
+                android:id="@+id/spinnerMana"
+                style="android:spinnerStyle"
+                android:layout_width="75dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:entries="@array/ManaCost" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="4dp"
+                android:gravity="center_vertical"
+                android:text="Sort:"
+                android:textColor="#000000" />
+
+            <Spinner
+                android:id="@+id/spinnerSort"
+                style="android:spinnerStyle"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:entries="@array/Sort" />
+
+            <TextView
+                android:id="@+id/tvCost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
+                android:text="Mechanic: "
+                android:textColor="#000000" />
+
+            <Spinner
+                android:id="@+id/spinnerMechanic"
+                style="android:spinnerStyle"
+                android:layout_width="125dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="8dp"
+                android:entries="@array/Mechanic" />
+        </LinearLayout>
+    </HorizontalScrollView>
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="4dp"
         android:layout_height="4dp"
-        android:layout_centerHorizontal="true" />
-
-    <TextView
-        android:id="@+id/tvCost"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerMechanic"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="6dp"
-        android:gravity="center_vertical"
-        android:text="Mechanic: "
-        android:textColor="#000000"
-        android:textSize="@dimen/card_list_textview" />
-
-    <Spinner
-        android:id="@+id/spinnerMechanic"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_alignRight="@+id/spinnerSort"
-        android:layout_marginTop="6dp"
-        android:layout_toRightOf="@+id/tvCost"
-        android:entries="@array/Mechanic" />
-
-    <Spinner
-        android:id="@+id/spinnerSort"
-        style="android:spinnerStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvCost"
-        android:layout_marginLeft="8dp"
-        android:layout_toLeftOf="@+id/cbReverse"
-        android:layout_toRightOf="@+id/textView2"
-        android:entries="@array/Sort" />
-
-    <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerSort"
-        android:layout_below="@+id/tvCost"
-        android:layout_marginLeft="8dp"
-        android:gravity="center_vertical"
-        android:text="Sort:"
-        android:textColor="#000000"
-        android:textSize="@dimen/card_list_textview" />
-
-    <CheckBox
-        android:id="@+id/cbGenerics"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerMechanic"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@+id/tvCost"
-        android:layout_marginRight="8dp"
-        android:text="Neutral Cards"
-        android:textColor="#000000"
-        android:textSize="@dimen/spinner_textview" />
+        android:layout_below="@+id/mrScrolls"
+        android:layout_centerHorizontal="true"
+        android:contentDescription="This is used for positioning. How&apos;d you get here?" />
 
     <CheckBox
         android:id="@+id/cbReverse"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/spinnerSort"
-        android:layout_alignLeft="@+id/cbGenerics"
-        android:layout_alignTop="@+id/spinnerSort"
+        android:layout_below="@+id/mrScrolls"
+        android:layout_marginRight="8dp"
+        android:layout_toLeftOf="@+id/imageView1"
         android:text="Reverse Sort"
         android:textColor="#000000"
-        android:textSize="@dimen/spinner_textview" />
-    
+        android:textSize="12sp" />
+
+    <CheckBox
+        android:id="@+id/cbGenerics"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/cbReverse"
+        android:layout_alignBottom="@+id/cbReverse"
+        android:layout_marginLeft="8dp"
+        android:layout_toRightOf="@+id/imageView1"
+        android:text="Neutral Cards"
+        android:textColor="#000000"
+        android:textSize="12sp" />
+
     <RelativeLayout
         android:id="@+id/rlPopup"
         android:layout_width="match_parent"
@@ -152,7 +175,6 @@
             android:text="Tap and hold on a card to see more details"
             android:textColor="#FFFFFF"
             android:textSize="20sp" />
-        
     </RelativeLayout>
 
 </RelativeLayout>

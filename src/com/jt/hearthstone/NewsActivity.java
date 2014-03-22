@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -110,14 +111,16 @@ public class NewsActivity extends ActionBarActivity {
 			new FetchNews(this).execute();
 		}
 	}
-	
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		
-		outState.putStringArrayList("articleUrls", (ArrayList<String>) articleUrls);
-		outState.putStringArrayList("newsTitles", (ArrayList<String>) newsTitles);
+
+		outState.putStringArrayList("articleUrls",
+				(ArrayList<String>) articleUrls);
+		outState.putStringArrayList("newsTitles",
+				(ArrayList<String>) newsTitles);
 		outState.putStringArrayList("imageUrls", (ArrayList<String>) imageUrls);
-		
+
 		super.onSaveInstanceState(outState);
 	}
 
@@ -216,19 +219,25 @@ public class NewsActivity extends ActionBarActivity {
 				// Grab the article titles, image URLs, and article URLs
 				titles = result.select("span.article-title");
 				images = result.select("div.article-image");
-				urls = result.select("a[href^=/hearthstone/en/blog/1]");
+				urls = result.select("a[itemprop=url]");
 
 				for (Element e : urls) {
 
 					/*
-					 * Add links to List if the URL is longer than 25
-					 * characters. Additional check to make sure we only get the
-					 * links we want
+					 * Add links to List if the URL is actually a blog post (URL
+					 * contains "blog/1"). Additional check to make sure we only
+					 * get the links we want.
 					 */
-					if (e.attr("href").length() > 25) {
-						articleUrls
-								.add("http://us.battle.net" + e.attr("href"));
+					if (e.attr("href").contains("blog/1")) {
+						if (e.attr("href").contains("http")) {
+							articleUrls.add(e.attr("href"));
+						} else {
+							articleUrls.add("http://us.battle.net"
+									+ e.attr("href"));
+						}
+						Log.w("URLS", "url: " + e.attr("href"));
 					}
+
 				}
 
 				for (Element e : images) {

@@ -62,7 +62,7 @@ public class DeckActivity extends CustomCardFragment {
 	private List<String> listDecks = DeckSelector.listDecks;
 	private BarGraph manaChart;
 	private PieGraph pieGraph;
-	
+
 	private View gridOrListView;
 
 	private int position;
@@ -166,8 +166,7 @@ public class DeckActivity extends CustomCardFragment {
 
 						@Override
 						public void run() {
-							cardPos = position;
-							parentAdapterView = parent;
+							removeCard(parent, position);
 							refreshDecks();
 							ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
 									"alpha", 0.0f, 1.0f);
@@ -198,6 +197,7 @@ public class DeckActivity extends CustomCardFragment {
 						@Override
 						public void run() {
 							removeCard(parent, position);
+							refreshDecks();
 							ObjectAnimator animTwo = ObjectAnimator.ofFloat(v,
 									"alpha", 0.0f, 1.0f);
 							animTwo.setDuration(100).start();
@@ -222,12 +222,13 @@ public class DeckActivity extends CustomCardFragment {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-		
+
 		gridOrListView = v;
-		
-		cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(cardList));
+
+		cardListUnique = new ArrayList<Cards>(
+				new LinkedHashSet<Cards>(cardList));
 		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
-		
+
 		if (v.getId() == R.id.lvDeck) {
 			if (isQuickEditMode) {
 				menu.setHeaderTitle(cardListUnique.get(info.position).getName());
@@ -252,7 +253,10 @@ public class DeckActivity extends CustomCardFragment {
 
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+				.getMenuInfo();
+
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
 		if (isQuickEditMode) {
 			if (item.getGroupId() == Menu.FIRST
 					|| item.getGroupId() == Menu.NONE) {
@@ -260,10 +264,12 @@ public class DeckActivity extends CustomCardFragment {
 				MyWindow.initiatePopupWindow(info.position, info.targetView);
 			}
 		} else {
-			cardPos = info.position;
-			parentAdapterView = gridOrListView;
-			refreshDecks();
-			
+			if (item.getGroupId() == Menu.FIRST
+					|| item.getGroupId() == Menu.NONE) {
+				removeCard(gridOrListView, info.position);
+				refreshDecks();
+			}
+
 		}
 
 		return super.onContextItemSelected(item);
@@ -274,7 +280,6 @@ public class DeckActivity extends CustomCardFragment {
 		inflater.inflate(R.menu.deck, menu);
 
 		MenuItem listSwitcher = menu.findItem(R.id.action_switch);
-		MenuItem quickEditMode = menu.findItem(R.id.action_toggle_quick_mode);
 
 		if (isGrid) {
 			listSwitcher.setTitle("Switch to list view");
@@ -283,14 +288,7 @@ public class DeckActivity extends CustomCardFragment {
 			listSwitcher.setTitle("Switch to grid view");
 			listSwitcher.setIcon(R.drawable.collections_view_as_grid);
 		}
-		
-		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
-		
-		if (isQuickEditMode) {
-			quickEditMode.setTitle("Disable quick deck editing");
-		} else {
-			quickEditMode.setTitle("Enable quick deck editing");
-		}
+
 		super.onCreateOptionsMenu(menu, inflater);
 	}
 
@@ -315,20 +313,6 @@ public class DeckActivity extends CustomCardFragment {
 			}
 			break;
 
-		case R.id.action_toggle_quick_mode:
-
-			isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
-			
-			if (isQuickEditMode) {
-				item.setTitle("Disable quick deck editing");
-				prefs.edit().putBoolean("isQuickEditMode", false).commit();
-			} else {
-				item.setTitle("Enable quick deck editing");
-				prefs.edit().putBoolean("isQuickEditMode", true).commit();
-			}
-
-			break;
-
 		case R.id.action_rename:
 			DeckUtils.renameDeck(getActivity(), position, getActivity(),
 					cardList);
@@ -338,6 +322,11 @@ public class DeckActivity extends CustomCardFragment {
 		case R.id.action_clear:
 			AlertDialog dialog;
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+			final CardListFragment cardListFrag = (CardListFragment) getActivity()
+					.getSupportFragmentManager().findFragmentByTag(
+							Utils.makeFragmentName(R.id.pager, 0));
+
 			builder.setTitle("Remove all cards from this deck?");
 			builder.setPositiveButton("Remove All",
 					new DialogInterface.OnClickListener() {
@@ -345,12 +334,13 @@ public class DeckActivity extends CustomCardFragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							cardListUnique.clear();
-							cardList.clear();
+							cardList = new ArrayList<Cards>();
 							new DeckUtils.SaveDeck(getActivity(), listDecks
 									.get(position), cardList).execute();
+							cardListFrag.cardsList.clear();
+							cardListFrag.cardsList.addAll(cardList);
 							adapter.update(cardList);
-							lvDeck.setAdapter(new DeckListAdapter(
-									getActivity(), cardList));
+							adapter2.update(cardList);
 							tvNumCards
 									.setText("Looks like there's nothing here. Swipe right to get started!");
 						}
@@ -443,7 +433,7 @@ public class DeckActivity extends CustomCardFragment {
 		}
 	}
 
-	private void refreshDecks() {
+	public void refreshDecks() {
 		new DeckUtils.GetCardsList(getActivity(), this, 1337).execute(listDecks
 				.get(position));
 
@@ -469,7 +459,7 @@ public class DeckActivity extends CustomCardFragment {
 			Crouton.cancelAllCroutons();
 			Crouton.makeText(getActivity(),
 					"Card removed: " + cardList.get(pos).getName(),
-					Style.CONFIRM).show();
+					Style.INFO).show();
 
 			cardList.remove(pos);
 			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
@@ -480,7 +470,7 @@ public class DeckActivity extends CustomCardFragment {
 			Crouton.cancelAllCroutons();
 			Crouton.makeText(getActivity(),
 					"Card removed: " + cardListUnique.get(pos).getName(),
-					Style.CONFIRM).show();
+					Style.INFO).show();
 
 			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
 				Cards card = it.next();
@@ -500,17 +490,6 @@ public class DeckActivity extends CustomCardFragment {
 				.execute();
 		Log.i("Deck Saved", "Deck name: " + listDecks.get(position));
 
-		// Refresh Views with updated data
-		adapter.update(cardList);
-		adapter2.update(cardList);
-		// lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
-
-		// Refresh charts
-		setManaChart(cardList);
-		setPieGraph(cardList);
-
-		deckChanceFragment.updatePercents(cardList, true);
-
 		// Set current card count
 		tvNumCards.setText("" + cardList.size() + " / 30");
 
@@ -528,13 +507,31 @@ public class DeckActivity extends CustomCardFragment {
 			ivSwipe.setVisibility(View.VISIBLE);
 		}
 
-		deckChanceFragment.deckList = cardList;
-		cardListFragment.cardsList = cardList;
+		deckChanceFragment.deckList.clear();
+		deckChanceFragment.deckList.addAll(cardList);
+		cardListFragment.cardsList.clear();
+		cardListFragment.cardsList.addAll(cardList);
+
+		// Refresh Views with updated data
+		adapter.update(cardList);
+		adapter2.update(cardList);
+		// lvDeck.setAdapter(new DeckListAdapter(getActivity(), cardList));
+
+		// Refresh charts
+		setManaChart(cardList);
+		setPieGraph(cardList);
+
+		deckChanceFragment.updatePercents(cardList, true);
 	}
 
 	@Override
 	protected void setCardList(List<Cards> cardList, int tag) {
-		this.cardList = cardList;
+		if (this.cardList != null) {
+			this.cardList.clear();
+		} else {
+			this.cardList = new ArrayList<Cards>();
+		}
+		this.cardList.addAll(cardList);
 		if (cardList != null) {
 			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
 					cardList));
@@ -595,7 +592,6 @@ public class DeckActivity extends CustomCardFragment {
 
 			break;
 		case 1337:
-			removeCard(parentAdapterView, cardPos);
 			adapter.update(cardList);
 			adapter2.update(cardList);
 		}

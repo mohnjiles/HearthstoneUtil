@@ -33,8 +33,12 @@ import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 public class Utils {
 	private static Context cxt = HearthstoneUtil.getAppContext();
 	static Locale curLocale = cxt.getResources().getConfiguration().locale;
-	static Cards[] cards = setupCardList();
+	static Cards[] cards;
 	final static int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
+	static {
+		new SetupCardList().execute();
+	}
 
 	static final DisplayImageOptions noStubOptions = new DisplayImageOptions.Builder()
 			.resetViewBeforeLoading(false).cacheOnDisc(true)
@@ -76,9 +80,8 @@ public class Utils {
 		return "android:switcher:" + viewId + ":" + index;
 	}
 
-	static Cards[] setupCardList() {
-		new SetupCardList().execute();
-		return cards;
+	static void setupCardList(Cards[] cards) {
+		Utils.cards = cards;
 	}
 
 	static void navigateUp(Activity activity) {
@@ -126,7 +129,7 @@ public class Utils {
 		}
 
 	}
-	
+
 	static class SetupCardList extends AsyncTask<Void, Void, Cards[]> {
 		@Override
 		protected Cards[] doInBackground(Void... params) {
@@ -137,6 +140,7 @@ public class Utils {
 				fis = cxt.openFileInput("cards.json");
 			} catch (FileNotFoundException e1) {
 				copyFile("cards.json");
+				Log.w("SetupCardList", "file not found -- cards.json");
 				try {
 					fis = cxt.openFileInput("cards.json");
 				} catch (FileNotFoundException e) {
@@ -172,13 +176,14 @@ public class Utils {
 			String jsonString = writer.toString();
 
 			// Set our pojo from the GSON data
-			Utils.cards = gson.fromJson(jsonString, Cards[].class);
+			cards = gson.fromJson(jsonString, Cards[].class);
 			return cards;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Cards[] result) {
-			// TODO Auto-generated method stub
+
+			setupCardList(result);
 			super.onPostExecute(result);
 		}
 	}

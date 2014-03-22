@@ -15,9 +15,5 @@
         android:id="@+id/action_rename"
         android:title="Rename deck"
         hearthstone:showAsAction="never"/>
-    <item
-        android:id="@+id/action_toggle_quick_mode"
-        android:title="Enable quick deck editing"
-        hearthstone:showAsAction="never"/>
 
 </menu>

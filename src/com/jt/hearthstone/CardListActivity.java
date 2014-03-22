@@ -2,31 +2,21 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.OutputStream;
-import java.io.Reader;
 import java.io.StreamCorruptedException;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.view.MenuItemCompat;
@@ -50,9 +40,6 @@ import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
-
-import com.google.gson.Gson;
-
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
@@ -204,7 +191,6 @@ public class CardListActivity extends ActionBarActivity {
 		includeNeutralCards
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-					// Called when checkbox is checked or unchecked
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
@@ -258,8 +244,9 @@ public class CardListActivity extends ActionBarActivity {
 						Collections.sort(cardList, new CardComparator(
 								spinnerSort.getSelectedItemPosition(),
 								cbReverse.isChecked()));
-						adapter.update(cardList);
+						adapter.notifyDataSetChanged();
 						adapter2.notifyDataSetChanged();
+						grid.setAdapter(adapter);
 						listCards.setAdapter(adapter2);
 					}
 
@@ -268,7 +255,6 @@ public class CardListActivity extends ActionBarActivity {
 		cbReverse
 				.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
-					// Called when checkbox is checked or unchecked
 					@Override
 					public void onCheckedChanged(CompoundButton buttonView,
 							boolean isChecked) {
@@ -387,13 +373,13 @@ public class CardListActivity extends ActionBarActivity {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
 			menu.setHeaderTitle(cardList.get(info.position).getName());
 			position = info.position;
-			
+
 			menu.add(Menu.NONE, 0, 0, "Add to new deck");
 
 			if (deckList != null && deckList.size() != 0) {
-				
+
 				menuItems = new String[deckList.size()];
-				
+
 				for (int i = 0; i < deckList.size(); i++) {
 					menuItems[i] = "Add to \"" + deckList.get(i) + "\"";
 				}
@@ -410,7 +396,8 @@ public class CardListActivity extends ActionBarActivity {
 		menuItemIndex = item.getItemId();
 		final List<Integer> deckClasses = (List<Integer>) DeckUtils
 				.getIntegerDeck(this, "deckclasses");
-		if (!item.getTitle().equals("") && item.getTitle().equals("Add to new deck")) {
+		if (!item.getTitle().equals("")
+				&& item.getTitle().equals("Add to new deck")) {
 			LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.dialog_layout,
 					(ViewGroup) findViewById(R.id.linearLayout));
@@ -510,6 +497,12 @@ public class CardListActivity extends ActionBarActivity {
 		}
 
 		list.add(cardList.get(position));
+
+		Crouton.makeText(
+				this,
+				cardList.get(position).getName() + " added to \"" + deckName
+						+ "\"", Style.INFO).show();
+
 		Log.w("CardListActivity", "addCards added a card");
 		new DeckUtils.SaveDeck(this, deckName, list).execute();
 		Log.w("CardListActivity", "addCards might've saved the deck");
@@ -556,16 +549,12 @@ public class CardListActivity extends ActionBarActivity {
 		if (cardList == null) {
 			cardList = new ArrayList<Cards>();
 			for (Cards card : cards) {
-				if (card.getClasss() == null) {
-					cardList.add(card);
-				}
+				cardList.add(card);
 			}
 		} else {
 			cardList.clear();
 			for (Cards card : cards) {
-				if (card.getClasss() == null) {
-					cardList.add(card);
-				}
+				cardList.add(card);
 			}
 		}
 	}

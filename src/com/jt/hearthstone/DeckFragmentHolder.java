@@ -196,6 +196,15 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 		getMenuInflater().inflate(R.menu.deck_fragment_holder, menu);
 		
+		MenuItem quickEditMode = menu.findItem(R.id.action_toggle_quick_mode);
+		
+		isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+		if (isQuickEditMode) {
+			quickEditMode.setTitle("Disable quick deck editing");
+		} else {
+			quickEditMode.setTitle("Enable quick deck editing");
+		}
+		
 		return true;
 	}
 
@@ -217,6 +226,20 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		case R.id.action_settings:
 			startActivity(new Intent(DeckFragmentHolder.this,
 					SettingsActivity.class));
+			break;
+			
+		case R.id.action_toggle_quick_mode:
+
+			isQuickEditMode = prefs.getBoolean("isQuickEditMode", false);
+			
+			if (isQuickEditMode) {
+				item.setTitle("Enable quick deck editing");
+				prefs.edit().putBoolean("isQuickEditMode", false).commit();
+			} else {
+				item.setTitle("Disable quick deck editing");
+				prefs.edit().putBoolean("isQuickEditMode", true).commit();
+			}
+
 			break;
 		}
 		return super.onOptionsItemSelected(item);

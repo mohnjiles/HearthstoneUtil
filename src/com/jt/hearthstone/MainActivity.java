@@ -18,7 +18,11 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 
+import android.app.AlarmManager;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -81,8 +85,6 @@ public class MainActivity extends ActionBarActivity {
 		btnDeckBuilder.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnArena.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnNews.setShadowLayer(1, 1, 1, Color.WHITE);
-		
-		
 
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
 		mDrawerLayout, /* DrawerLayout object */
@@ -101,7 +103,7 @@ public class MainActivity extends ActionBarActivity {
 				getSupportActionBar().setTitle("Hearthstone Companion");
 			}
 		};
-		
+
 		mActivityNames = getResources().getStringArray(R.array.Drawer);
 		mDrawerList.setAdapter(new NavDrawerAdapter(this,
 				R.layout.sliding_list, mActivityNames));
@@ -140,15 +142,16 @@ public class MainActivity extends ActionBarActivity {
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setHomeButtonEnabled(true);
-		
-		SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+		SharedPreferences prefs = PreferenceManager
+				.getDefaultSharedPreferences(this);
 		boolean isfirstTime = prefs.getBoolean("first_time_drawer", true);
-		
+
 		if (isfirstTime) {
 			mDrawerLayout.openDrawer(mDrawerList);
 			SharedPreferences.Editor editor = prefs.edit();
-            editor.putBoolean("first_time_drawer", false);
-            editor.commit();
+			editor.putBoolean("first_time_drawer", false);
+			editor.commit();
 		}
 
 		new CheckVersion().execute();
@@ -161,7 +164,7 @@ public class MainActivity extends ActionBarActivity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
-	
+
 	@Override
 	protected void onPostCreate(Bundle savedInstanceState) {
 		super.onPostCreate(savedInstanceState);
@@ -353,6 +356,7 @@ public class MainActivity extends ActionBarActivity {
 				outputStreamWriter.write(json);
 				Log.i("updating cards.json", "updating cards.json");
 				outputStreamWriter.close();
+
 			} catch (ClientProtocolException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -364,6 +368,50 @@ public class MainActivity extends ActionBarActivity {
 			}
 
 			return null;
+		}
+
+		@Override
+		protected void onPostExecute(Void result) {
+
+			AlertDialog.Builder builder = new AlertDialog.Builder(
+					MainActivity.this);
+			builder.setTitle("Restart app");
+			builder.setMessage("Card data updated. App restart required for changes to take effect. Restart now?");
+
+			builder.setPositiveButton("Yes",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							Intent mStartActivity = new Intent(
+									MainActivity.this, MainActivity.class);
+							int mPendingIntentId = 123456;
+							PendingIntent mPendingIntent = PendingIntent
+									.getActivity(MainActivity.this,
+											mPendingIntentId, mStartActivity,
+											PendingIntent.FLAG_CANCEL_CURRENT);
+							AlarmManager mgr = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+							mgr.set(AlarmManager.RTC,
+									System.currentTimeMillis() + 100,
+									mPendingIntent);
+							System.exit(0);
+						}
+					});
+
+			builder.setNegativeButton("No",
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();
+						}
+					});
+
+			AlertDialog dialog = builder.create();
+
+			dialog.show();
+
+			super.onPostExecute(result);
 		}
 	}
 }

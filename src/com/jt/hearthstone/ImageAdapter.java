@@ -1,10 +1,13 @@
 package com.jt.hearthstone;
 
+import icepick.Icicle;
+
 import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Parcelable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -13,7 +16,7 @@ import android.widget.TextView;
 
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
-    private List<Cards> cardList;
+    @Icicle private List<Cards> cardList;
 
     public ImageAdapter(Context c, List<Cards> list) {
         mContext = c;
@@ -44,7 +47,6 @@ public class ImageAdapter extends BaseAdapter {
     	ImageView iv = null;
     	TextView tv = null;
     }
-    
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {

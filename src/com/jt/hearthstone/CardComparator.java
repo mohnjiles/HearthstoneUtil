@@ -18,7 +18,15 @@ public class CardComparator implements Comparator<Cards> {
 	 * 
 	 * @param position
 	 *            <code>int</code> that determines what to sort by, based on
-	 *            <i>Spinner</i> position
+	 *            <i>Spinner</i> position. Possible values:
+	 *            <ul>
+	 *            <li>0: Alphabetically</li>
+	 *            <li>1: Quality (Rarity)</li>
+	 *            <li>2: Mana Cost, then Alphabetically</li>
+	 *            <li>3: Attack</li>
+	 *            <li>4: Health</li>
+	 *            <li><code>default:</code> Mana Cost</li>
+	 *            </ul>
 	 * @param reverse
 	 *            <code>boolean</code> that determines if we should sort
 	 *            inversely.
@@ -56,9 +64,9 @@ public class CardComparator implements Comparator<Cards> {
 					c = left.getName().toString()
 							.compareTo(right.getName().toString());
 				}
-				
+
 				return c;
-				
+
 			} else {
 				return Double.compare(right.getCost().doubleValue(), left
 						.getCost().doubleValue());

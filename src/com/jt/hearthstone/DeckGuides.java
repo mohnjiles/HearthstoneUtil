@@ -28,7 +28,8 @@ import android.widget.Spinner;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckGuides extends ActionBarActivity {
+public class DeckGuides extends ActionBarActivity implements
+		AdapterView.OnItemSelectedListener {
 
 	private ListView lvDecks;
 	private Spinner spinClass;
@@ -37,7 +38,6 @@ public class DeckGuides extends ActionBarActivity {
 	private List<String> deckLinks = new ArrayList<String>();
 	private List<String> dustList = new ArrayList<String>();
 	private SerializableSparseArray<String> sparseRatings = new SerializableSparseArray<String>();
-	private CustomListener listener;
 	private GuideListAdapter adapter;
 
 	private String[] mActivityNames;
@@ -89,10 +89,34 @@ public class DeckGuides extends ActionBarActivity {
 						}
 					}
 				});
-
-		listener = new CustomListener();
-		spinClass.setOnItemSelectedListener(listener);
 		
+		String[] classNames = getResources().getStringArray(R.array.Classes);
+		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
+				R.layout.spinner_row, R.id.name, classNames);
+
+		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
+		spinClass.setAdapter(spinAdapter);
+
+		if (savedInstanceState == null) {
+			spinClass.setOnItemSelectedListener(this);
+		} else {
+
+			deckNames = savedInstanceState.getStringArrayList("deckNames");
+			sparseRatings = (SerializableSparseArray<String>) savedInstanceState
+					.getSerializable("sparseRatings");
+			classes = (List<Classes>) savedInstanceState
+					.getSerializable("classes");
+			deckLinks = savedInstanceState.getStringArrayList("deckLinks");
+			dustList = savedInstanceState.getStringArrayList("dustList");
+
+			adapter = new GuideListAdapter(DeckGuides.this, deckNames.size(),
+					deckNames, classes, sparseRatings);
+			lvDecks.setAdapter(adapter);
+			
+			spinClass.setSelection(savedInstanceState.getInt("spinnerPos"), false);
+			spinClass.setOnItemSelectedListener(this);
+		}
+
 		lvDecks.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 			@Override
@@ -109,14 +133,7 @@ public class DeckGuides extends ActionBarActivity {
 			}
 		});
 
-		String[] classNames = getResources().getStringArray(R.array.Classes);
-		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
-				R.layout.spinner_row, R.id.name, classNames);
-		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-
-		spinClass.setAdapter(spinAdapter);
-
-		spinClass.setOnItemSelectedListener(listener);
+		
 	}
 
 	@Override
@@ -137,6 +154,19 @@ public class DeckGuides extends ActionBarActivity {
 			return true;
 		}
 		return super.onOptionsItemSelected(item);
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+
+		outState.putStringArrayList("deckNames", (ArrayList<String>) deckNames);
+		outState.putSerializable("sparseRatings", sparseRatings);
+		outState.putSerializable("classes", (ArrayList<Classes>) classes);
+		outState.putStringArrayList("deckLinks", (ArrayList<String>) deckLinks);
+		outState.putStringArrayList("dustList", (ArrayList<String>) dustList);
+		outState.putInt("spinnerPos", spinClass.getSelectedItemPosition());
+
+		super.onSaveInstanceState(outState);
 	}
 
 	private class FetchDecks extends AsyncTask<String, Void, Document> {
@@ -258,71 +288,64 @@ public class DeckGuides extends ActionBarActivity {
 
 	}
 
-	private class CustomListener implements AdapterView.OnItemSelectedListener {
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
 
-		public CustomListener() {
-			super();
-		}
+		deckNames.clear();
+		deckLinks.clear();
+		classes.clear();
 
-		@Override
-		public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
-				long arg3) {
-
-			deckNames.clear();
-			deckLinks.clear();
-			classes.clear();
-
-			switch (arg2) {
-			case 0:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=0&sort=-rating");
-				break;
-			case 1:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
-				break;
-			case 2:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
-				break;
-			case 3:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=16&sort=-rating");
-				break;
-			case 4:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=32&sort=-rating");
-				break;
-			case 5:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=64&sort=-rating");
-				break;
-			case 6:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=128&sort=-rating");
-				break;
-			case 7:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=256&sort=-rating");
-				break;
-			case 8:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=512&sort=-rating");
-				break;
-			case 9:
-				new FetchDecks(DeckGuides.this)
-						.execute("http://www.hearthpwn.com/decks?filter-class=1024&sort=-rating");
-				break;
-
-			}
+		switch (arg2) {
+		case 0:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=0&sort=-rating");
+			break;
+		case 1:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
+			break;
+		case 2:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
+			break;
+		case 3:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=16&sort=-rating");
+			break;
+		case 4:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=32&sort=-rating");
+			break;
+		case 5:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=64&sort=-rating");
+			break;
+		case 6:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=128&sort=-rating");
+			break;
+		case 7:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=256&sort=-rating");
+			break;
+		case 8:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=512&sort=-rating");
+			break;
+		case 9:
+			new FetchDecks(DeckGuides.this)
+					.execute("http://www.hearthpwn.com/decks?filter-class=1024&sort=-rating");
+			break;
 
 		}
 
-		@Override
-		public void onNothingSelected(AdapterView<?> arg0) {
-			// TODO Auto-generated method stub
+	}
 
-		}
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 }

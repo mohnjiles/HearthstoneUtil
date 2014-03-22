@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
+import android.webkit.WebSettings.LayoutAlgorithm;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -187,7 +188,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 
 				Log.w("url", url);
 
-				result.select("img").remove();
+				result.select("img[itemprop=image]").remove();
 				content = result.select("div.article-content").first();
 				html = content.toString().replace("'", "&apos;");
 				wvDetails.loadData(html, "text/html; charset=UTF-8", null);
@@ -196,6 +197,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 				} else {
 					wvDetails.setBackgroundColor(0x00000000);
 				}
+				wvDetails.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 
 			} else {
 				Crouton.makeText(

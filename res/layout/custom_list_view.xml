@@ -19,7 +19,7 @@
         android:gravity="center"
         android:text="2"
         android:textAlignment="center"
-        android:textColor="#FFE600"
+        android:textColor="#000000"
         android:textSize="@dimen/card_stats_text_size" />
 
     <TextView

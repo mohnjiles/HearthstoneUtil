@@ -1,10 +1,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:hearthstone="http://schemas.android.com/apk/res-auto" >
-
     <item
         android:id="@+id/action_search"
-        android:icon="@android:drawable/ic_menu_search"
         android:title="Search"
+        android:icon="@android:drawable/ic_menu_search"
         hearthstone:actionViewClass="android.support.v7.widget.SearchView"
         hearthstone:showAsAction="always"/>
     <item
@@ -12,11 +11,10 @@
         android:icon="@drawable/collections_view_as_grid"
         android:title="Switch to grid view"
         hearthstone:showAsAction="ifRoom"/>
-    
-        <item
+
+    <item
         android:id="@+id/action_rename"
         android:title="Rename deck"
         hearthstone:showAsAction="never"/>
-        
 
-</menu>
+</menu>               

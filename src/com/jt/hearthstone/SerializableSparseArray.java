@@ -1,16 +1,11 @@
 package com.jt.hearthstone;
 
 import java.io.Serializable;
-
 import android.util.SparseArray;
 
 public class SerializableSparseArray<E> extends SparseArray<E> implements
-		Serializable, Cloneable {
+		Serializable {
 
-	private static final long serialVersionUID = 1337L;
+	private static final long serialVersionUID = -4993730696463827761L;
 
-	@Override
-	public SerializableSparseArray<E> clone() {
-		return (SerializableSparseArray<E>) super.clone();
-	}
 }

@@ -10,9 +10,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import android.R.array;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,7 +41,7 @@ public class DeckChanceFragment extends CustomCardFragment implements
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+
 		super.setClassName("DeckChanceFragment");
 
 		View v = inflater.inflate(R.layout.deck_chance_fragment, container,
@@ -61,8 +61,40 @@ public class DeckChanceFragment extends CustomCardFragment implements
 
 		Intent intent = getActivity().getIntent();
 		listOfDecks = intent.getStringArrayListExtra("listDecks");
-		new DeckUtils.GetCardsList(getActivity(), this, 1337)
-				.execute(listOfDecks.get(intent.getIntExtra("position", 0)));
+
+		if (savedInstanceState != null) {
+			listPercents.clear();
+			listPercents.addAll((List<Double>) savedInstanceState
+					.getSerializable("listPercents"));
+			if (deckList != null) {
+				deckList.clear();
+			} else {
+				deckList = new ArrayList<Cards>();
+			}
+			deckList.addAll((List<Cards>) savedInstanceState
+					.getSerializable("deckList"));
+			
+			if (deckListUnique != null) {
+				deckListUnique.clear();
+			} else {
+				deckListUnique = new ArrayList<Cards>();
+			}
+			deckListUnique.addAll((List<Cards>) savedInstanceState
+					.getSerializable("deckListUnique"));
+			
+			prevCards.clear();
+			prevCards.addAll((List<Cards>) savedInstanceState
+					.getSerializable("prevCards"));
+
+			adapter = new DeckChanceAdapter(getActivity(), deckList,
+					listPercents);
+			lvDeck.setAdapter(adapter);
+			lvDeck.setOnItemClickListener(this);
+			updatePercents(deckList, true);
+		} else {
+			new DeckUtils.GetCardsList(getActivity(), this, 1337)
+					.execute(listOfDecks.get(intent.getIntExtra("position", 0)));
+		}
 
 		super.onActivityCreated(savedInstanceState);
 	}
@@ -72,6 +104,18 @@ public class DeckChanceFragment extends CustomCardFragment implements
 		inflater.inflate(R.menu.deck_chance, menu);
 
 		super.onCreateOptionsMenu(menu, inflater);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+
+		outState.putSerializable("deckList", (ArrayList<Cards>) deckList);
+		outState.putSerializable("listPercents",
+				(ArrayList<Double>) listPercents);
+		outState.putSerializable("prevCards", (ArrayList<Cards>) prevCards);
+		outState.putSerializable("deckListUnique", (ArrayList<Cards>) deckListUnique);
+
+		super.onSaveInstanceState(outState);
 	}
 
 	@Override
@@ -170,7 +214,13 @@ public class DeckChanceFragment extends CustomCardFragment implements
 
 	@Override
 	protected void setCardList(List<Cards> cardList, int tag) {
-		this.deckList = cardList;
+		if (deckList != null) {
+			deckList.clear();
+		} else {
+			deckList = new ArrayList<Cards>();
+		}
+		deckList.addAll(cardList);
+
 		deckListUnique = new ArrayList<Cards>(
 				new LinkedHashSet<Cards>(deckList));
 

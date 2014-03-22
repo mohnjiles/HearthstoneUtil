@@ -4,6 +4,7 @@ import static butterknife.Views.findById;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.jsoup.Jsoup;
@@ -29,7 +30,8 @@ import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckGuideDetail extends ActionBarActivity {
+public class DeckGuideDetail extends ActionBarActivity implements
+		AdapterView.OnItemSelectedListener {
 
 	private ListView lvDeck;
 	private TextView tvDust;
@@ -39,7 +41,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 	private Intent intent;
 	private Spinner spinSort;
 	private String url;
-	SparseArray<String> soSparse = new SparseArray<String>();
+	SerializableSparseArray<String> soSparse = new SerializableSparseArray<String>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -73,37 +75,35 @@ public class DeckGuideDetail extends ActionBarActivity {
 				R.layout.spinner_row, R.id.name, sortNames);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
 		spinSort.setAdapter(spinAdapter);
-		spinSort.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				switch (arg2) {
-				case 0:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url);
-					break;
-				case 1:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url
-							+ "?sort=cost");
-					break;
-				case 2:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url
-							+ "?sort=atk");
-					break;
-				case 3:
-					new FetchDeckCards(DeckGuideDetail.this).execute(url
-							+ "?sort=hp");
-					break;
+		if (savedInstanceState == null) {
+			new FetchDeckCards(DeckGuideDetail.this).execute(url);
+			spinSort.setOnItemSelectedListener(this);
+		} else {
+			deckCards = (ArrayList<Cards>) savedInstanceState
+					.getSerializable("deckCards");
+			soSparse = (SerializableSparseArray<String>) savedInstanceState
+					.getSerializable("soSparse");
+
+			lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this,
+					deckCards.size(), deckCards, soSparse));
+
+			MyWindow.setContext(DeckGuideDetail.this);
+
+			lvDeck.setOnItemClickListener(new OnItemClickListener() {
+
+				@Override
+				public void onItemClick(AdapterView<?> arg0, View arg1,
+						int arg2, long arg3) {
+					MyWindow.setCardList(deckCards);
+					MyWindow.initiatePopupWindow(arg2, arg0);
+
 				}
-
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
-
-			}
-		});
+			});
+			
+			spinSort.setSelection(savedInstanceState.getInt("spinnerPos"), false);
+			spinSort.setOnItemSelectedListener(this);
+		}
 
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
@@ -141,6 +141,14 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 		tvDust.setText("Deck Crafting Cost: " + dustCost);
 		tvDust.setTypeface(TypefaceCache.get(getAssets(), "fonts/belwebd.ttf"));
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putSerializable("soSparse", soSparse);
+		outState.putSerializable("deckCards", (ArrayList<Cards>) deckCards);
+		outState.putInt("spinnerPos", spinSort.getSelectedItemPosition());
 	}
 
 	@Override
@@ -226,7 +234,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 			new DeckUtils.SaveDeck(this, "decklist", deckList).execute();
 			new DeckUtils.SaveDeck(this, "deckclasses", classesList).execute();
 
-			Crouton.makeText(this, "Deck saved", Style.CONFIRM).show();
+			Crouton.makeText(this, "Deck saved", Style.INFO).show();
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -278,6 +286,7 @@ public class DeckGuideDetail extends ActionBarActivity {
 			}
 			if (result != null) {
 				deckCards.clear();
+				result.select("div#related").remove();
 				elementz = result.select("a[class]");
 				someEles = result.select("td.col-name");
 
@@ -296,7 +305,8 @@ public class DeckGuideDetail extends ActionBarActivity {
 						}
 					}
 				}
-
+				
+				Collections.sort(deckCards, new CardComparator(1, false));
 				lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this,
 						deckCards.size(), deckCards, soSparse));
 
@@ -321,6 +331,35 @@ public class DeckGuideDetail extends ActionBarActivity {
 
 			super.onPostExecute(result);
 		}
+	}
+
+	@Override
+	public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		switch (arg2) {
+		case 0:
+			Collections.sort(deckCards, new CardComparator(1, false));
+			break;
+		case 1:
+			Collections.sort(deckCards, new CardComparator(2, false));
+			break;
+		case 2:
+			Collections.sort(deckCards, new CardComparator(3, false));
+			break;
+		case 3:
+			Collections.sort(deckCards, new CardComparator(4, false));
+			break;
+		}
+		
+		lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this,
+				deckCards.size(), deckCards, soSparse));
+
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> arg0) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
