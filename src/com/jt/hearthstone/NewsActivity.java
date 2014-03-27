@@ -6,11 +6,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import android.R.integer;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -23,19 +26,22 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class NewsActivity extends ActionBarActivity {
+public class NewsActivity extends HearthstoneActivity {
 
 	private ListView lvNews;
 	private List<String> articleUrls;
 	private List<String> newsTitles;
 	private List<String> imageUrls;
 	private DrawerLayout drawerLayout;
+	private MessageBar mBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +53,7 @@ public class NewsActivity extends ActionBarActivity {
 
 		lvNews = findById(this, R.id.lvNews);
 		drawerLayout = findById(this, R.id.drawerLayout);
+		mBar = new MessageBar(this);
 
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
@@ -255,10 +262,7 @@ public class NewsActivity extends ActionBarActivity {
 				}
 			} else {
 				// If we failed to load the web page, inform the user
-				Crouton.makeText(
-						NewsActivity.this,
-						"Failed to load news. Check your internet connection and try again later",
-						Style.ALERT).show();
+				mBar.show("Failed to load news. Check your internet connection and try again later");
 			}
 
 			NewsListAdapter adapter = new NewsListAdapter(NewsActivity.this,
@@ -279,6 +283,7 @@ public class NewsActivity extends ActionBarActivity {
 
 				}
 			});
+		
 
 			super.onPostExecute(result);
 		}

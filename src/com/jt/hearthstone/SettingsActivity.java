@@ -3,6 +3,8 @@ package com.jt.hearthstone;
 import java.io.File;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.app.AlertDialog;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -28,6 +30,7 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class SettingsActivity extends PreferenceActivity {
 
 	private List<String> deckList;
+	private MessageBar mBar;
 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -58,6 +61,8 @@ public class SettingsActivity extends PreferenceActivity {
 		Preference refresh = (Preference) findPreference("refresh");
 		Preference version = (Preference) findPreference("version");
 		Preference sources = (Preference) findPreference("licenses");
+		
+		mBar = new MessageBar(this);
 
 		sources.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
 
@@ -67,7 +72,7 @@ public class SettingsActivity extends PreferenceActivity {
 				// Preparing views
 				LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 				View layout = inflater.inflate(R.layout.source_dialog,
-						(ViewGroup) findViewById(R.id.linearLayout));
+						(ViewGroup) findViewById(R.id.relativeLayout));
 				WebView wvLicenses = (WebView) layout
 						.findViewById(R.id.wvLicenses);
 
@@ -129,8 +134,7 @@ public class SettingsActivity extends PreferenceActivity {
 				}
 				loader.clearDiscCache();
 				loader.clearMemoryCache();
-				Crouton.makeText(SettingsActivity.this, "Caches cleared.",
-						Style.INFO).show();
+				mBar.show("Caches cleared");
 				return true;
 			}
 		});
@@ -144,8 +148,7 @@ public class SettingsActivity extends PreferenceActivity {
 				deckList = DeckUtils.listDecks;
 				if (deckList.size() > 0) {
 					deckList.clear();
-					Crouton.makeText(SettingsActivity.this,
-							"Deck List cleared.", Style.INFO).show();
+					mBar.show("Deck List cleared");
 					Log.i("deckList.clear()", "Deck list cleared");
 					new DeckUtils.SaveDeck(SettingsActivity.this, "decklist",
 							deckList).execute();
@@ -153,8 +156,7 @@ public class SettingsActivity extends PreferenceActivity {
 				}
 				if (classesDeck.size() > 0) {
 					classesDeck.clear();
-					Crouton.makeText(SettingsActivity.this,
-							"Deck Classes cleared.", Style.INFO).show();
+					mBar.show("Classes list cleared");
 					Log.i("deckClasses.clear()", "Deck Classes cleared.");
 					new DeckUtils.SaveDeck(SettingsActivity.this,
 							"deckclasses", classesDeck).execute();

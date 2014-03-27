@@ -7,6 +7,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:paddingTop="?attr/actionBarSize"
         android:background="@drawable/app_bg"
         android:orientation="vertical" >
 
@@ -26,6 +27,7 @@
     <ListView
         android:id="@+id/left_drawer"
         android:layout_width="240dp"
+        android:paddingTop="?attr/actionBarSize"
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:background="@drawable/app_bg"

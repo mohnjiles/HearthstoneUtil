@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.jt.hearthstone"
-    android:versionCode="23"
-    android:versionName="0.23" >
+    android:versionCode="24"
+    android:versionName="0.24" >
 
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -13,7 +13,7 @@
     <application
         android:name="com.jt.hearthstone.HearthstoneUtil"
         android:allowBackup="true"
-        android:icon="@drawable/app_icon"
+        android:icon="@drawable/launcher_icon_test"
         android:label="@string/app_name"
         android:theme="@style/Theme.AppCompat.Light.DarkActionBar" >
         <activity
@@ -28,11 +28,12 @@
         <activity
             android:name="com.jt.hearthstone.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:theme="@style/PreferencesTheme" >
+            android:theme="@style/AppTheme" >
         </activity>
         <activity
             android:name="com.jt.hearthstone.CardListActivity"
             android:label="@string/title_activity_card_list"
+            android:theme="@style/AppTheme"
             android:parentActivityName="com.jt.hearthstone.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -57,7 +58,8 @@
         <activity
             android:name="com.jt.hearthstone.DeckSelector"
             android:label="@string/title_activity_deck_selector"
-            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+            android:parentActivityName="com.jt.hearthstone.MainActivity"
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.MainActivity" />
@@ -65,7 +67,8 @@
         <activity
             android:name="com.jt.hearthstone.DeckActivity"
             android:label="@string/title_activity_deck"
-            android:parentActivityName="com.jt.hearthstone.DeckSelector" >
+            android:parentActivityName="com.jt.hearthstone.DeckSelector"
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.DeckSelector" />
@@ -77,6 +80,7 @@
         <activity
             android:name="com.jt.hearthstone.DeckFragmentHolder"
             android:label="@string/title_activity_deck_fragment_holder"
+            android:theme="@style/AppTheme"
             android:parentActivityName="com.jt.hearthstone.DeckSelector" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -88,10 +92,12 @@
         </activity>
         <activity
             android:name="com.jt.hearthstone.SimulatorFragment"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_simulator_fragment" >
         </activity>
         <activity
             android:name="com.jt.hearthstone.ArenaSimulator"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_arena_simulator"
             android:parentActivityName="com.jt.hearthstone.MainActivity" >
             <meta-data
@@ -100,10 +106,12 @@
         </activity>
         <activity
             android:name="com.jt.hearthstone.ArenaFragment"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_arena_fragment" >
         </activity>
         <activity
             android:name="com.jt.hearthstone.ArenaDeckFragment"
+            android:theme="@style/AppTheme"
             android:label="@string/title_activity_arena_deck_fragment" >
         </activity>
         <activity
@@ -114,14 +122,16 @@
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name="com.jt.hearthstone.DeckGuides"
-            android:label="@string/title_activity_deck_guides" >
+            android:label="@string/title_activity_deck_guides"
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.MainActivity" />
         </activity>
         <activity
             android:name="com.jt.hearthstone.DeckGuideDetail"
-            android:label="@string/title_activity_deck_guide_detail" >
+            android:label="@string/title_activity_deck_guide_detail"
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.DeckGuides" />
@@ -129,7 +139,8 @@
         <activity
             android:name="com.jt.hearthstone.NewsActivity"
             android:label="@string/title_activity_news"
-            android:parentActivityName="com.jt.hearthstone.MainActivity" >
+            android:parentActivityName="com.jt.hearthstone.MainActivity"
+            android:theme="@style/AppTheme" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.MainActivity" />
@@ -137,11 +148,19 @@
         <activity
             android:name="com.jt.hearthstone.NewsDetailActivity"
             android:label="@string/title_activity_news_detail"
+            android:theme="@style/AppTheme"
             android:parentActivityName="com.jt.hearthstone.NewsActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.jt.hearthstone.NewsActivity" />
         </activity>
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
     </application>
 
 </manifest>

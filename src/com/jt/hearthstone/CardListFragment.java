@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
@@ -38,6 +40,7 @@ import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.drive.internal.m;
 import com.nineoldandroids.animation.ObjectAnimator;
 
 import de.keyboardsurfer.android.widget.crouton.Crouton;
@@ -80,6 +83,7 @@ public class CardListFragment extends CustomCardFragment {
 	private boolean isQuickEditMode = false;
 
 	private Typeface font;
+	private MessageBar mBar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -106,6 +110,8 @@ public class CardListFragment extends CustomCardFragment {
 		tvMechanic = findById(V, R.id.tvCost);
 		tvSort = findById(V, R.id.textView2);
 		tvMana = findById(V, R.id.tvMana);
+
+		mBar = ((DeckFragmentHolder)getActivity()).getMessageBar();
 
 		tvMechanic.setTypeface(font);
 		tvSort.setTypeface(font);
@@ -223,7 +229,7 @@ public class CardListFragment extends CustomCardFragment {
 				.getStringArray(R.array.Mechanic);
 		String[] sortNames = getResources().getStringArray(R.array.Sort);
 		String[] sortMana = getResources().getStringArray(R.array.ManaCost);
-		
+
 		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(getActivity(),
 				R.layout.spinner_row, R.id.name, sortNames);
 		spinAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
@@ -231,7 +237,7 @@ public class CardListFragment extends CustomCardFragment {
 		CustomArrayAdapter spinSortAdapter = new CustomArrayAdapter(
 				getActivity(), R.layout.spinner_row, R.id.name, mechanicNames);
 		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
-		
+
 		CustomArrayAdapter spinManaAdapter = new CustomArrayAdapter(
 				getActivity(), R.layout.spinner_row, R.id.name, sortMana);
 		spinSortAdapter.setDropDownViewResource(R.layout.spinner_dropdown_row);
@@ -355,18 +361,13 @@ public class CardListFragment extends CustomCardFragment {
 				.getSupportFragmentManager().findFragmentByTag(
 						Utils.makeFragmentName(R.id.pager, 1));
 
-		Crouton.cancelAllCroutons();
-
 		if (cardsList.size() < 30) {
 			cardsList.add(cardList.get(position));
-
-			Crouton.makeText(getActivity(),
-					"Card added: " + cardList.get(position).getName(),
-					Style.INFO).show();
+			mBar.clear();
+			mBar.show("Card added: " + cardList.get(position).getName());
 		} else {
-			Crouton.makeText(getActivity(),
-					"Cannot have more than 30 cards in the deck", Style.ALERT)
-					.show();
+			mBar.clear();
+			mBar.show("Cannot have more than 30 cards in the deck");
 		}
 
 		deckActivity.setManaChart(cardsList);
@@ -404,7 +405,6 @@ public class CardListFragment extends CustomCardFragment {
 		deckFrag.cardList.addAll(cardsList);
 		deckFrag.refreshDecks();
 
-		
 		deckChanceFragment.deckList.clear();
 		deckChanceFragment.deckList.addAll(cardsList);
 		deckChanceFragment.updatePercents(cardsList, true);

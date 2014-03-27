@@ -13,16 +13,25 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.google.android.gms.drive.internal.m;
+
+import net.simonvt.messagebar.MessageBar;
+
+import android.R.integer;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.TypedArray;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat.Action;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -43,7 +52,7 @@ import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class CardListActivity extends ActionBarActivity {
+public class CardListActivity extends HearthstoneActivity {
 
 	Spinner spinner;
 	Spinner spinnerSort;
@@ -72,6 +81,7 @@ public class CardListActivity extends ActionBarActivity {
 	private ImageAdapter adapter;
 	private CustomListAdapter adapter2;
 	private String query;
+	private MessageBar mBar;
 
 	private int pos = OnItemSelectedListenerStandalone.position;
 	private int position;
@@ -101,6 +111,8 @@ public class CardListActivity extends ActionBarActivity {
 		tvMechanic = findById(this, R.id.tvCost);
 		mDrawerLayout = findById(this, R.id.drawerLayout);
 		mDrawerList = findById(this, R.id.left_drawer);
+
+		mBar = new MessageBar(this);
 
 		// Show ActionBar (Top bar)
 		getSupportActionBar().show();
@@ -310,12 +322,30 @@ public class CardListActivity extends ActionBarActivity {
 		MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.card_list_standalone, menu);
 		searchItem = menu.findItem(R.id.action_search);
+
+		MenuItemCompat.setShowAsAction(searchItem,
+				MenuItemCompat.SHOW_AS_ACTION_IF_ROOM
+						| MenuItemCompat.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
+
 		menu.findItem(R.id.action_switch).setIcon(
 				R.drawable.collections_view_as_list);
 		mSearchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 		mSearchView.setOnQueryTextListener(new SearchListener2(
 				CardListActivity.this, cardList, cards, grid, listCards,
 				adapter, adapter2, searchItem));
+
+		// mSearchView.setOnQueryTextFocusChangeListener(new
+		// View.OnFocusChangeListener() {
+		//
+		// @Override
+		// public void onFocusChange(View v, boolean hasFocus) {
+		// if (!hasFocus) {
+		// MenuItemCompat.collapseActionView(searchItem);
+		// mSearchView.setQuery("", false);
+		// }
+		//
+		// }
+		// });
 
 		OnItemSelectedListenerStandalone listener = new OnItemSelectedListenerStandalone(
 				CardListActivity.this, mSearchView, cardList, cards, adapter,
@@ -400,7 +430,7 @@ public class CardListActivity extends ActionBarActivity {
 				&& item.getTitle().equals("Add to new deck")) {
 			LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.dialog_layout,
-					(ViewGroup) findViewById(R.id.linearLayout));
+					(ViewGroup) findViewById(R.id.relativeLayout));
 			// layout_root should be the name of the "top-level" layout node
 			// in the dialog_layout.xml file.
 			final EditText nameBox = (EditText) layout
@@ -488,20 +518,31 @@ public class CardListActivity extends ActionBarActivity {
 		}
 
 		if (list.size() == 30) {
-			Crouton.makeText(
-					this,
-					"Cannot add card. Deck \"" + deckList.get(menuItemIndex)
-							+ "\" is full.", Style.ALERT).show();
+			mBar.show("Cannot add card. Deck \"" + deckList.get(menuItemIndex)
+					+ "\" is full.");
 			Log.w("CardListActivity", "addCards can't add that card");
 			return;
 		}
 
-		list.add(cardList.get(position));
+		TypedValue typedValue = new TypedValue();
+		int[] attrs = new int[] { R.attr.actionBarSize };
+		TypedArray a = obtainStyledAttributes(typedValue.data, attrs);
+		int actionBarSize = a.getDimensionPixelSize(0, -1);
 
-		Crouton.makeText(
-				this,
-				cardList.get(position).getName() + " added to \"" + deckName
-						+ "\"", Style.INFO).show();
+		Log.w("ActionBarSize", actionBarSize + "");
+
+		list.add(cardList.get(position));
+		mBar.show(cardList.get(position).getName() + " added to \"" + deckName
+				+ "\"");
+
+		// Handler handler = new Handler();
+		// handler.postDelayed(new Runnable() {
+		//
+		// @Override
+		// public void run() {
+		// mBar.clear();
+		// }
+		// }, 3000);
 
 		Log.w("CardListActivity", "addCards added a card");
 		new DeckUtils.SaveDeck(this, deckName, list).execute();

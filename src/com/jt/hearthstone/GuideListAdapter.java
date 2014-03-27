@@ -3,10 +3,13 @@ package com.jt.hearthstone;
 import static butterknife.Views.findById;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,25 +20,23 @@ import android.widget.TextView;
 public class GuideListAdapter extends BaseAdapter implements Serializable {
 
 	private static final long serialVersionUID = 1608733535153958604L;
-	
-	private Context mContext;
-	private int count;
-	private List<String> deckNames;
-	private List<Classes> classes;
-	private SparseArray<String> sparseRatings;
 
-	public GuideListAdapter(Context c, int count, List<String> deckNames,
-			List<Classes> classes, SparseArray<String> sparseRatings) {
+	private Context mContext;
+	private List<String> mDeckNames;
+	private List<Classes> classes;
+	private List<String> sparseRatings;
+
+	public GuideListAdapter(Context c, List<String> deckNames,
+			List<Classes> classes, List<String> sparseRatings) {
 		mContext = c;
-		this.count = count;
-		this.deckNames = deckNames;
-		this.classes = classes;
-		this.sparseRatings = sparseRatings;
+		mDeckNames = new ArrayList<String>(deckNames);
+		this.classes = new ArrayList<Classes>(classes);
+		this.sparseRatings = new ArrayList<String>(sparseRatings);
 
 	}
 
 	public int getCount() {
-		return count;
+		return mDeckNames.size();
 	}
 
 	public Object getItem(int position) {
@@ -43,7 +44,21 @@ public class GuideListAdapter extends BaseAdapter implements Serializable {
 	}
 
 	public long getItemId(int position) {
-		return 0;
+		return position;
+	}
+	
+	public void update(List<String> deckNames,
+			List<Classes> classes, List<String> sparseRatings) {
+		Log.w("deckNames.size() before clear", (mDeckNames == deckNames) + "   mDeckNames.size() = " + mDeckNames.size() + "   deckNames.size() = " + deckNames.size() + "   getCount() = " + getCount());
+		mDeckNames.clear();
+		mDeckNames.addAll(deckNames);
+		Log.w("deckNames.size() after clear", "mDeckNames.size() = " + mDeckNames.size() + "   deckNames.size() = " + deckNames.size() + "   getCount() = " + getCount());
+		this.classes.clear();
+		this.classes.addAll(classes);
+		this.sparseRatings.clear();
+		this.sparseRatings.addAll(sparseRatings);
+
+		this.notifyDataSetChanged();
 	}
 
 	// Custom ViewHolder class to make scrolling smoother
@@ -79,7 +94,7 @@ public class GuideListAdapter extends BaseAdapter implements Serializable {
 		vh.tvDeckName.setTypeface(font);
 		vh.tvRating.setTypeface(font);
 
-		vh.tvDeckName.setText(deckNames.get(position));
+		vh.tvDeckName.setText(mDeckNames.get(position));
 		vh.tvRating.setText(sparseRatings.get(position));
 
 		switch (classes.get(position)) {

@@ -33,8 +33,9 @@
 
     <HorizontalScrollView
         android:id="@+id/mrScrolls"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
         android:scrollbars="none" >
 
@@ -120,7 +121,8 @@
         android:layout_toLeftOf="@+id/imageView1"
         android:text="Reverse Sort"
         android:textColor="#000000"
-        android:textSize="12sp" />
+        android:textSize="12sp"
+        android:button="@drawable/checkbox_selector" />
 
     <CheckBox
         android:id="@+id/cbGenerics"

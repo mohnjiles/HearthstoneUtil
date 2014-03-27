@@ -47,7 +47,6 @@
             style="android:spinnerStyle"
             android:layout_width="@dimen/spinner_size"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:layout_toRightOf="@+id/tvMana"
@@ -71,7 +70,6 @@
             android:layout_width="@dimen/spinner_size"
             android:layout_height="wrap_content"
             android:layout_below="@+id/spinnerMana"
-            android:layout_marginBottom="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginTop="8dp"
             android:layout_toRightOf="@+id/textView2"
@@ -94,8 +92,10 @@
             style="android:spinnerStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
             android:layout_below="@+id/spinnerSort"
             android:layout_marginBottom="8dp"
+            android:layout_marginRight="16dp"
             android:layout_marginTop="8dp"
             android:layout_toRightOf="@+id/tvCost"
             android:entries="@array/Mechanic" />
@@ -104,8 +104,8 @@
             android:id="@+id/cbReverse"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/tvCost"
-            android:layout_below="@+id/tvCost"
+            android:layout_alignLeft="@+id/cbGenerics"
+            android:layout_below="@+id/cbGenerics"
             android:layout_marginBottom="8dp"
             android:layout_marginTop="8dp"
             android:text="Reverse Sort"
@@ -116,9 +116,8 @@
             android:id="@+id/cbGenerics"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/cbReverse"
-            android:layout_below="@+id/cbReverse"
-            android:layout_marginBottom="8dp"
+            android:layout_alignLeft="@+id/tvCost"
+            android:layout_below="@+id/tvCost"
             android:layout_marginTop="8dp"
             android:text="Neutral Cards"
             android:textColor="#000000"
@@ -130,11 +129,12 @@
             android:layout_height="wrap_content"
             android:layout_alignBottom="@+id/spinnerSort"
             android:layout_alignTop="@+id/spinnerSort"
-            android:layout_marginLeft="8dp"
+            android:layout_marginLeft="16dp"
             android:gravity="center_vertical"
             android:text="Sort:"
             android:textColor="#000000"
             android:textSize="@dimen/card_name_text_size" />
+
     </RelativeLayout>
 
     <RelativeLayout

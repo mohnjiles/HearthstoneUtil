@@ -10,6 +10,11 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.android.gms.drive.internal.m;
+
+import net.simonvt.messagebar.MessageBar;
+
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -248,6 +253,7 @@ public class DeckUtils {
 		private int position;
 		private FragmentActivity fragmentActivity;
 		private List<Cards> cardList;
+		private MessageBar mBar;
 
 		public GetStringList(Context context, Object tag, int position,
 				FragmentActivity fragmentActivity, List<Cards> cardList) {
@@ -256,6 +262,7 @@ public class DeckUtils {
 			this.position = position;
 			this.fragmentActivity = fragmentActivity;
 			this.cardList = cardList;
+			mBar = new MessageBar(fragmentActivity);
 		}
 
 		@Override
@@ -323,10 +330,7 @@ public class DeckUtils {
 								for (String deckName : listDecks) {
 									if (deckName.equals(nameBox.getText()
 											.toString())) {
-										Crouton.makeText(
-												fragmentActivity,
-												"Deck with that name already exists",
-												Style.ALERT).show();
+										mBar.show("Deck with that name already exists");
 										return;
 									}
 								}

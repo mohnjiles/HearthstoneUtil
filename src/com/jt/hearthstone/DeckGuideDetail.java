@@ -7,10 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+
+import com.google.android.gms.drive.internal.m;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -30,7 +34,7 @@ import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckGuideDetail extends ActionBarActivity implements
+public class DeckGuideDetail extends HearthstoneActivity implements
 		AdapterView.OnItemSelectedListener {
 
 	private ListView lvDeck;
@@ -41,6 +45,7 @@ public class DeckGuideDetail extends ActionBarActivity implements
 	private Intent intent;
 	private Spinner spinSort;
 	private String url;
+	private MessageBar mBar;
 	SerializableSparseArray<String> soSparse = new SerializableSparseArray<String>();
 
 	@Override
@@ -51,6 +56,7 @@ public class DeckGuideDetail extends ActionBarActivity implements
 		lvDeck = findById(this, R.id.lvDeck);
 		spinSort = findById(this, R.id.spinSort);
 		tvDust = findById(this, R.id.tvSomeText);
+		mBar = new MessageBar(this);
 
 		intent = getIntent();
 
@@ -100,8 +106,9 @@ public class DeckGuideDetail extends ActionBarActivity implements
 
 				}
 			});
-			
-			spinSort.setSelection(savedInstanceState.getInt("spinnerPos"), false);
+
+			spinSort.setSelection(savedInstanceState.getInt("spinnerPos"),
+					false);
 			spinSort.setOnItemSelectedListener(this);
 		}
 
@@ -234,7 +241,7 @@ public class DeckGuideDetail extends ActionBarActivity implements
 			new DeckUtils.SaveDeck(this, "decklist", deckList).execute();
 			new DeckUtils.SaveDeck(this, "deckclasses", classesList).execute();
 
-			Crouton.makeText(this, "Deck saved", Style.INFO).show();
+			mBar.show("Deck saved");
 		}
 		return super.onOptionsItemSelected(item);
 	}
@@ -305,7 +312,7 @@ public class DeckGuideDetail extends ActionBarActivity implements
 						}
 					}
 				}
-				
+
 				Collections.sort(deckCards, new CardComparator(1, false));
 				lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this,
 						deckCards.size(), deckCards, soSparse));
@@ -323,10 +330,7 @@ public class DeckGuideDetail extends ActionBarActivity implements
 					}
 				});
 			} else {
-				Crouton.makeText(
-						DeckGuideDetail.this,
-						"Failed to load guides. Check your internet connectoin and try again later",
-						Style.ALERT).show();
+				mBar.show("Failed to load guides. Check your internet connectoin and try again later");
 			}
 
 			super.onPostExecute(result);
@@ -350,9 +354,9 @@ public class DeckGuideDetail extends ActionBarActivity implements
 			Collections.sort(deckCards, new CardComparator(4, false));
 			break;
 		}
-		
-		lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this,
-				deckCards.size(), deckCards, soSparse));
+
+		lvDeck.setAdapter(new DeckGuideAdapter(DeckGuideDetail.this, deckCards
+				.size(), deckCards, soSparse));
 
 	}
 

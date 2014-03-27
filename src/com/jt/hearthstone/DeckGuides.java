@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -17,18 +19,19 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Spinner;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckGuides extends ActionBarActivity implements
+public class DeckGuides extends HearthstoneActivity implements
 		AdapterView.OnItemSelectedListener {
 
 	private ListView lvDecks;
@@ -37,12 +40,18 @@ public class DeckGuides extends ActionBarActivity implements
 	private List<String> deckNames = new ArrayList<String>();
 	private List<String> deckLinks = new ArrayList<String>();
 	private List<String> dustList = new ArrayList<String>();
-	private SerializableSparseArray<String> sparseRatings = new SerializableSparseArray<String>();
+	private List<String> listRatings = new ArrayList<String>();
 	private GuideListAdapter adapter;
 
 	private String[] mActivityNames;
 	private ListView mDrawerList;
 	private DrawerLayout drawerLayout;
+	private MessageBar mBar;
+
+	private int pageNum = 1;
+	private int preLast;
+
+	private View v;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +61,7 @@ public class DeckGuides extends ActionBarActivity implements
 		lvDecks = findById(this, R.id.lvDecks);
 		spinClass = findById(this, R.id.spinClass);
 		drawerLayout = findById(this, R.id.drawerLayout);
+		mBar = new MessageBar(this);
 
 		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		getSupportActionBar().setTitle("Deck Guides");
@@ -89,7 +99,7 @@ public class DeckGuides extends ActionBarActivity implements
 						}
 					}
 				});
-		
+
 		String[] classNames = getResources().getStringArray(R.array.Classes);
 		CustomArrayAdapter spinAdapter = new CustomArrayAdapter(this,
 				R.layout.spinner_row, R.id.name, classNames);
@@ -102,18 +112,19 @@ public class DeckGuides extends ActionBarActivity implements
 		} else {
 
 			deckNames = savedInstanceState.getStringArrayList("deckNames");
-			sparseRatings = (SerializableSparseArray<String>) savedInstanceState
+			listRatings = (List<String>) savedInstanceState
 					.getSerializable("sparseRatings");
 			classes = (List<Classes>) savedInstanceState
 					.getSerializable("classes");
 			deckLinks = savedInstanceState.getStringArrayList("deckLinks");
 			dustList = savedInstanceState.getStringArrayList("dustList");
 
-			adapter = new GuideListAdapter(DeckGuides.this, deckNames.size(),
-					deckNames, classes, sparseRatings);
+			adapter = new GuideListAdapter(DeckGuides.this, deckNames, classes,
+					listRatings);
 			lvDecks.setAdapter(adapter);
-			
-			spinClass.setSelection(savedInstanceState.getInt("spinnerPos"), false);
+
+			spinClass.setSelection(savedInstanceState.getInt("spinnerPos"),
+					false);
 			spinClass.setOnItemSelectedListener(this);
 		}
 
@@ -133,7 +144,9 @@ public class DeckGuides extends ActionBarActivity implements
 			}
 		});
 
-		
+		v = getLayoutInflater().inflate(R.layout.list_footer, null);
+		lvDecks.addFooterView(v);
+
 	}
 
 	@Override
@@ -160,7 +173,8 @@ public class DeckGuides extends ActionBarActivity implements
 	protected void onSaveInstanceState(Bundle outState) {
 
 		outState.putStringArrayList("deckNames", (ArrayList<String>) deckNames);
-		outState.putSerializable("sparseRatings", sparseRatings);
+		outState.putSerializable("sparseRatings",
+				(ArrayList<String>) listRatings);
 		outState.putSerializable("classes", (ArrayList<Classes>) classes);
 		outState.putStringArrayList("deckLinks", (ArrayList<String>) deckLinks);
 		outState.putStringArrayList("dustList", (ArrayList<String>) dustList);
@@ -177,14 +191,21 @@ public class DeckGuides extends ActionBarActivity implements
 		Elements dustCost;
 		private Context cxt;
 		private ProgressDialog dialog;
+		private String url;
+		private boolean isNextPage;
 
-		private FetchDecks(Context cxt) {
+		private FetchDecks(Context cxt, boolean isNextPage) {
 			this.cxt = cxt;
+			this.isNextPage = isNextPage;
 			dialog = new ProgressDialog(cxt);
 		}
 
 		@Override
 		protected Document doInBackground(String... params) {
+
+			url = params[0].replace("&page=" + pageNum, "");
+			Log.w("pageNum", "pageNum = " + pageNum);
+
 			try {
 				doc = Jsoup
 						.connect(params[0])
@@ -202,20 +223,22 @@ public class DeckGuides extends ActionBarActivity implements
 
 		@Override
 		protected void onPreExecute() {
-			dialog = ProgressDialog.show(cxt, "", "Loading guides...", true);
-			dialog.show();
+
+			if (isNextPage) {
+				v.setVisibility(View.VISIBLE);
+			} else {
+				dialog = ProgressDialog
+						.show(cxt, "", "Loading guides...", true);
+				dialog.show();
+			}
 			super.onPreExecute();
 		}
 
 		@Override
 		protected void onPostExecute(Document result) {
 			dialog.cancel();
-
 			if (result == null) {
-				Crouton.makeText(
-						DeckGuides.this,
-						"Failed to load guides. Check your internet connectoin and try again later",
-						Style.ALERT).show();
+				mBar.show("Failed to load guides. Check your internet connection and try again later");
 				return;
 			}
 
@@ -223,11 +246,6 @@ public class DeckGuides extends ActionBarActivity implements
 			elements = result.select("a[class]");
 			moreElements = result
 					.select("div.rating-sum.rating-average.rating-average-ratingPositive");
-			int i = 0;
-			for (Element e : moreElements) {
-				sparseRatings.put(i, e.text());
-				i++;
-			}
 
 			for (Element e : dustCost) {
 				dustList.add(e.text());
@@ -276,9 +294,56 @@ public class DeckGuides extends ActionBarActivity implements
 						deckLinks.add(link);
 					}
 				}
-				adapter = new GuideListAdapter(DeckGuides.this,
-						deckNames.size(), deckNames, classes, sparseRatings);
-				lvDecks.setAdapter(adapter);
+
+				for (Element e : moreElements) {
+					listRatings.add(e.text());
+				}
+
+				if (isNextPage) {
+					adapter.update(deckNames, classes, listRatings);
+					v.setVisibility(View.GONE);
+					//lvDecks.setSelection(firstVisibleItem + 1);
+
+					return;
+				} else {
+					adapter = new GuideListAdapter(DeckGuides.this, deckNames,
+							classes, listRatings);
+
+					lvDecks.setAdapter(adapter);
+				}
+
+				lvDecks.setOnScrollListener(new OnScrollListener() {
+
+					@Override
+					public void onScroll(AbsListView view,
+							int firstVisibleItem, int visibleItemCount,
+							int totalItemCount) {
+
+						final int lastItem = firstVisibleItem
+								+ visibleItemCount;
+						if (lastItem == totalItemCount) {
+							if (preLast != lastItem) {
+								pageNum++;
+								Log.w("Loading next page", url + "&page="
+										+ pageNum);
+
+								new FetchDecks(DeckGuides.this, true)
+										.execute(url + "&page=" + pageNum);
+
+								preLast = lastItem;
+							}
+						}
+
+					}
+
+					@Override
+					public void onScrollStateChanged(AbsListView view,
+							int scrollState) {
+						// TODO Auto-generated method stub
+
+					}
+				});
+
 				Log.w("Fetch Guides", "Done fetching guides");
 			} else {
 				Log.w("Load failed!", "Loading guides failed!");
@@ -298,43 +363,43 @@ public class DeckGuides extends ActionBarActivity implements
 
 		switch (arg2) {
 		case 0:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=0&sort=-rating");
 			break;
 		case 1:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=4&sort=-rating");
 			break;
 		case 2:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=8&sort=-rating");
 			break;
 		case 3:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=16&sort=-rating");
 			break;
 		case 4:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=32&sort=-rating");
 			break;
 		case 5:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=64&sort=-rating");
 			break;
 		case 6:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=128&sort=-rating");
 			break;
 		case 7:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=256&sort=-rating");
 			break;
 		case 8:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=512&sort=-rating");
 			break;
 		case 9:
-			new FetchDecks(DeckGuides.this)
+			new FetchDecks(DeckGuides.this, false)
 					.execute("http://www.hearthpwn.com/decks?filter-class=1024&sort=-rating");
 			break;
 

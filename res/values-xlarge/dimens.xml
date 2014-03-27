@@ -21,6 +21,7 @@
     <dimen name="arena_card_width">280dp</dimen>
     <dimen name="top_layout_height">240dp</dimen>
     <dimen name="side_layout_width">300dp</dimen>
+    <dimen name="list_class_icon_padding">30dp</dimen>
 
     <!-- Text Sizes -->
     <dimen name="card_list_textview">18sp</dimen>

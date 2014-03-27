@@ -12,6 +12,8 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -31,8 +33,8 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.ActionBarDrawerToggle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,7 +43,10 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
-public class MainActivity extends ActionBarActivity {
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
+public class MainActivity extends HearthstoneActivity {
 	private Button btnCardList;
 	private Button btnClasses;
 	private Button btnDeckBuilder;
@@ -51,18 +56,15 @@ public class MainActivity extends ActionBarActivity {
 	private ActionBarDrawerToggle mDrawerToggle;
 	private ListView mDrawerList;
 	private String[] mActivityNames;
+	private AdView adView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		// Set main view to Activity_Main layout
 		setContentView(R.layout.activity_main);
-
-		// Show ActionBar (Title bar)
+		
 		getSupportActionBar().show();
-
-		// Set ActionBar Title
 		getSupportActionBar().setTitle("Hearthstone Companion");
 
 		Typeface font = TypefaceCache.get(getAssets(), "fonts/belwebd.ttf");
@@ -85,6 +87,28 @@ public class MainActivity extends ActionBarActivity {
 		btnDeckBuilder.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnArena.setShadowLayer(1, 1, 1, Color.WHITE);
 		btnNews.setShadowLayer(1, 1, 1, Color.WHITE);
+
+		adView = findById(this, R.id.adView);
+
+		AdRequest.Builder adRequestBuilder = new AdRequest.Builder().addTestDevice(
+				AdRequest.DEVICE_ID_EMULATOR).addTestDevice(
+				"6AEDAF2D22A9E9C74B304FF9FC273280");
+
+		String android_id = Settings.Secure.getString(
+				this.getContentResolver(), Settings.Secure.ANDROID_ID);
+		String deviceId = md5(android_id).toUpperCase(Utils.curLocale);
+		
+		if (HearthstoneUtil.isDebugEnabled) {
+
+			adRequestBuilder.addTestDevice(deviceId);
+		}
+
+		AdRequest mAdRequest = adRequestBuilder.build();
+		boolean isTestDevice = mAdRequest.isTestDevice(this);
+
+		Log.w("MainActivity Ads", "is Admob Test Device ? " + deviceId + " "
+				+ isTestDevice); // to confirm it worked
+		adView.loadAd(mAdRequest);
 
 		mDrawerToggle = new ActionBarDrawerToggle(this, /* host Activity */
 		mDrawerLayout, /* DrawerLayout object */
@@ -413,5 +437,53 @@ public class MainActivity extends ActionBarActivity {
 
 			super.onPostExecute(result);
 		}
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		// Resume the AdView.
+		adView.resume();
+	}
+
+	@Override
+	public void onPause() {
+		// Pause the AdView.
+		adView.pause();
+
+		super.onPause();
+	}
+
+	@Override
+	public void onDestroy() {
+		// Destroy the AdView.
+		adView.destroy();
+
+		super.onDestroy();
+	}
+
+	public static final String md5(final String s) {
+		try {
+			// Create MD5 Hash
+			MessageDigest digest = java.security.MessageDigest
+					.getInstance("MD5");
+			digest.update(s.getBytes());
+			byte messageDigest[] = digest.digest();
+
+			// Create Hex String
+			StringBuffer hexString = new StringBuffer();
+			for (int i = 0; i < messageDigest.length; i++) {
+				String h = Integer.toHexString(0xFF & messageDigest[i]);
+				while (h.length() < 2)
+					h = "0" + h;
+				hexString.append(h);
+			}
+			return hexString.toString();
+
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return "";
 	}
 }

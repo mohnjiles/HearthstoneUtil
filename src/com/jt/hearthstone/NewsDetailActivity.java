@@ -4,6 +4,8 @@ import static butterknife.Views.findById;
 
 import java.io.IOException;
 
+import net.simonvt.messagebar.MessageBar;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -29,12 +31,13 @@ import android.widget.ListView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class NewsDetailActivity extends ActionBarActivity {
+public class NewsDetailActivity extends HearthstoneActivity {
 
 	private WebView wvDetails;
 	private String url;
 	private String title;
 	private String html;
+	private MessageBar mBar;
 
 	@SuppressLint("NewApi")
 	@Override
@@ -48,6 +51,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 
 		url = intent.getStringExtra("url");
 		title = intent.getStringExtra("title");
+		mBar = new MessageBar(this);
 
 		getSupportActionBar().setTitle(title);
 
@@ -200,10 +204,7 @@ public class NewsDetailActivity extends ActionBarActivity {
 				wvDetails.getSettings().setLayoutAlgorithm(LayoutAlgorithm.SINGLE_COLUMN);
 
 			} else {
-				Crouton.makeText(
-						NewsDetailActivity.this,
-						"Failed to load article. Check your internet connectoin and try again later",
-						Style.ALERT).show();
+				mBar.show("Failed to load article. Check your internet connection and try again later");
 			}
 			super.onPostExecute(result);
 		}

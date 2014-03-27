@@ -10,6 +10,8 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -35,7 +37,7 @@ import com.jfeinstein.jazzyviewpager.JazzyViewPager;
 import com.jfeinstein.jazzyviewpager.JazzyViewPager.TransitionEffect;
 import com.viewpagerindicator.TitlePageIndicator;
 
-public class DeckFragmentHolder extends ActionBarActivity {
+public class DeckFragmentHolder extends HearthstoneActivity {
 
 	static ActionBar aBar;
 	private JazzyViewPager myPager;
@@ -55,6 +57,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 	private SimulatorFragment simFrag;
 	private TitlePageIndicator titles;
 	private DeckChanceFragment deckChanceFrag;
+	
+	public MessageBar mBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,8 @@ public class DeckFragmentHolder extends ActionBarActivity {
 		myPager = (JazzyViewPager) findViewById(R.id.pager);
 		titles = (TitlePageIndicator) findViewById(R.id.titles);
 
+		mBar = new MessageBar(this);
+		
 		position = getIntent().getIntExtra("position", 0);
 		ArrayList<Fragment> fragments = new ArrayList<Fragment>();
 		cardListFrag = new CardListFragment();
@@ -191,6 +197,10 @@ public class DeckFragmentHolder extends ActionBarActivity {
 
 	}
 
+	public MessageBar getMessageBar() {
+		return mBar;
+	}
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 

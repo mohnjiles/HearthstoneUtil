@@ -10,6 +10,8 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.R.array;
 import android.content.Intent;
 import android.os.Bundle;
@@ -37,6 +39,7 @@ public class DeckChanceFragment extends CustomCardFragment implements
 	List<Cards> deckListUnique;
 	private Intent intent;
 	private List<Cards> prevCards = new ArrayList<Cards>();
+	private MessageBar mBar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,6 +51,7 @@ public class DeckChanceFragment extends CustomCardFragment implements
 				false);
 
 		lvDeck = findById(v, R.id.lvChanceDeck);
+		mBar = ((DeckFragmentHolder)getActivity()).getMessageBar();
 
 		intent = getActivity().getIntent();
 
@@ -134,8 +138,7 @@ public class DeckChanceFragment extends CustomCardFragment implements
 				prevCards.remove(prevCards.size() - 1);
 				updatePercents(deckList, true);
 			} else {
-				Crouton.makeText(getActivity(), "Cannot undo any further",
-						Style.ALERT).show();
+				mBar.show("Cannot undo any further");
 			}
 			break;
 		case R.id.action_restart:

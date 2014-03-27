@@ -10,6 +10,8 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
@@ -35,7 +37,7 @@ import android.widget.TextView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 
-public class DeckSelector extends ActionBarActivity {
+public class DeckSelector extends HearthstoneActivity {
 
 	static List<String> listDecks = new ArrayList<String>();
 	static List<Integer> deckClasses;
@@ -48,6 +50,7 @@ public class DeckSelector extends ActionBarActivity {
 
 	private Typeface font;
 	private DrawerLayout drawerLayout;
+	private MessageBar mBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class DeckSelector extends ActionBarActivity {
 		getSupportActionBar().setTitle("Decks");
 		gvDecks = findById(this, R.id.gvDecks);
 		drawerLayout = findById(this, R.id.drawerLayout);
+		mBar = new MessageBar(this);
 
 		ListView mDrawerList = findById(this, R.id.left_drawer);
 		String[] mActivityNames = getResources().getStringArray(R.array.Drawer);
@@ -174,7 +178,7 @@ public class DeckSelector extends ActionBarActivity {
 			// Preparing views
 			LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
 			View layout = inflater.inflate(R.layout.dialog_layout,
-					(ViewGroup) findViewById(R.id.linearLayout));
+					(ViewGroup) findViewById(R.id.relativeLayout));
 			// layout_root should be the name of the "top-level" layout node in
 			// the dialog_layout.xml file.
 			final EditText nameBox = (EditText) layout
@@ -223,19 +227,14 @@ public class DeckSelector extends ActionBarActivity {
 							for (String deckName : listDecks) {
 								if (deckName.equals(nameBox.getText()
 										.toString())) {
-									Crouton.makeText(
-											DeckSelector.this,
-											"Deck with that name already exists",
-											Style.ALERT).show();
+									mBar.show("Deck with that name already exists");
 									return;
 								}
 							}
 
 							if (nameBox.getText().toString() == null
 									|| nameBox.getText().toString().equals("")) {
-								Crouton.makeText(DeckSelector.this,
-										"You must provide a name for the deck",
-										Style.ALERT).show();
+								mBar.show("You must provide a name for the deck");
 								return;
 							}
 							

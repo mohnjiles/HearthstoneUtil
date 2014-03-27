@@ -2,24 +2,12 @@ package com.jt.hearthstone;
 
 import static butterknife.Views.findById;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
 
-import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.preference.PreferenceManager;
@@ -28,7 +16,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -47,7 +34,7 @@ import com.viewpagerindicator.TitlePageIndicator;
  * @author JT
  * 
  */
-public class ArenaSimulator extends ActionBarActivity {
+public class ArenaSimulator extends HearthstoneActivity {
 
 	private JazzyViewPager myPager;
 	private TitlePageIndicator titleIndicator;
@@ -56,11 +43,6 @@ public class ArenaSimulator extends ActionBarActivity {
 	private ActionBar aBar;
 	private TransitionEffect tf;
 	private SharedPreferences prefs;
-	private int timesRun = 0;
-
-	private List<Cards> listDeck = new ArrayList<Cards>();
-	private List<Cards> listChoices = new ArrayList<Cards>();
-	private List<Cards> listInbetween = new ArrayList<Cards>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {

@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -69,8 +71,7 @@ public class DeckActivity extends CustomCardFragment {
 	private boolean isGrid = true;
 	private Typeface font;
 
-	private int cardPos;
-	private View parentAdapterView;
+	private MessageBar mBar;
 
 	private boolean isQuickEditMode;
 	private SharedPreferences prefs;
@@ -100,6 +101,8 @@ public class DeckActivity extends CustomCardFragment {
 		gvDeck = findById(V, R.id.gvDeck);
 		tvNumCards = findById(V, R.id.tvNumCards);
 		ivSwipe = findById(V, R.id.imageView1);
+		
+		mBar = ((DeckFragmentHolder)getActivity()).getMessageBar();
 
 		// Set ListView and GridView to listen to long-press on an item
 		registerForContextMenu(lvDeck);
@@ -456,21 +459,16 @@ public class DeckActivity extends CustomCardFragment {
 
 		// Remove selected card from the deck
 		if (v.getId() == R.id.gvDeck) {
-			Crouton.cancelAllCroutons();
-			Crouton.makeText(getActivity(),
-					"Card removed: " + cardList.get(pos).getName(),
-					Style.INFO).show();
-
+			mBar.clear();
+			mBar.show("Card removed: " + cardList.get(pos).getName());
 			cardList.remove(pos);
 			cardListUnique = new ArrayList<Cards>(new LinkedHashSet<Cards>(
 					cardList));
 			Log.i("Card Removed", "Card removed, pos: " + pos);
 
 		} else {
-			Crouton.cancelAllCroutons();
-			Crouton.makeText(getActivity(),
-					"Card removed: " + cardListUnique.get(pos).getName(),
-					Style.INFO).show();
+			mBar.clear();
+			mBar.show("Card removed: " + cardListUnique.get(pos).getName());
 
 			for (Iterator<Cards> it = cardList.iterator(); it.hasNext();) {
 				Cards card = it.next();

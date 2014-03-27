@@ -28,6 +28,7 @@
     <dimen name="news_image_width">150dp</dimen>
     <dimen name="news_image_height">75dp</dimen>
     <dimen name="side_layout_width">250dp</dimen>
+    <dimen name="list_class_icon_padding">26dp</dimen>
 
     <!-- Text Sizes -->
     <dimen name="card_list_textview">16sp</dimen>

@@ -4,6 +4,7 @@ import static butterknife.Views.findById;
 
 import java.util.List;
 
+import android.R.integer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -37,7 +38,7 @@ public class DeckGuideAdapter extends BaseAdapter {
 	}
 
 	public long getItemId(int position) {
-		return 0;
+		return position;
 	}
 
 	static class ViewHolder {

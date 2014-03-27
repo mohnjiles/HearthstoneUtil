@@ -8,7 +8,7 @@
         android:title="Debugging" >
         <Preference
             android:key="button"
-            android:summary="Clears both disc and memory cache"
+            android:summary="Clears both disk and memory cache"
             android:title="Clear caches" />
         <Preference
             android:key="delete"

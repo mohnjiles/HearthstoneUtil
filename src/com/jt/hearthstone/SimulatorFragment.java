@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import net.simonvt.messagebar.MessageBar;
+
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -47,6 +49,8 @@ public class SimulatorFragment extends CustomCardFragment {
 
 	@Icicle private Typeface font;
 	@Icicle private DeckActivity deckActivity;
+	
+	private MessageBar mBar;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -62,6 +66,7 @@ public class SimulatorFragment extends CustomCardFragment {
 		btnDrawAnother = findById(V, R.id.btnDrawAnother);
 		spinnerNumCards = findById(V, R.id.spinnerNumCards);
 		tvStartingSize = findById(V, R.id.tvSomeText);
+		mBar = ((DeckFragmentHolder)getActivity()).getMessageBar();
 
 		position = getActivity().getIntent().getIntExtra("position", 0);
 		listDecks = getActivity().getIntent().getStringArrayListExtra(
@@ -74,6 +79,7 @@ public class SimulatorFragment extends CustomCardFragment {
 
 		return V;
 	}
+
 
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
@@ -141,10 +147,8 @@ public class SimulatorFragment extends CustomCardFragment {
 					}
 					gvCards.setAdapter(adapter);
 				} else {
-					Crouton.cancelAllCroutons();
-					Crouton.makeText(getActivity(),
-							"Not enough cards in the deck.", Style.ALERT)
-							.show();
+					mBar.clear();
+					mBar.show("Not enough cards in the deck");
 				}
 
 			}
@@ -160,9 +164,8 @@ public class SimulatorFragment extends CustomCardFragment {
 					gvCards.setAdapter(adapter);
 					gvCards.setSelection(index + 1);
 				} else {
-					Crouton.cancelAllCroutons();
-					Crouton.makeText(getActivity(), "No more cards.",
-							Style.ALERT).show();
+					mBar.clear();
+					mBar.show("No more cards");
 				}
 			}
 		});
